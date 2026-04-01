@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Usuario - Fundación Loyola</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF para generación de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- EmailJS para envío de correo sin backend -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Sistema de diseño unificado -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<!-- ===========================
+     SIDEBAR
+=========================== -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="assets/images/logo_oficial_2021_page-0001.jpg" alt="Fundación Loyola">
+        <div class="obra-label">Sistema de Obras</div>
+    </div>
+    <nav>
+        <div class="nav-section-label">General</div>
+        <button onclick="goTo('welcome')" id="nav-welcome">
+            <span class="nav-icon">🏠</span>
+            <span>Inicio</span>
+        </button>
+        <button onclick="goTo('datosObra')" id="nav-datosObra">
+            <span class="nav-icon">📋</span>
+            <span>Datos de la Obra</span>
+        </button>
+        <button onclick="goTo('calendario')" id="nav-calendario">
+            <span class="nav-icon">📅</span>
+            <span>Fechas</span>
+        </button>
+        <button onclick="goTo('documentos')" id="nav-documentos">
+            <span class="nav-icon">📂</span>
+            <span>Documentos</span>
+        </button>
+
+        <div class="nav-section-label">Sondeo SNF</div>
+        <button onclick="goTo('sondeo')" id="nav-sondeo">
+            <span class="nav-icon">📊</span>
+            <span>Sondeo (Menú)</span>
+        </button>
+        <button onclick="goTo('presupuesto')" id="nav-presupuesto">
+            <span class="nav-icon">💰</span>
+            <span>Presupuesto</span>
+        </button>
+        <button onclick="goTo('proyectosVigentes')" id="nav-proyectosVigentes">
+            <span class="nav-icon">📁</span>
+            <span>Proyectos Vigentes</span>
+        </button>
+        <button onclick="goTo('proyectosFinanciar')" id="nav-proyectosFinanciar">
+            <span class="nav-icon">🔍</span>
+            <span>Proyectos a Financiar</span>
+        </button>
+        <button onclick="goTo('necesidadesMateriales')" id="nav-necesidadesMateriales">
+            <span class="nav-icon">🔧</span>
+            <span>Necesidades Materiales</span>
+        </button>
+        <button onclick="goTo('contextoDemografico')" id="nav-contextoDemografico">
+            <span class="nav-icon">🌍</span>
+            <span>Contexto Demográfico</span>
+        </button>
+        <button onclick="goTo('impacto')" id="nav-impacto">
+            <span class="nav-icon">📈</span>
+            <span>Impacto</span>
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
+    </div>
+</aside>
+
+<!-- ===========================
+     MAIN
+=========================== -->
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-title">Fundación Loyola</div>
+        <div class="topbar-breadcrumb">SNF 2025 &nbsp;›&nbsp; <span id="topbar-current">Inicio</span></div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="progress-tracker">
+        <span class="pt-label">Progreso:</span>
+        <div class="pt-item" id="pt-datosObra" onclick="goTo('datosObra')"><span class="pt-check">○</span> Datos de Obra</div>
+        <div class="pt-item" id="pt-presupuesto" onclick="goTo('presupuesto')"><span class="pt-check">○</span> Presupuesto</div>
+        <div class="pt-item" id="pt-proyectosVigentes" onclick="goTo('proyectosVigentes')"><span class="pt-check">○</span> Proy. Vigentes</div>
+        <div class="pt-item" id="pt-proyectosFinanciar" onclick="goTo('proyectosFinanciar')"><span class="pt-check">○</span> Proy. a Financiar</div>
+        <div class="pt-item" id="pt-necesidadesMateriales" onclick="goTo('necesidadesMateriales')"><span class="pt-check">○</span> Necesidades</div>
+        <div class="pt-item" id="pt-contextoDemografico" onclick="goTo('contextoDemografico')"><span class="pt-check">○</span> Contexto</div>
+        <div class="pt-item" id="pt-impacto" onclick="goTo('impacto')"><span class="pt-check">○</span> Impacto</div>
+        <div class="pt-bar-wrap">
+            <div class="pt-bar"><div class="pt-bar-fill" id="pt-bar-fill"></div></div>
+            <span class="pt-pct" id="pt-pct">0%</span>
+        </div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- ===== WELCOME ===== -->
+        <div id="page-welcome" class="section-page active">
+            <div class="page-header">
+                <h2>Bienvenido al Sistema de Obras</h2>
+                <p>Sondeo de Necesidades Financieras y Materiales 2025 — Fundación Loyola</p>
+            </div>
+            <div class="info-box">
+                <strong>Propósito del Sondeo:</strong> Recopilar información sobre los proyectos y programas que ejecutan las obras jesuitas del sector social y pastoral, identificar necesidades financieras y afinar estrategias de procuración de fondos.<br><br>
+                <strong>Enviar a:</strong> Sergio Anzures — <a href="/cdn-cgi/l/email-protection#a0d6c9cec3d5ccc1c3c9cfcee0c6d5cec4c1c3c9cfcecccfd9cfccc18ecdd8" style="color:var(--green-dark)"><span class="__cf_email__" data-cfemail="2c5a45424f59404d4f4543426c4a5942484d4f45434240435543404d024154">[email&#160;protected]</span></a> con copia a Octavio Ubaldo — <a href="/cdn-cgi/l/email-protection#8bf8e4fbe4f9ffeeeae4e9f9eaf8cbedfee5efeae8e2e4e5e7e4f2e4e7eaa5e6f3" style="color:var(--green-dark)"><span class="__cf_email__" data-cfemail="5a29352a35282e3f3b3538283b291a3c2f343e3b3933353436352335363b743722">[email&#160;protected]</span></a><br>
+                <strong>Dudas:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="691a0619061b1d0c08060b1b081a290f1c070d080a000607050610060508470411">[email&#160;protected]</a> · Horario: 9:00 a 17:30
+            </div>
+            <div class="welcome-grid">
+                <div class="welcome-card" onclick="goTo('datosObra')">
+                    <div class="card-icon">📋</div>
+                    <h3>Datos de la Obra</h3>
+                    <p>Información general, contactos y comunicación</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('presupuesto')">
+                    <div class="card-icon">💰</div>
+                    <h3>Presupuesto</h3>
+                    <p>Gastos y fuentes de financiamiento 2026</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('proyectosVigentes')">
+                    <div class="card-icon">📁</div>
+                    <h3>Proyectos Vigentes</h3>
+                    <p>Todos los proyectos activos de la Obra</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('proyectosFinanciar')">
+                    <div class="card-icon">🔍</div>
+                    <h3>Proyectos a Financiar</h3>
+                    <p>Proyectos con necesidad de financiamiento</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('necesidadesMateriales')">
+                    <div class="card-icon">🔧</div>
+                    <h3>Necesidades Materiales</h3>
+                    <p>Insumos y materiales requeridos</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('contextoDemografico')">
+                    <div class="card-icon">🌍</div>
+                    <h3>Contexto Demográfico</h3>
+                    <p>Características de las comunidades</p>
+                </div>
+                <div class="welcome-card" onclick="goTo('impacto')">
+                    <div class="card-icon">📈</div>
+                    <h3>Impacto</h3>
+                    <p>Resultados sociales de los proyectos</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SONDEO MENU ===== -->
+        <div id="page-sondeo" class="section-page">
+            <div class="page-header">
+                <h2>📊 Sondeo de Necesidades</h2>
+                <p>SNF 2025 — Selecciona una sección para completar</p>
+                <div class="badge">SNF_2025_[NOMBRE DE LA OBRA]</div>
+            </div>
+            <div class="sondeo-menu">
+                <div class="sondeo-card" onclick="goTo('datosObra')">
+                    <div class="s-icon">📋</div>
+                    <h4>2. Datos de la Obra</h4>
+                    <p>Información general, contactos, planeación</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('presupuesto')">
+                    <div class="s-icon">💰</div>
+                    <h4>3. Presupuesto</h4>
+                    <p>Gastos y financiamientos</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('proyectosVigentes')">
+                    <div class="s-icon">📁</div>
+                    <h4>4. Proyectos Vigentes</h4>
+                    <p>Proyectos activos</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('proyectosFinanciar')">
+                    <div class="s-icon">🔍</div>
+                    <h4>5. Proyectos a Financiar</h4>
+                    <p>Necesidades de fondos</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('necesidadesMateriales')">
+                    <div class="s-icon">🔧</div>
+                    <h4>6. Necesidades Materiales</h4>
+                    <p>Insumos y materiales</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('contextoDemografico')">
+                    <div class="s-icon">🌍</div>
+                    <h4>7. Contexto Demográfico</h4>
+                    <p>Datos de comunidades</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+                <div class="sondeo-card" onclick="goTo('impacto')">
+                    <div class="s-icon">📈</div>
+                    <h4>8. Impacto</h4>
+                    <p>Resultados sociales</p>
+                    <div class="s-status">Pendiente</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 2: DATOS DE LA OBRA
+        ===================================================== -->
+        <div id="page-datosObra" class="section-page">
+            <div class="page-header">
+                <h2>📋 Sección 2 — Datos de la Obra</h2>
+                <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario.</p>
+            </div>
+
+            <!-- 2.1 Datos Generales -->
+            <div class="form-card">
+                <h3>2.1 Datos Generales</h3>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Nombre de la Obra *</label>
+                        <input type="text" id="nombreObra" placeholder="Nombre completo de la obra">
+                    </div>
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <input type="text" id="rfc" placeholder="Ej. ABC123456XYZ" maxlength="13">
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Ubicación — Estado</label>
+                        <input type="text" id="estado" placeholder="Ej. Jalisco">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección de la sede</label>
+                        <input type="text" id="direccionSede" placeholder="Calle, número, colonia, municipio">
+                    </div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Teléfono local</label>
+                        <input type="tel" id="telefonoLocal" placeholder="(33) 1234-5678">
+                    </div>
+                    <div class="form-group">
+                        <label>Personalidad Jurídica</label>
+                        <select id="personalidadJuridica">
+                            <option value="">Seleccione una opción</option>
+                            <option>Asociación Civil</option>
+                            <option>Institución de Asistencia Privada</option>
+                            <option>Sociedad Civil</option>
+                            <option>Asociación Religiosa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Donataria Autorizada</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn" onclick="toggleBtn(this,'donataria','si')">✅ Sí</button>
+                            <button class="toggle-btn" onclick="toggleBtn(this,'donataria','no')">❌ No</button>
+                        </div>
+                        <input type="hidden" id="donataria" value="">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.2 Planeación General -->
+            <div class="form-card">
+                <h3>2.2 Planeación General</h3>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Fecha de la última planeación</label>
+                        <input type="date" id="fechaPlaneacion">
+                    </div>
+                    <div class="form-group">
+                        <label>Periodo que abarca</label>
+                        <input type="text" id="periodoPlaneacion" placeholder="Ej. 2024 – 2026">
+                    </div>
+                </div>
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Misión</label>
+                        <textarea id="mision" rows="3" placeholder="Misión de la Obra..."></textarea>
+                    </div>
+                </div>
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Visión</label>
+                        <textarea id="vision" rows="3" placeholder="Visión de la Obra..."></textarea>
+                    </div>
+                </div>
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Objetivo General</label>
+                        <span class="label-hint">¿Cuál es la meta a cumplir de la Obra?</span>
+                        <textarea id="objetivoGeneral" rows="3" placeholder="Describa el objetivo general de la Obra..."></textarea>
+                    </div>
+                </div>
+                <div class="form-row cols-1">
+                    <div class="form-group">
+                        <label>Objetivos Estratégicos</label>
+                        <span class="label-hint">Rutas clave para el cumplimiento del objetivo general</span>
+                        <textarea id="objetivosEstrategicos" rows="4" placeholder="Describa los objetivos estratégicos..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos de Contacto -->
+            <div class="form-card">
+                <h3>2.3 – 2.6 Datos de Contacto</h3>
+                <div id="contactos-list">
+                    <div class="form-row cols-1" style="margin-bottom:8px"><strong style="color:var(--text-mid);font-size:13px">2.3 Director</strong></div>
+                    <div class="form-row cols-3">
+                        <div class="form-group"><label>Nombre</label><input type="text" id="directorNombre" placeholder="Nombre completo"></div>
+                        <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="directorTel" placeholder="+52..."></div>
+                        <div class="form-group"><label>Correo electrónico</label><input type="email" id="directorCorreo" placeholder="correo@..."></div>
+                    </div>
+                    <div class="form-row cols-1" style="margin:8px 0"><strong style="color:var(--text-mid);font-size:13px">2.4 Persona encargada de la Administración</strong></div>
+                    <div class="form-row cols-3">
+                        <div class="form-group"><label>Nombre</label><input type="text" id="adminNombre" placeholder="Nombre completo"></div>
+                        <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="adminTel" placeholder="+52..."></div>
+                        <div class="form-group"><label>Correo electrónico</label><input type="email" id="adminCorreo" placeholder="correo@..."></div>
+                    </div>
+                    <div class="form-row cols-1" style="margin:8px 0"><strong style="color:var(--text-mid);font-size:13px">2.5 Responsable de Proyectos</strong></div>
+                    <div class="form-row cols-3">
+                        <div class="form-group"><label>Nombre</label><input type="text" id="proyNombre" placeholder="Nombre completo"></div>
+                        <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="proyTel" placeholder="+52..."></div>
+                        <div class="form-group"><label>Correo electrónico</label><input type="email" id="proyCorreo" placeholder="correo@..."></div>
+                    </div>
+                    <div class="form-row cols-1" style="margin:8px 0"><strong style="color:var(--text-mid);font-size:13px">2.6 Responsable del llenado de este formato</strong></div>
+                    <div class="form-row cols-3">
+                        <div class="form-group"><label>Nombre</label><input type="text" id="llenadoNombre" placeholder="Nombre completo"></div>
+                        <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="llenadoTel" placeholder="+52..."></div>
+                        <div class="form-group"><label>Correo electrónico</label><input type="email" id="llenadoCorreo" placeholder="correo@..."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.7 Colaboradores -->
+            <div class="form-card">
+                <h3>2.7 Número de Colaboradores</h3>
+                <div class="form-row cols-3">
+                    <div class="form-group"><label>Jesuitas</label><input type="number" id="numJesuitas" min="0" value="0" oninput="calcColaboradores()"></div>
+                    <div class="form-group"><label>Sacerdotes diocesanos</label><input type="number" id="numSacerdotes" min="0" value="0" oninput="calcColaboradores()"></div>
+                    <div class="form-group"><label>Otros religiosos / religiosas</label><input type="number" id="numReligiosos" min="0" value="0" oninput="calcColaboradores()"></div>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group"><label>Personas laicas</label><input type="number" id="numLaicos" min="0" value="0" oninput="calcColaboradores()"></div>
+                    <div class="form-group"><label>Total de colaboradores</label><input type="number" id="totalColaboradores" value="0" readonly style="background:#f0f0f0;font-weight:700;color:var(--green-dark)"></div>
+                </div>
+            </div>
+
+            <!-- 2.8 Comunicación -->
+            <div class="form-card">
+                <h3>2.8 Comunicación y Redes Sociales</h3>
+                <div class="form-row cols-3">
+                    <div class="form-group"><label>Responsable de contenidos</label><input type="text" id="respContenidos" placeholder="Nombre completo"></div>
+                    <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="respContenidosTel" placeholder="+52..."></div>
+                    <div class="form-group"><label>Correo electrónico</label><input type="email" id="respContenidosCorreo" placeholder="correo@..."></div>
+                </div>
+                <div style="margin:16px 0 10px;font-size:13px;font-weight:700;color:var(--text-mid)">Plataformas digitales</div>
+                <div id="redes-list">
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>Facebook</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'fb-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'fb-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="fb-url" style="flex:1"><label>Enlace</label><input type="url" placeholder="https://facebook.com/..."></div>
+                    </div>
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>Instagram</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'ig-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'ig-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="ig-url" style="flex:1"><label>Enlace</label><input type="url" placeholder="https://instagram.com/..."></div>
+                    </div>
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>X (Twitter)</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'tw-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'tw-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="tw-url" style="flex:1"><label>Enlace</label><input type="url" placeholder="https://x.com/..."></div>
+                    </div>
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>Página Web</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'web-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'web-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="web-url" style="flex:1"><label>Enlace</label><input type="url" placeholder="https://..."></div>
+                    </div>
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>WhatsApp</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'wa-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'wa-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="wa-url" style="flex:1"><label>Número / Enlace</label><input type="url" placeholder="https://wa.me/..."></div>
+                    </div>
+                    <div class="form-row" style="align-items:center;margin-bottom:10px">
+                        <div class="form-group" style="min-width:100px;flex:0 0 auto"><label>Otro</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn" onclick="toggleRed(this,'otro-url','si')">Sí</button>
+                                <button class="toggle-btn" onclick="toggleRed(this,'otro-url','no')">No</button>
+                            </div>
+                        </div>
+                        <div class="form-group toggle-input" id="otro-url" style="flex:1"><label>Enlace</label><input type="url" placeholder="https://..."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2.9 Frecuencia de publicaciones -->
+            <div class="form-card">
+                <h3>2.9 Frecuencia de Publicaciones</h3>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>¿Cuál es la frecuencia de publicaciones en redes?</label>
+                        <select id="frecuenciaPublicaciones">
+                            <option value="">Seleccione...</option>
+                            <option>Una vez al día</option>
+                            <option>1 o 2 veces por semana</option>
+                            <option>1 vez cada dos semanas</option>
+                            <option>1 vez al mes</option>
+                            <option>No publican</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:14px;margin-top:10px">
+                    <div>
+                        <label style="font-size:13px;font-weight:700">¿Tienen un formato para subir contenido a redes?</label>
+                        <div class="toggle-group" style="margin-top:6px">
+                            <button class="toggle-btn" onclick="toggleBtn(this,'formatoRedes','si')">✅ Sí</button>
+                            <button class="toggle-btn" onclick="toggleBtn(this,'formatoRedes','no')">❌ No</button>
+                            <input type="hidden" id="formatoRedes">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:13px;font-weight:700">¿Tienen formato para publicar fotografías o videos?</label>
+                        <div class="toggle-group" style="margin-top:6px">
+                            <button class="toggle-btn" onclick="toggleBtn(this,'formatoFotos','si')">✅ Sí</button>
+                            <button class="toggle-btn" onclick="toggleBtn(this,'formatoFotos','no')">❌ No</button>
+                            <input type="hidden" id="formatoFotos">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:13px;font-weight:700">¿Cuentan con permiso para publicar imágenes de los beneficiados?</label>
+                        <div class="toggle-group" style="margin-top:6px">
+                            <button class="toggle-btn" onclick="toggleBtn(this,'permisoImagenes','si')">✅ Sí</button>
+                            <button class="toggle-btn" onclick="toggleBtn(this,'permisoImagenes','no')">❌ No</button>
+                            <input type="hidden" id="permisoImagenes">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:13px;font-weight:700">¿Nos podría compartir sus materiales (fotografías, folletos, videos)?</label>
+                        <div class="toggle-group" style="margin-top:6px">
+                            <button class="toggle-btn" onclick="toggleBtn(this,'compartirMaterial','si')">✅ Sí</button>
+                            <button class="toggle-btn" onclick="toggleBtn(this,'compartirMaterial','no')">❌ No</button>
+                            <input type="hidden" id="compartirMaterial">
+                        </div>
+                        <div class="form-group toggle-input" id="enlace-drive" style="margin-top:10px">
+                            <label>Enlace a Drive / carpeta</label>
+                            <input type="url" placeholder="https://drive.google.com/...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('welcome')">← Cancelar</button>
+                <button class="btn-primary" onclick="guardarSeccion('datosObra')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 3: PRESUPUESTO
+        ===================================================== -->
+        <div id="page-presupuesto" class="section-page">
+            <div class="page-header">
+                <h2>💰 Sección 3 — Presupuesto General de la Obra</h2>
+                <p>Desglosar el presupuesto según los rubros indicados. Si tienes un formato interno, puedes mandarlo como anexo.</p>
+            </div>
+
+            <div class="form-card">
+                <h3>Presupuesto Anual 2026</h3>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>Presupuesto anual total 2026 (MXN)</label>
+                        <input type="number" id="presupuestoAnual" class="full-width" placeholder="0.00" min="0" step="0.01" oninput="formatearNumero(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.2 Gastos -->
+            <div class="form-card">
+                <h3>3.2 Gastos de la Obra</h3>
+
+                <div style="margin-bottom:16px;font-weight:700;color:var(--text-mid);font-size:13px">Capital Humano y Operativo <span style="font-weight:400">(Salarios, honorarios, capacitación, renta, electricidad, agua, internet)</span></div>
+                <div class="dyn-table-wrapper">
+                    <table class="dyn-table" id="tablaCapHumano">
+                        <thead><tr><th>Descripción</th><th>Costo (MXN)</th><th class="col-remove"></th></tr></thead>
+                        <tbody id="tbodyCapHumano">
+                            <tr>
+                                <td><input type="text" placeholder="Ej. Salarios personal operativo"></td>
+                                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalGastos()"></td>
+                                <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this)">✕</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot><tr><td>Subtotal Capital Humano</td><td id="subtotalCapHumano">$0.00</td><td></td></tr></tfoot>
+                    </table>
+                </div>
+                <button class="btn-add-row" onclick="addGastoRow('tbodyCapHumano')">+ Agregar fila</button>
+
+                <div style="margin:24px 0 16px;font-weight:700;color:var(--text-mid);font-size:13px">Materiales y Servicios <span style="font-weight:400">(Papelería, gasolina, transporte, cómputo, viáticos)</span></div>
+                <div class="dyn-table-wrapper">
+                    <table class="dyn-table" id="tablaMatServ">
+                        <thead><tr><th>Descripción</th><th>Costo (MXN)</th><th class="col-remove"></th></tr></thead>
+                        <tbody id="tbodyMatServ">
+                            <tr>
+                                <td><input type="text" placeholder="Ej. Papelería y materiales de oficina"></td>
+                                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalGastos()"></td>
+                                <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this)">✕</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot><tr><td>Subtotal Materiales y Servicios</td><td id="subtotalMatServ">$0.00</td><td></td></tr></tfoot>
+                    </table>
+                </div>
+                <button class="btn-add-row" onclick="addGastoRow('tbodyMatServ')">+ Agregar fila</button>
+
+                <div style="background:var(--green-light);border:2px solid var(--green-border);border-radius:8px;padding:14px 20px;margin-top:20px;display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-weight:800;color:var(--green-dark);font-size:15px">TOTAL GASTOS</span>
+                    <span id="totalGastos" style="font-weight:800;color:var(--green-dark);font-size:18px">$0.00</span>
+                </div>
+            </div>
+
+            <!-- 3.3 Financiamiento -->
+            <div class="form-card">
+                <h3>3.3 Principales Fuentes de Financiamiento</h3>
+                <div class="dyn-table-wrapper">
+                    <table class="dyn-table" id="tablaFinanciamiento">
+                        <thead>
+                            <tr>
+                                <th>Fuente de Financiamiento</th>
+                                <th>Monto Financiado (MXN)</th>
+                                <th>Financiamiento por Confirmar</th>
+                                <th>Monto a Confirmar (MXN)</th>
+                                <th class="col-remove"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyFinanciamiento">
+                            <tr>
+                                <td><input type="text" placeholder="Nombre del donante/fuente"></td>
+                                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalFinanciamiento()"></td>
+                                <td><input type="text" placeholder="Nombre / descripción"></td>
+                                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalFinanciamiento()"></td>
+                                <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this)">✕</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>TOTAL</td>
+                                <td id="totalFinanciado">$0.00</td>
+                                <td>TOTAL A CONFIRMAR</td>
+                                <td id="totalConfirmar">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <button class="btn-add-row" onclick="addFinanciamientoRow()">+ Agregar fuente</button>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('presupuesto')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 4: PROYECTOS VIGENTES
+        ===================================================== -->
+        <div id="page-proyectosVigentes" class="section-page">
+            <div class="page-header">
+                <h2>📁 Sección 4 — Proyectos Vigentes</h2>
+                <p>Desglosar TODOS los proyectos que actualmente se están desarrollando en la obra.</p>
+            </div>
+            <div class="info-box">
+                Es importante que en los apartados narrativos puedan ofrecernos información <strong>clara y abundante</strong>. Con esta información se construirán fichas técnicas por proyecto.
+            </div>
+
+            <div id="lista-proyectos-vigentes"></div>
+
+            <button class="btn-outline-add" onclick="agregarProyectoVigente()">
+                ➕ Agregar Proyecto Vigente
+            </button>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('proyectosVigentes')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 5: PROYECTOS A FINANCIAR
+        ===================================================== -->
+        <div id="page-proyectosFinanciar" class="section-page">
+            <div class="page-header">
+                <h2>🔍 Sección 5 — Proyectos con Necesidad Financiera</h2>
+                <p>Proyectos cuyo presupuesto está por agotarse, son nuevos sin financiamiento, o enfrentan emergencias.</p>
+            </div>
+            <div class="info-box">
+                Con esta información, la <strong>Fundación Loyola</strong> podrá enfocar sus estrategias de procuración de fondos de manera más precisa y con mayor impacto.
+            </div>
+
+            <div id="lista-proyectos-financiar"></div>
+
+            <button class="btn-outline-add" onclick="agregarProyectoFinanciar()">
+                ➕ Agregar Proyecto por Financiar
+            </button>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('proyectosFinanciar')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 6: NECESIDADES MATERIALES
+        ===================================================== -->
+        <div id="page-necesidadesMateriales" class="section-page">
+            <div class="page-header">
+                <h2>🔧 Sección 6 — Necesidades Materiales</h2>
+                <p>Principales necesidades que enfrenta la Obra para su operación diaria y actividades.</p>
+            </div>
+            <div class="warn-box">
+                ⚠️ <strong>Nota importante:</strong> Las necesidades expresadas aquí son aquellas que <strong>no se logran cubrir</strong> por alguno de los proyectos descritos en los apartados anteriores.
+            </div>
+
+            <div class="form-card">
+                <h3>6.2 Retos Materiales Urgentes</h3>
+                <div class="form-group">
+                    <label>¿Cuáles son los principales retos materiales urgentes que enfrenta la Obra actualmente?</label>
+                    <span class="label-hint">Ej. Descompostura de camionetas, mantenimiento del edificio, computadoras con fallas recurrentes...</span>
+                    <textarea id="retosUrgentes" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>6.3 Necesidades Previstas</h3>
+                <div class="form-group">
+                    <label>¿Deseas compartir alguna situación sobre necesidades materiales previstas en los próximos meses?</label>
+                    <span class="label-hint">Ej. Aumento en número de personas atendidas y falta de mobiliario...</span>
+                    <textarea id="necesidadesPrevistas" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>6.4 Tipos de Insumos, Materiales o Mobiliario</h3>
+                <div class="dyn-table-wrapper">
+                    <table class="dyn-table" id="tablaInsumos">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th>Descripción</th>
+                                <th>Cantidad</th>
+                                <th>Costo Unitario (MXN)</th>
+                                <th>Valor Total (MXN)</th>
+                                <th class="col-remove"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyInsumos">
+                            <tr>
+                                <td>
+                                    <select>
+                                        <option value="">Seleccione...</option>
+                                        <option>Electrónicos</option>
+                                        <option>Mobiliario</option>
+                                        <option>Papelería</option>
+                                        <option>Salarios</option>
+                                        <option>Otros</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" placeholder="Descripción del insumo"></td>
+                                <td><input type="number" min="0" placeholder="0" style="width:80px" oninput="calcInsumo(this)"></td>
+                                <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcInsumo(this)"></td>
+                                <td class="valor-total-cell"><input type="number" placeholder="0.00" readonly style="background:#f0f0f0;font-weight:700"></td>
+                                <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcTotalInsumos()">✕</button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">TOTAL</td>
+                                <td id="totalInsumos">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <button class="btn-add-row" onclick="addInsumoRow()">+ Agregar insumo</button>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('necesidadesMateriales')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 7: CONTEXTO DEMOGRÁFICO
+        ===================================================== -->
+        <div id="page-contextoDemografico" class="section-page">
+            <div class="page-header">
+                <h2>🌍 Sección 7 — Contexto Demográfico</h2>
+                <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario. Máximo 200 palabras por respuesta.</p>
+            </div>
+
+            <div class="form-card">
+                <h3>7.1 Tipo de Población</h3>
+                <div class="form-group">
+                    <label>¿Su población es urbana o rural?</label>
+                    <span class="label-hint">Urbana: densa, con acceso a instituciones públicas y privadas. Rural: menor densidad, actividades primarias (agricultura, pesca, ganadería).</span>
+                    <div class="toggle-group" style="margin-top:8px">
+                        <button class="toggle-btn" onclick="toggleBtn(this,'tipoPoblacion','urbana')">🏙 Urbana</button>
+                        <button class="toggle-btn" onclick="toggleBtn(this,'tipoPoblacion','rural')">🌾 Rural</button>
+                        <button class="toggle-btn" onclick="toggleBtn(this,'tipoPoblacion','mixta')">🏘 Mixta</button>
+                    </div>
+                    <input type="hidden" id="tipoPoblacion">
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.2 Tamaño y Crecimiento Poblacional</h3>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cuál es el tamaño total de la población en las comunidades donde trabaja la Obra?</label>
+                    <span class="label-hint">Describir el tamaño y si el número de habitantes ha aumentado o disminuido.</span>
+                    <textarea id="tamanoPoblacion" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>¿Cuál es el principal grupo poblacional con el que trabaja la Obra?</label>
+                    <span class="label-hint">Ej. niñas y niños, mujeres, adultos mayores, personas en situación de vulnerabilidad, comunidades indígenas. Máx. 200 palabras.</span>
+                    <textarea id="grupoPrincipal" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.3 Estructura Familiar</h3>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>¿Cuál es el tamaño promedio de las familias?</label>
+                        <input type="text" id="tamanoFamilias" placeholder="Ej. 4 personas por familia">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.4 Nivel Socioeconómico</h3>
+                <div class="form-group">
+                    <label>Describe la situación socioeconómica de las comunidades.</label>
+                    <span class="label-hint">Línea de pobreza, actividades económicas. Máx. 200 palabras.</span>
+                    <textarea id="situacionSocioeconomica" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.5 Educación y Recreación</h3>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>Describe las condiciones del área educativa.</label>
+                    <span class="label-hint">Tasa de acceso, brechas por género, etc. Máx. 200 palabras.</span>
+                    <textarea id="condicionesEducativas" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>¿Qué oportunidades de recreación y desarrollo están disponibles?</label>
+                    <span class="label-hint">Programas sociales, grupos deportivos, bibliotecas, internet. Máx. 200 palabras.</span>
+                    <textarea id="oportunidadesRecreacion" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.6 Ocupación y Empleo</h3>
+                <div class="form-group">
+                    <label>¿Cuál es la tasa de empleo/desempleo y las principales actividades económicas?</label>
+                    <span class="label-hint">Sector industrial, construcción, comercial, agropecuario. Máx. 200 palabras.</span>
+                    <textarea id="empleoDesempleo" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.7 Salud y Bienestar</h3>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cuáles son las condiciones de salud de la población?</label>
+                    <span class="label-hint">Esperanza de vida, mortalidad infantil, acceso a servicios de salud. Máx. 200 palabras.</span>
+                    <textarea id="condicionesSalud" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>¿Cuáles son las principales enfermedades o problemas de salud?</label>
+                    <span class="label-hint">Diabetes, hipertensión, desnutrición, enfermedades respiratorias. Máx. 200 palabras.</span>
+                    <textarea id="enfermedadesComunes" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.8 Acceso a Servicios Básicos</h3>
+                <div class="form-group">
+                    <label>Describe el acceso a servicios básicos en la comunidad.</label>
+                    <span class="label-hint">Agua, electricidad, vivienda digna, vías de comunicación, internet. Máx. 200 palabras.</span>
+                    <textarea id="accesoServicios" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.9 Diversidad Cultural</h3>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cómo se integran las diversas identidades culturales en las comunidades?</label>
+                    <span class="label-hint">Festividades patronales, tradición oral, expresión cultural. Máx. 200 palabras.</span>
+                    <textarea id="identidadCultural" rows="4"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cuáles son las principales comunidades indígenas presentes en la región?</label>
+                    <span class="label-hint">Enlistar del predominante al menor. Si no aplica, dejar en blanco.</span>
+                    <textarea id="comunidadesIndigenas" rows="3"></textarea>
+                </div>
+                <div class="form-row cols-2">
+                    <div class="form-group">
+                        <label>¿Cuál es la población indígena total con la que trabaja la Obra?</label>
+                        <input type="text" id="poblacionIndigena" placeholder="Ej. 320 personas">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Cuáles son las principales lenguas indígenas habladas?</label>
+                        <input type="text" id="lenguasIndigenas" placeholder="Ej. Nahuatl, Zapoteco...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.10 Movilidad y Migración</h3>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cuál es la tasa de migración interna y externa?</label>
+                    <span class="label-hint">Si no atienden migración, dejar en blanco. Máx. 200 palabras.</span>
+                    <textarea id="tasaMigracion" rows="4"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Hay tendencias de migración interna o externa que afecten a la población?</label>
+                    <span class="label-hint">Solo si la Obra trabaja con población en movilidad. Máx. 200 palabras.</span>
+                    <textarea id="tendenciasMigracion" rows="4"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:16px">
+                    <label>¿Cuáles son las principales razones que fomentan la migración?</label>
+                    <span class="label-hint">Razones económicas, violencia, familiares. Si no aplica, dejar en blanco. Máx. 200 palabras.</span>
+                    <textarea id="razonesMigracion" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>¿Existen programas o políticas públicas que apoyen a los migrantes?</label>
+                    <span class="label-hint">Programas que fomenten el apoyo al paso o permanencia de migrantes.</span>
+                    <textarea id="politicasMigratorias" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>7.11 Comentarios o Notas Adicionales</h3>
+                <div class="form-group">
+                    <label>Características propias de la comunidad no consideradas anteriormente.</label>
+                    <textarea id="notasContexto" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('contextoDemografico')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- =====================================================
+             SECCIÓN 8: IMPACTO
+        ===================================================== -->
+        <div id="page-impacto" class="section-page">
+            <div class="page-header">
+                <h2>📈 Sección 8 — Impacto</h2>
+                <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario. Máx. 200 palabras por respuesta.</p>
+            </div>
+            <div class="info-box">
+                Describir detalladamente los diferentes impactos que han tenido los proyectos ejecutados. En caso de no contar con información actualizada, hacer referencia al último registro y aproximado de resultados esperados.
+            </div>
+
+            <div class="form-card">
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Cómo ha mejorado la calidad de vida de las personas beneficiarias gracias a las acciones de la Obra?</label>
+                    <span class="label-hint">Impacto en calidad de vida de la comunidad. Máx. 200 palabras.</span>
+                    <textarea id="calidadVida" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Qué habilidades o capacidades han desarrollado las personas beneficiarias?</label>
+                    <span class="label-hint">Capacidades de aprendizaje, salud, sociales, espirituales. Máx. 200 palabras.</span>
+                    <textarea id="habilidades" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Cómo ha contribuido el proyecto a la educación y concientización en las comunidades?</label>
+                    <span class="label-hint">Responder según corresponda. Máx. 200 palabras.</span>
+                    <textarea id="impactoEducacion" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Cuál es el impacto en referencia a la cohesión social y relaciones internas de las comunidades?</label>
+                    <span class="label-hint">Detallar resultados de cohesión social. Máx. 200 palabras.</span>
+                    <textarea id="cohesionSocial" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Qué mejoras en infraestructura se han realizado y cómo se ha beneficiado a las comunidades?</label>
+                    <span class="label-hint">Si no aplica, dejar en blanco. Máx. 200 palabras.</span>
+                    <textarea id="infraestructura" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Qué mejoras en salud y bienestar se han observado?</label>
+                    <span class="label-hint">Si no aplica, dejar en blanco. Máx. 200 palabras.</span>
+                    <textarea id="impactoSalud" rows="5"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px">
+                    <label>¿Qué impacto económico ha tenido el proyecto en las comunidades?</label>
+                    <span class="label-hint">Si no aplica, dejar en blanco. Máx. 200 palabras.</span>
+                    <textarea id="impactoEconomico" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Comentarios adicionales</label>
+                    <span class="label-hint">¿Existe algún impacto no considerado en las preguntas anteriores? Máx. 200 palabras.</span>
+                    <textarea id="comentariosImpacto" rows="5"></textarea>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-secondary" onclick="goTo('sondeo')">← Regresar</button>
+                <button class="btn-primary" onclick="guardarSeccion('impacto')">💾 Guardar Sección</button>
+            </div>
+        </div>
+
+        <!-- ===== CALENDARIO ===== -->
+        <div id="page-calendario" class="section-page">
+            <div class="page-header"><h2>📅 Fechas Importantes</h2></div>
+            <div class="form-card">
+                <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FMexico_City&showPrint=0&src=c2VydmljaW9zb2NpYWxAZnVuZGFjaW9ubG95b2xhLm14&src=ZXMubWV4aWNhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039BE5&color=%230B8043"
+                    style="border:none;border-radius:8px" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </div>
+
+        <!-- ===== DOCUMENTOS ===== -->
+        <div id="page-documentos" class="section-page">
+            <div class="page-header"><h2>📂 Documentos Institucionales</h2><p>Suba documentos en formato PDF, Word o Excel.</p></div>
+            <div class="form-card">
+                <label style="display:block;border:2px dashed var(--green-border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;color:var(--text-mid);transition:all 0.2s" id="drop-zone">
+                    <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple id="fileUpload" style="display:none" onchange="listFiles(this)">
+                    <div style="font-size:36px;margin-bottom:10px">📁</div>
+                    <div style="font-weight:700;color:var(--green-dark)">Arrastra y suelta archivos aquí</div>
+                    <div style="font-size:13px;margin-top:4px">o haz clic para seleccionar — PDF, Word, Excel</div>
+                </label>
+                <ul id="fileList" style="margin-top:16px;list-style:none;display:flex;flex-direction:column;gap:8px"></ul>
+            </div>
+        </div>
+
+    </div><!-- end page-content -->
+
+    <!-- Floating Action Bar -->
+    <div class="fab-bar">
+        <div class="fab-left">
+            <span id="fab-save-status">💾 Los datos se guardan automáticamente</span>
+        </div>
+        <div class="fab-right">
+            <button class="btn-pdf" onclick="abrirModalPDF()">📄 Generar PDF</button>
+            <button class="btn-email" onclick="abrirModalCorreo()">📧 Enviar por correo</button>
+        </div>
+    </div>
+
+</div><!-- end main -->
+
+<!-- Autosave badge -->
+<div class="autosave-badge" id="autosave-badge">
+    <span id="autosave-icon">💾</span>
+    <span id="autosave-text">Guardando...</span>
+</div>
+
+<!-- ===== MODAL PDF ===== -->
+<div class="modal-overlay" id="modal-pdf">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-pdf')">✕</button>
+        <h3>📄 Generar PDF del Sondeo</h3>
+        <p>Se generará un PDF con toda la información capturada en las secciones del Sondeo SNF 2025. Asegúrate de haber guardado todas las secciones antes de continuar.</p>
+
+        <div style="background:var(--green-light);border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px">
+            <div style="font-weight:800;color:var(--green-dark);margin-bottom:6px">Secciones incluidas en el PDF:</div>
+            <div id="pdf-sections-list" style="display:flex;flex-direction:column;gap:4px;color:var(--text-mid)"></div>
+        </div>
+
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Nombre del archivo</label>
+            <input type="text" id="pdf-filename" value="SNF_2025_" placeholder="SNF_2025_NombreObra">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-pdf')">Cancelar</button>
+            <button class="btn-pdf" id="btn-generar-pdf" onclick="generarPDF()">📄 Generar y Descargar PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL CORREO ===== -->
+<div class="modal-overlay" id="modal-correo">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-correo')">✕</button>
+        <h3>📧 Enviar Sondeo por Correo</h3>
+        <p>El sondeo se enviará a la Fundación Loyola junto con un PDF adjunto. Completa los datos del remitente.</p>
+
+        <div class="warn-box" style="margin-bottom:16px">
+            ⚠️ <strong>Configuración requerida:</strong> Para activar el envío de correos, configura tu cuenta de <strong>EmailJS</strong> con el Service ID y Template ID correspondientes. <a href="https://www.emailjs.com" target="_blank" style="color:var(--green-dark)">emailjs.com</a>
+        </div>
+
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Nombre del remitente *</label>
+            <input type="text" id="email-nombre" placeholder="Tu nombre completo">
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Tu correo electrónico *</label>
+            <input type="email" id="email-from" placeholder="tucorreo@obra.mx">
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Nombre de la Obra *</label>
+            <input type="text" id="email-obra" placeholder="Nombre de la Obra">
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Mensaje adicional (opcional)</label>
+            <textarea id="email-mensaje" rows="3" placeholder="Notas o comentarios adicionales para el equipo de Fundación Loyola..."></textarea>
+        </div>
+        <div style="background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-mid);margin-bottom:4px">
+            📬 Se enviará a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9cfd0d7daccd5d8dad0d6d7f9dfccd7ddd8dad0d6d7d5d6c0d6d5d897d4c1">[email&#160;protected]</a></strong> con copia a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90e3ffe0ffe2e4f5f1fff2e2f1e3d0f6e5fef4f1f3f9fffefcffe9fffcf1befde8">[email&#160;protected]</a></strong>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-correo')">Cancelar</button>
+            <button class="btn-email" id="btn-enviar-correo" onclick="enviarCorreo()">📧 Enviar Sondeo</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ <span id="toast-msg">Guardado correctamente</span></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script>
+// =================== CONFIG EMAILJS ===================
+// Edita assets/js/config.js para configurar las credenciales de EmailJS.
+const EMAILJS_CONFIG = CONFIG.EMAILJS;
+
+// =================== STORAGE KEY ===================
+const LS_KEY = 'fl_snf_2025';
+
+// =================== NAVIGATION ===================
+const pages = ['welcome','datosObra','sondeo','presupuesto','proyectosVigentes','proyectosFinanciar','necesidadesMateriales','contextoDemografico','impacto','calendario','documentos'];
+const pageTitles = {
+    welcome:'Inicio', datosObra:'Datos de la Obra', sondeo:'Sondeo SNF',
+    presupuesto:'Presupuesto', proyectosVigentes:'Proyectos Vigentes',
+    proyectosFinanciar:'Proyectos a Financiar', necesidadesMateriales:'Necesidades Materiales',
+    contextoDemografico:'Contexto Demográfico', impacto:'Impacto',
+    calendario:'Fechas', documentos:'Documentos'
+};
+
+// Sections that count toward progress
+const SONDEO_SECTIONS = ['datosObra','presupuesto','proyectosVigentes','proyectosFinanciar','necesidadesMateriales','contextoDemografico','impacto'];
+
+function goTo(page) {
+    pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.classList.remove('active');
+        const nav = document.getElementById('nav-' + p);
+        if (nav) nav.classList.remove('active');
+    });
+    const target = document.getElementById('page-' + page);
+    if (target) { target.classList.add('active'); window.scrollTo({top:0, behavior:'smooth'}); }
+    const navBtn = document.getElementById('nav-' + page);
+    if (navBtn) navBtn.classList.add('active');
+    document.getElementById('topbar-current').textContent = pageTitles[page] || page;
+}
+
+async function cerrarSesion() {
+    if (confirm('¿Está seguro que desea cerrar sesión?')) {
+        try { await API.auth.logout(); } catch { /* silent */ }
+        sessionStorage.removeItem('usuarioActual');
+        window.location.href = 'Inicio.html';
+    }
+}
+
+// =================== TOAST ===================
+function showToast(msg, color, ms) {
+    let t = document.getElementById('toast');
+    if (!t) return;
+    document.getElementById('toast-msg').textContent = msg;
+    t.style.background = color || 'var(--green-dark)';
+    t.classList.add('show');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => t.classList.remove('show'), ms || 3500);
+}
+
+// =================== AUTOSAVE HELPERS ===================
+let autosaveTimer = null;
+
+function showAutosaveBadge(state) {
+    const badge = document.getElementById('autosave-badge');
+    if (!badge) return;
+    badge.classList.remove('saving','saved');
+    if (state === 'saving') {
+        badge.classList.add('show','saving');
+        document.getElementById('autosave-icon').textContent = '💾';
+        document.getElementById('autosave-text').textContent = 'Guardando...';
+    } else if (state === 'saved') {
+        badge.classList.add('show','saved');
+        document.getElementById('autosave-icon').textContent = '✅';
+        document.getElementById('autosave-text').textContent = 'Guardado';
+        setTimeout(() => badge.classList.remove('show'), 2500);
+    }
+}
+
+function marcarSeccionCompleta(key) {
+    const el = document.getElementById('pt-' + key);
+    if (el) {
+        el.classList.add('completed');
+        el.querySelector('.pt-check').textContent = '✅';
+    }
+    // Update sondeo card status
+    const scard = document.querySelector(`[onclick*="goTo('${key}')"] .s-status`);
+    if (scard) { scard.textContent = '✅ Completado'; scard.style.background = 'var(--green-light)'; scard.style.color = 'var(--green-dark)'; }
+    actualizarProgreso();
+}
+
+function actualizarProgreso() {
+    const total = SONDEO_SECTIONS.length;
+    const done  = SONDEO_SECTIONS.filter(s => document.getElementById('pt-' + s)?.classList.contains('completed')).length;
+    const pct   = Math.round((done / total) * 100);
+    const fill  = document.getElementById('pt-bar-fill');
+    const pctEl = document.getElementById('pt-pct');
+    if (fill)  fill.style.width  = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+}
+
+function formatearNumero(input) {
+    // Allow numeric input
+}
+
+
+function triggerAutosave() {
+    clearTimeout(autosaveTimer);
+    showAutosaveBadge('saving');
+    autosaveTimer = setTimeout(() => {
+        guardarTodo(true);
+    }, 1200);
+}
+
+// Collect ALL form data from the page
+function recolectarTodosLosDatos() {
+    const data = {};
+    // Static inputs / textareas / selects
+    document.querySelectorAll('input[id], textarea[id], select[id]').forEach(el => {
+        if (el.id && el.type !== 'file') {
+            data[el.id] = el.value;
+        }
+    });
+    return data;
+}
+
+async function guardarTodo(silent = false) {
+    try {
+        const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+        const obraId = session.obraId || session.id;
+       // if (!obraId) { console.warn('Sin obraId en sesión'); return; }
+
+        const data = {
+            formData: recolectarTodosLosDatos(),
+            completedSections: SONDEO_SECTIONS.filter(s => {
+                const el = document.getElementById('pt-' + s);
+                return el && el.classList.contains('completed');
+            }),
+            timestamp: new Date().toISOString()
+        };
+
+        await API.formularios.save(obraId, 'sondeo_general', data);
+        if (!silent) showAutosaveBadge('saved');
+        else showAutosaveBadge('saved');
+    } catch(e) {
+        console.error('Error al guardar via API:', e);
+    }
+}
+
+async function restaurarDatos() {
+    try {
+        const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+        const obraId = session.obraId || session.id;
+        if (!obraId) return;
+
+        const data = await API.formularios.get(obraId, 'sondeo_general');
+        if (!data) return;
+        if (!data.formData) return;
+
+        // Restore form fields
+        Object.entries(data.formData).forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el && el.type !== 'file') {
+                el.value = value;
+            }
+        });
+
+        // Restore completed sections
+        if (data.completedSections) {
+            data.completedSections.forEach(s => marcarSeccionCompleta(s));
+        }
+
+        // Recalculate derived values
+        calcColaboradores();
+        calcTotalGastos();
+        calcTotalFinanciamiento();
+        calcTotalInsumos();
+
+        if (data.timestamp) {
+            const d = new Date(data.timestamp);
+            document.getElementById('fab-save-status').textContent =
+                `💾 Último guardado: ${d.toLocaleDateString('es-MX')} ${d.toLocaleTimeString('es-MX', {hour:'2-digit',minute:'2-digit'})}`;
+        }
+    } catch(e) {
+        console.error('Error al restaurar datos:', e);
+    }
+}
+
+// Hook autosave to all inputs
+function initAutosave() {
+    document.addEventListener('input', triggerAutosave);
+    document.addEventListener('change', triggerAutosave);
+}
+
+// =================== SAVE SECTION ===================
+function guardarSeccion(key) {
+    guardarTodo(false);
+    marcarSeccionCompleta(key);
+    showToast('✅ Sección guardada correctamente');
+}
+
+// =================== MODAL HELPERS ===================
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function abrirModalPDF() {
+    // Build section list in modal
+    const list = document.getElementById('pdf-sections-list');
+    const labels = {
+        datosObra: '2. Datos de la Obra',
+        presupuesto: '3. Presupuesto General',
+        proyectosVigentes: '4. Proyectos Vigentes',
+        proyectosFinanciar: '5. Proyectos con Necesidad Financiera',
+        necesidadesMateriales: '6. Necesidades Materiales',
+        contextoDemografico: '7. Contexto Demográfico',
+        impacto: '8. Impacto'
+    };
+    list.innerHTML = '';
+    SONDEO_SECTIONS.forEach(s => {
+        const completed = document.getElementById('pt-' + s)?.classList.contains('completed');
+        const div = document.createElement('div');
+        div.innerHTML = `${completed ? '✅' : '⬜'} ${labels[s]}`;
+        div.style.color = completed ? 'var(--green-dark)' : 'var(--text-light)';
+        list.appendChild(div);
+    });
+    // Pre-fill filename
+    const obra = document.getElementById('nombreObra')?.value;
+    if (obra) document.getElementById('pdf-filename').value = `SNF_2025_${obra.replace(/\s+/g,'_')}`;
+    abrirModal('modal-pdf');
+}
+
+function abrirModalCorreo() {
+    // Pre-fill with saved data if available
+    const nombre = document.getElementById('llenadoNombre')?.value || document.getElementById('directorNombre')?.value;
+    const correo = document.getElementById('llenadoCorreo')?.value || document.getElementById('directorCorreo')?.value;
+    const obra   = document.getElementById('nombreObra')?.value;
+    if (nombre) document.getElementById('email-nombre').value = nombre;
+    if (correo) document.getElementById('email-from').value = correo;
+    if (obra)   document.getElementById('email-obra').value = obra;
+    abrirModal('modal-correo');
+}
+
+// =================== PDF GENERATION ===================
+function generarPDF() {
+    const btn = document.getElementById('btn-generar-pdf');
+    btn.innerHTML = '<span class="spinner"></span> Generando...';
+    btn.disabled = true;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const contentW = pageW - margin * 2;
+    let y = 0;
+
+    // --- Helper functions ---
+    function addPage() { doc.addPage(); y = 20; }
+    function checkPage(needed = 10) { if (y + needed > 270) addPage(); }
+
+    function header() {
+        // Green header band
+        doc.setFillColor(13, 104, 53);
+        doc.rect(0, 0, pageW, 18, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('Fundación Loyola — Sondeo de Necesidades SNF 2025', margin, 12);
+        doc.setFontSize(9);
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, pageW - margin, 12, { align: 'right' });
+        y = 26;
+    }
+
+    function sectionTitle(title) {
+        checkPage(14);
+        doc.setFillColor(232, 245, 238);
+        doc.rect(margin - 2, y - 4, contentW + 4, 10, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(13, 104, 53);
+        doc.text(title, margin, y + 3);
+        y += 11;
+        doc.setTextColor(50, 50, 50);
+    }
+
+    function subTitle(title) {
+        checkPage(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(13, 104, 53);
+        doc.text(title, margin, y);
+        y += 6;
+        doc.setTextColor(50, 50, 50);
+    }
+
+    function field(label, value) {
+        if (!value || value.trim() === '') return;
+        checkPage(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        doc.text(label + ':', margin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 30, 30);
+        const lines = doc.splitTextToSize(value, contentW - 2);
+        lines.forEach(line => {
+            checkPage(6);
+            doc.text(line, margin + 3, y + 5);
+            y += 5.5;
+        });
+        y += 3;
+    }
+
+    function simpleTable(headers, rows) {
+        if (!rows || rows.length === 0) return;
+        checkPage(20);
+        doc.autoTable({
+            startY: y,
+            head: [headers],
+            body: rows,
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [13, 104, 53], textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [232, 245, 238] },
+            theme: 'grid'
+        });
+        y = doc.lastAutoTable.finalY + 6;
+    }
+
+    function getVal(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+    // ---- START BUILDING PDF ----
+    header();
+
+    // Cover info
+    doc.setFillColor(245, 250, 247);
+    doc.rect(margin - 2, y - 4, contentW + 4, 20, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(13,104,53);
+    const obraName = getVal('nombreObra') || 'Obra';
+    doc.text(`SNF 2025 — ${obraName}`, pageW / 2, y + 5, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
+    doc.text('Sondeo de Necesidades Financieras y Materiales', pageW / 2, y + 12, { align: 'center' });
+    y += 24;
+
+    // ---- SECCIÓN 2: DATOS DE LA OBRA ----
+    sectionTitle('2. Datos de la Obra');
+    subTitle('2.1 Datos Generales');
+    field('Nombre de la Obra', getVal('nombreObra'));
+    field('RFC', getVal('rfc'));
+    field('Estado', getVal('estado'));
+    field('Dirección', getVal('direccionSede'));
+    field('Teléfono', getVal('telefonoLocal'));
+    field('Personalidad Jurídica', getVal('personalidadJuridica'));
+    field('Donataria Autorizada', getVal('donataria'));
+
+    subTitle('2.2 Planeación General');
+    field('Fecha última planeación', getVal('fechaPlaneacion'));
+    field('Periodo', getVal('periodoPlaneacion'));
+    field('Misión', getVal('mision'));
+    field('Visión', getVal('vision'));
+    field('Objetivo General', getVal('objetivoGeneral'));
+    field('Objetivos Estratégicos', getVal('objetivosEstrategicos'));
+
+    subTitle('2.3 Director');
+    field('Nombre', getVal('directorNombre'));
+    field('Teléfono', getVal('directorTel'));
+    field('Correo', getVal('directorCorreo'));
+
+    subTitle('2.4 Administración');
+    field('Nombre', getVal('adminNombre'));
+    field('Teléfono', getVal('adminTel'));
+    field('Correo', getVal('adminCorreo'));
+
+    subTitle('2.7 Colaboradores');
+    simpleTable(
+        ['Categoría', 'Número'],
+        [
+            ['Jesuitas', getVal('numJesuitas')],
+            ['Sacerdotes diocesanos', getVal('numSacerdotes')],
+            ['Otros religiosos/as', getVal('numReligiosos')],
+            ['Personas laicas', getVal('numLaicos')],
+            ['TOTAL', getVal('totalColaboradores')]
+        ]
+    );
+
+    // ---- SECCIÓN 3: PRESUPUESTO ----
+    addPage(); header();
+    sectionTitle('3. Presupuesto General de la Obra');
+    field('Presupuesto anual 2026', '$' + (getVal('presupuestoAnual') || '0'));
+
+    subTitle('3.2 Capital Humano y Operativo');
+    const rowsCH = [];
+    document.querySelectorAll('#tbodyCapHumano tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        if (inputs[0]?.value) rowsCH.push([inputs[0].value, '$' + (inputs[1]?.value || '0')]);
+    });
+    simpleTable(['Descripción', 'Costo (MXN)'], rowsCH);
+
+    subTitle('3.2 Materiales y Servicios');
+    const rowsMS = [];
+    document.querySelectorAll('#tbodyMatServ tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        if (inputs[0]?.value) rowsMS.push([inputs[0].value, '$' + (inputs[1]?.value || '0')]);
+    });
+    simpleTable(['Descripción', 'Costo (MXN)'], rowsMS);
+    field('TOTAL GASTOS', document.getElementById('totalGastos')?.textContent || '$0.00');
+
+    subTitle('3.3 Fuentes de Financiamiento');
+    const rowsFin = [];
+    document.querySelectorAll('#tbodyFinanciamiento tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        if (inputs[0]?.value) rowsFin.push([inputs[0].value, '$'+(inputs[1]?.value||'0'), inputs[2]?.value||'', '$'+(inputs[3]?.value||'0')]);
+    });
+    simpleTable(['Fuente', 'Monto Financiado', 'Por Confirmar', 'Monto a Confirmar'], rowsFin);
+
+    // ---- SECCIÓN 6: NECESIDADES MATERIALES ----
+    addPage(); header();
+    sectionTitle('6. Necesidades Materiales');
+    field('Retos urgentes', getVal('retosUrgentes'));
+    field('Necesidades previstas', getVal('necesidadesPrevistas'));
+
+    subTitle('6.4 Insumos y Materiales');
+    const rowsIns = [];
+    document.querySelectorAll('#tbodyInsumos tr').forEach(tr => {
+        const sel = tr.querySelector('select')?.value || '';
+        const inputs = tr.querySelectorAll('input');
+        if (sel) rowsIns.push([sel, inputs[0]?.value||'', inputs[1]?.value||'0', '$'+(inputs[2]?.value||'0'), '$'+(inputs[3]?.value||'0')]);
+    });
+    simpleTable(['Concepto','Descripción','Cantidad','Costo Unitario','Valor Total'], rowsIns);
+
+    // ---- SECCIÓN 7: CONTEXTO DEMOGRÁFICO ----
+    addPage(); header();
+    sectionTitle('7. Contexto Demográfico');
+    field('Tipo de población', getVal('tipoPoblacion'));
+    field('Tamaño y crecimiento poblacional', getVal('tamanoPoblacion'));
+    field('Grupo poblacional principal', getVal('grupoPrincipal'));
+    field('Tamaño promedio de familias', getVal('tamanoFamilias'));
+    field('Situación socioeconómica', getVal('situacionSocioeconomica'));
+    field('Condiciones educativas', getVal('condicionesEducativas'));
+    field('Oportunidades de recreación', getVal('oportunidadesRecreacion'));
+    field('Empleo y desempleo', getVal('empleoDesempleo'));
+    field('Condiciones de salud', getVal('condicionesSalud'));
+    field('Enfermedades comunes', getVal('enfermedadesComunes'));
+    field('Acceso a servicios básicos', getVal('accesoServicios'));
+    field('Identidad cultural', getVal('identidadCultural'));
+    field('Comunidades indígenas', getVal('comunidadesIndigenas'));
+    field('Población indígena', getVal('poblacionIndigena'));
+    field('Lenguas indígenas', getVal('lenguasIndigenas'));
+    field('Tasa de migración', getVal('tasaMigracion'));
+    field('Tendencias migratorias', getVal('tendenciasMigracion'));
+    field('Razones de migración', getVal('razonesMigracion'));
+    field('Políticas migratorias', getVal('politicasMigratorias'));
+    field('Notas adicionales', getVal('notasContexto'));
+
+    // ---- SECCIÓN 8: IMPACTO ----
+    addPage(); header();
+    sectionTitle('8. Impacto');
+    field('Calidad de vida', getVal('calidadVida'));
+    field('Habilidades desarrolladas', getVal('habilidades'));
+    field('Impacto en educación', getVal('impactoEducacion'));
+    field('Cohesión social', getVal('cohesionSocial'));
+    field('Mejoras en infraestructura', getVal('infraestructura'));
+    field('Mejoras en salud', getVal('impactoSalud'));
+    field('Impacto económico', getVal('impactoEconomico'));
+    field('Comentarios adicionales', getVal('comentariosImpacto'));
+
+    // ---- Footer on all pages ----
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFillColor(13, 104, 53);
+        doc.rect(0, 285, pageW, 12, 'F');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(255,255,255);
+        doc.text('Fundación Loyola — Confidencial', margin, 292);
+        doc.text(`Página ${i} de ${totalPages}`, pageW - margin, 292, { align: 'right' });
+    }
+
+    // ---- Save ----
+    const filename = (document.getElementById('pdf-filename')?.value || 'SNF_2025').replace(/[^a-zA-Z0-9_\-]/g,'_') + '.pdf';
+    doc.save(filename);
+
+    btn.innerHTML = '📄 Generar y Descargar PDF';
+    btn.disabled = false;
+    cerrarModal('modal-pdf');
+    showToast('📄 PDF generado y descargado correctamente');
+}
+
+// =================== EMAIL SEND ===================
+function enviarCorreo() {
+    const nombre  = document.getElementById('email-nombre')?.value?.trim();
+    const from    = document.getElementById('email-from')?.value?.trim();
+    const obra    = document.getElementById('email-obra')?.value?.trim();
+    const mensaje = document.getElementById('email-mensaje')?.value?.trim();
+
+    if (!nombre || !from || !obra) {
+        showToast('⚠️ Por favor completa los campos obligatorios', '#c47a00');
+        return;
+    }
+
+    const btn = document.getElementById('btn-enviar-correo');
+    btn.innerHTML = '<span class="spinner"></span> Enviando...';
+    btn.disabled = true;
+
+    // Check EmailJS is configured
+    if (EMAILJS_CONFIG.publicKey === 'TU_PUBLIC_KEY') {
+        setTimeout(() => {
+            btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
+            cerrarModal('modal-correo');
+            showToast('⚠️ Configura EmailJS en el código para habilitar el envío real. Los datos están listos.', '#c47a00');
+        }, 1000);
+        return;
+    }
+
+    // Initialize EmailJS
+    emailjs.init(EMAILJS_CONFIG.publicKey);
+
+    // Build summary text for email body
+    const resumen = buildResumenTexto();
+
+    emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+        from_name:    nombre,
+        from_email:   from,
+        obra_nombre:  obra,
+        mensaje:      mensaje || 'Sin mensaje adicional.',
+        resumen_snf:  resumen,
+        fecha:        new Date().toLocaleDateString('es-MX'),
+        to_email:     'vinculacion@fundacionloyola.mx',
+        cc_email:     'soporteaobras@fundacionloyola.mx'
+    }).then(() => {
+        btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
+        cerrarModal('modal-correo');
+        showToast('📧 Sondeo enviado correctamente a Fundación Loyola');
+    }).catch(err => {
+        console.error('EmailJS error:', err);
+        btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
+        showToast('❌ Error al enviar. Verifica tu configuración de EmailJS.', '#c43a3a');
+    });
+}
+
+function buildResumenTexto() {
+    const g = id => document.getElementById(id)?.value?.trim() || 'N/D';
+    return `
+SONDEO SNF 2025 — ${g('nombreObra')}
+Fecha: ${new Date().toLocaleDateString('es-MX')}
+Estado: ${g('estado')}
+Director: ${g('directorNombre')} | ${g('directorCorreo')}
+Presupuesto 2026: $${g('presupuestoAnual')} MXN
+Total Gastos: ${document.getElementById('totalGastos')?.textContent || 'N/D'}
+
+Secciones completadas: ${SONDEO_SECTIONS.filter(s => document.getElementById('pt-'+s)?.classList.contains('completed')).length} de ${SONDEO_SECTIONS.length}
+    `.trim();
+}
+
+// =================== TOGGLE BUTTONS ===================
+function toggleBtn(btn, fieldId, value) {
+    const parent = btn.closest('.toggle-group') || btn.parentElement;
+    parent.querySelectorAll('.toggle-btn').forEach(b => {
+        b.classList.remove('selected-yes','selected-no');
+    });
+    btn.classList.add(value === 'si' || value === 'urbana' || value === 'rural' || value === 'mixta' ? 'selected-yes' : 'selected-no');
+    if (value === 'no') btn.classList.replace('selected-yes','selected-no');
+    const field = document.getElementById(fieldId);
+    if (field) field.value = value;
+
+    // Show drive link if compartirMaterial = si
+    if (fieldId === 'compartirMaterial') {
+        const el = document.getElementById('enlace-drive');
+        if (el) el.classList.toggle('show', value === 'si');
+    }
+}
+
+function toggleRed(btn, containerId, value) {
+    const row = btn.closest('.form-row');
+    row.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected-yes','selected-no'));
+    btn.classList.add(value === 'si' ? 'selected-yes' : 'selected-no');
+    const el = document.getElementById(containerId);
+    if (el) el.classList.toggle('show', value === 'si');
+}
+
+// =================== COLLABORATORS ===================
+function calcColaboradores() {
+    const vals = ['numJesuitas','numSacerdotes','numReligiosos','numLaicos'].map(id => parseInt(document.getElementById(id)?.value) || 0);
+    document.getElementById('totalColaboradores').value = vals.reduce((a,b) => a+b, 0);
+}
+
+// =================== BUDGET CALCS ===================
+function sumColumn(tbodyId) {
+    const rows = document.querySelectorAll('#' + tbodyId + ' tr');
+    let total = 0;
+    rows.forEach(row => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const costInput = inputs[inputs.length - 1];
+        if (costInput) total += parseFloat(costInput.value) || 0;
+    });
+    return total;
+}
+
+function calcTotalGastos() {
+    const ch = sumColumn('tbodyCapHumano');
+    const ms = sumColumn('tbodyMatServ');
+    document.getElementById('subtotalCapHumano').textContent = formatMXN(ch);
+    document.getElementById('subtotalMatServ').textContent = formatMXN(ms);
+    document.getElementById('totalGastos').textContent = formatMXN(ch + ms);
+}
+
+function calcTotalFinanciamiento() {
+    let totalFin = 0, totalConf = 0;
+    document.querySelectorAll('#tbodyFinanciamiento tr').forEach(row => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        if (inputs[0]) totalFin += parseFloat(inputs[0].value) || 0;
+        if (inputs[1]) totalConf += parseFloat(inputs[1].value) || 0;
+    });
+    document.getElementById('totalFinanciado').textContent = formatMXN(totalFin);
+    document.getElementById('totalConfirmar').textContent = formatMXN(totalConf);
+}
+
+function formatMXN(n) {
+    return '$' + (parseFloat(n)||0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g,'$&,');
+}
+
+function addGastoRow(tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" placeholder="Descripción"></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalGastos()"></td>
+        <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcTotalGastos()">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function addFinanciamientoRow() {
+    const tbody = document.getElementById('tbodyFinanciamiento');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" placeholder="Fuente de financiamiento"></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalFinanciamiento()"></td>
+        <td><input type="text" placeholder="Por confirmar"></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcTotalFinanciamiento()"></td>
+        <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcTotalFinanciamiento()">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+// =================== INSUMOS ===================
+function calcInsumo(inp) {
+    const row = inp.closest('tr');
+    const nums = row.querySelectorAll('input[type="number"]');
+    const qty = parseFloat(nums[0]?.value) || 0;
+    const unit = parseFloat(nums[1]?.value) || 0;
+    const total = qty * unit;
+    const totalCell = row.querySelector('.valor-total-cell input');
+    if (totalCell) totalCell.value = total.toFixed(2);
+    calcTotalInsumos();
+}
+
+function calcTotalInsumos() {
+    let total = 0;
+    document.querySelectorAll('#tbodyInsumos .valor-total-cell input').forEach(i => {
+        total += parseFloat(i.value) || 0;
+    });
+    document.getElementById('totalInsumos').textContent = formatMXN(total);
+}
+
+function addInsumoRow() {
+    const tbody = document.getElementById('tbodyInsumos');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><select><option value="">Seleccione...</option><option>Electrónicos</option><option>Mobiliario</option><option>Papelería</option><option>Salarios</option><option>Otros</option></select></td>
+        <td><input type="text" placeholder="Descripción del insumo"></td>
+        <td><input type="number" min="0" placeholder="0" style="width:80px" oninput="calcInsumo(this)"></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcInsumo(this)"></td>
+        <td class="valor-total-cell"><input type="number" placeholder="0.00" readonly style="background:#f0f0f0;font-weight:700"></td>
+        <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcTotalInsumos()">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+// =================== REMOVE ROW ===================
+function removeRow(btn) {
+    btn.closest('tr').remove();
+}
+
+// =================== PROYECTOS ===================
+let proyVigenteCount = 0;
+let proyFinanciarCount = 0;
+
+function causasOpciones() {
+    return ['Economía Social y Cuidado de la Madre Tierra','Acompañamiento a Migrantes y Refugiados','Culturas Indígenas y Educación Intercultural','Salud Comunitaria','Derechos Humanos','Espiritualidad']
+        .map(c => `<option>${c}</option>`).join('');
+}
+
+function generoOptions() {
+    return ['Sin información','Mujer (femenino)','Hombre (masculino)','No binario','Transgénero','Género fluido','Agénero','Bigénero','Intergénero','Otras identidades'];
+}
+
+function buildPopTable(prefix) {
+    const grupos = ['Infancias','Adolescencias','Juventudes','Personas adultas','Personas adultas mayores','Multigeneraciones'];
+    const generos = generoOptions();
+    let head = `<tr><th class="group-col">Grupo Etario</th>`;
+    generos.forEach(g => head += `<th>${g}</th>`);
+    head += `<th style="background:#1a8a47">Total</th></tr>`;
+    let body = '';
+    grupos.forEach((g,i) => {
+        body += `<tr><td class="group-label">${g}</td>`;
+        generos.forEach((_, j) => {
+            body += `<td><input type="number" min="0" placeholder="0" oninput="calcPopRow(this,'${prefix}',${i})" style="width:65px"></td>`;
+        });
+        body += `<td class="total-row" id="${prefix}-row-total-${i}">0</td></tr>`;
+    });
+    const benefTotRow = `<tr class="total-row"><td colspan="${generos.length+1}">TOTAL beneficiarias directas</td><td id="${prefix}-grand-total">0</td></tr>`;
+    return `<div class="pop-table-wrapper"><table class="pop-table"><thead>${head}</thead><tbody>${body}${benefTotRow}</tbody></table></div>`;
+}
+
+function calcPopRow(inp, prefix, rowIdx) {
+    const row = inp.closest('tr');
+    let rowTotal = 0;
+    row.querySelectorAll('input[type="number"]').forEach(i => rowTotal += parseInt(i.value)||0);
+    const rt = document.getElementById(`${prefix}-row-total-${rowIdx}`);
+    if (rt) rt.textContent = rowTotal;
+    let grand = 0;
+    for (let i=0; i<6; i++) {
+        const el = document.getElementById(`${prefix}-row-total-${i}`);
+        if (el) grand += parseInt(el.textContent)||0;
+    }
+    const gt = document.getElementById(`${prefix}-grand-total`);
+    if (gt) gt.textContent = grand;
+}
+
+function buildFinanciamientoProyecto(prefix) {
+    return `
+    <div class="dyn-table-wrapper">
+        <table class="dyn-table">
+            <thead><tr><th>Financiadora / Donante</th><th>Fecha estimada de ingreso</th><th>Duración del financiamiento</th><th class="col-remove"></th></tr></thead>
+            <tbody id="${prefix}-fin-body">
+                <tr>
+                    <td><input type="text" placeholder="Nombre del donante"></td>
+                    <td><input type="date"></td>
+                    <td><input type="text" placeholder="Ej. 12 meses"></td>
+                    <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this)">✕</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <button class="btn-add-row" onclick="addFinProyRow('${prefix}-fin-body')">+ Agregar fuente</button>`;
+}
+
+function addFinProyRow(tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" placeholder="Nombre del donante"></td>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Ej. 12 meses"></td>
+        <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this)">✕</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function buildPresupuestoProyecto(prefix, showNecesidad = false) {
+    function tableBlock(title, tbodyId, totalId) {
+        return `
+        <div style="font-weight:700;color:var(--text-mid);font-size:13px;margin:16px 0 8px">${title}</div>
+        <div class="dyn-table-wrapper"><table class="dyn-table">
+            <thead><tr><th>Concepto</th><th>Descripción</th><th>Costo Total (MXN)</th><th class="col-remove"></th></tr></thead>
+            <tbody id="${tbodyId}">
+                <tr>
+                    <td><input type="text" placeholder="Concepto"></td>
+                    <td><input type="text" placeholder="Descripción"></td>
+                    <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcPresupProy('${tbodyId}','${totalId}')"></td>
+                    <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcPresupProy('${tbodyId}','${totalId}')">✕</button></td>
+                </tr>
+            </tbody>
+            <tfoot><tr><td colspan="2">TOTAL</td><td id="${totalId}">$0.00</td><td></td></tr></tfoot>
+        </table></div>
+        <button class="btn-add-row" onclick="addPresupRow('${tbodyId}','${totalId}')">+ Agregar fila</button>`;
+    }
+
+    let html = tableBlock('Capital Humano (Salarios, honorarios, consultoría, viáticos)', `${prefix}-pres-ch`, `${prefix}-pres-ch-total`);
+    html += tableBlock('Materiales (Gasolina, cómputo, licencias, papelería, transporte, alimentación)', `${prefix}-pres-mat`, `${prefix}-pres-mat-total`);
+    html += `<div style="background:var(--green-light);border:2px solid var(--green-border);border-radius:8px;padding:14px 20px;margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:800;color:var(--green-dark)">TOTAL PRESUPUESTO PROYECTO</span>
+        <span id="${prefix}-pres-grand-total" style="font-weight:800;color:var(--green-dark);font-size:16px">$0.00</span>
+    </div>`;
+
+    if (showNecesidad) {
+        html += `<div style="font-weight:700;color:var(--text-mid);font-size:13px;margin:24px 0 8px">Necesidad a Financiar del Proyecto</div>
+        <div class="info-box" style="margin-bottom:12px">Enlistar los recursos <strong>FALTANTES</strong>, aquellos que aún no tienen asegurados, para este proyecto.</div>
+        ${tableBlock('Recursos Faltantes', `${prefix}-nec-body`, `${prefix}-nec-total`)}`;
+    }
+    return html;
+}
+
+function calcPresupProy(tbodyId, totalId) {
+    let total = 0;
+    document.querySelectorAll(`#${tbodyId} input[type="number"]`).forEach(i => total += parseFloat(i.value)||0);
+    const el = document.getElementById(totalId);
+    if (el) el.textContent = formatMXN(total);
+    // Update grand totals
+    const prefix = tbodyId.split('-pres-')[0];
+    const ch = parseFloat((document.getElementById(`${prefix}-pres-ch-total`)?.textContent||'0').replace(/[$,]/g,''))||0;
+    const mat = parseFloat((document.getElementById(`${prefix}-pres-mat-total`)?.textContent||'0').replace(/[$,]/g,''))||0;
+    const gt = document.getElementById(`${prefix}-pres-grand-total`);
+    if (gt) gt.textContent = formatMXN(ch + mat);
+}
+
+function addPresupRow(tbodyId, totalId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" placeholder="Concepto"></td>
+        <td><input type="text" placeholder="Descripción"></td>
+        <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcPresupProy('${tbodyId}','${totalId}')"></td>
+        <td class="col-remove"><button class="btn-remove-row" onclick="removeRow(this);calcPresupProy('${tbodyId}','${totalId}')">✕</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function buildDatosGeneralesProyecto(prefix) {
+    return `
+    <div class="form-row cols-2">
+        <div class="form-group"><label>Nombre del Proyecto</label><input type="text" id="${prefix}-nombre" placeholder="Nombre del proyecto"></div>
+        <div class="form-group"><label>Temporalidad</label><input type="text" id="${prefix}-temporalidad" placeholder="Ej. Enero 2025 – Diciembre 2025"></div>
+    </div>
+    <div class="form-row cols-1">
+        <div class="form-group">
+            <label>Causa que atiende</label>
+            <select id="${prefix}-causa"><option value="">Seleccione...</option>${causasOpciones()}</select>
+        </div>
+    </div>
+    <div class="form-row cols-1">
+        <div class="form-group"><label>Temáticas que se abordan</label><input type="text" id="${prefix}-tematicas" placeholder="Ej. Seguridad alimentaria, educación básica..."></div>
+    </div>
+    <div class="form-row cols-3">
+        <div class="form-group"><label>Responsable del proyecto</label><input type="text" id="${prefix}-responsable" placeholder="Nombre completo"></div>
+        <div class="form-group"><label>Teléfono</label><input type="tel" id="${prefix}-tel" placeholder="+52..."></div>
+        <div class="form-group"><label>Correo electrónico</label><input type="email" id="${prefix}-correo" placeholder="correo@..."></div>
+    </div>`;
+}
+
+function buildDescripcionProyecto(prefix) {
+    return `
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Objetivo del Proyecto</label>
+        <span class="label-hint">Detallar el objetivo del proyecto.</span>
+        <textarea id="${prefix}-objetivo" rows="4"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Realidad a la que se quiere responder</label>
+        <span class="label-hint">Explicar el problema en el contexto de la Obra (máx. 200 palabras).</span>
+        <textarea id="${prefix}-realidad" rows="5"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Descripción del proyecto</label>
+        <span class="label-hint">¿Cómo se busca transformar el problema? (máx. 200 palabras).</span>
+        <textarea id="${prefix}-descripcion" rows="5"></textarea>
+    </div>
+    <div style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:700;display:block;margin-bottom:8px">Población beneficiaria</label>
+        <div class="form-row cols-2" style="margin-bottom:12px">
+            <div class="form-group"><label>Número de personas beneficiadas directamente</label><input type="number" id="${prefix}-benef-directos" min="0" placeholder="0"></div>
+        </div>
+        ${buildPopTable(prefix)}
+        <div class="form-row cols-2" style="margin-top:12px">
+            <div class="form-group"><label>Personas beneficiarias indirectamente</label><input type="number" id="${prefix}-benef-indirectos" min="0" placeholder="0"></div>
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Características de la población beneficiaria directa</label>
+        <textarea id="${prefix}-carac-pobl" rows="4"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>¿Cómo se llegó al resultado de la métrica de población beneficiaria indirecta?</label>
+        <span class="label-hint">Métodos usados para obtener resultados (máx. 200 palabras).</span>
+        <textarea id="${prefix}-metrica" rows="4"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Lugar donde se pretende desarrollar el proyecto</label>
+        <span class="label-hint">Incluir estado, municipio y localidad. Ej: Estado: Jalisco, Municipio: Zapopan, Colonia: Bugambilias</span>
+        <input type="text" id="${prefix}-lugar" placeholder="Estado: ___, Municipio: ___, Localidad: ___">
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>Resultados esperados</label>
+        <span class="label-hint">Descripción de lo que se espera obtener tras desarrollar el proyecto (máx. 200 palabras).</span>
+        <textarea id="${prefix}-resultados" rows="4"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+        <label>¿A qué objetivos del plan estratégico de la Obra responde este proyecto?</label>
+        <span class="label-hint">Indique qué objetivos específicos de la Obra se implementarán.</span>
+        <textarea id="${prefix}-obj-estrategico" rows="3"></textarea>
+    </div>
+    <div style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--text-mid)">Principales fuentes de financiamiento para este proyecto</div>
+    ${buildFinanciamientoProyecto(prefix)}`;
+}
+
+function agregarProyectoVigente() {
+    proyVigenteCount++;
+    const n = proyVigenteCount;
+    const prefix = `pv${n}`;
+    const container = document.getElementById('lista-proyectos-vigentes');
+    const div = document.createElement('div');
+    div.className = 'proyecto-block';
+    div.id = `bloque-pv${n}`;
+    div.innerHTML = `
+        <div class="proyecto-header">
+            <h4>Proyecto Vigente #${n}</h4>
+            <button class="btn-remove-project" onclick="document.getElementById('bloque-pv${n}').remove()">✕ Eliminar</button>
+        </div>
+        <div class="proyecto-body">
+            <div class="form-card" style="margin-bottom:16px">
+                <h3>4.2 Datos Generales</h3>
+                ${buildDatosGeneralesProyecto(prefix)}
+            </div>
+            <div class="form-card" style="margin-bottom:16px">
+                <h3>4.3 Descripción del Proyecto</h3>
+                ${buildDescripcionProyecto(prefix)}
+            </div>
+            <div class="form-card">
+                <h3>4.4 Presupuesto del Proyecto</h3>
+                ${buildPresupuestoProyecto(prefix, false)}
+            </div>
+        </div>`;
+    container.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function agregarProyectoFinanciar() {
+    proyFinanciarCount++;
+    const n = proyFinanciarCount;
+    const prefix = `pf${n}`;
+    const container = document.getElementById('lista-proyectos-financiar');
+    const div = document.createElement('div');
+    div.className = 'proyecto-block';
+    div.id = `bloque-pf${n}`;
+    div.innerHTML = `
+        <div class="proyecto-header" style="background:linear-gradient(90deg,#0a5229,#0D6835)">
+            <h4>Proyecto por Financiar #${n}</h4>
+            <button class="btn-remove-project" onclick="document.getElementById('bloque-pf${n}').remove()">✕ Eliminar</button>
+        </div>
+        <div class="proyecto-body">
+            <div class="form-card" style="margin-bottom:16px">
+                <h3>5.2 Datos Generales</h3>
+                ${buildDatosGeneralesProyecto(prefix)}
+            </div>
+            <div class="form-card" style="margin-bottom:16px">
+                <h3>5.3 Descripción del Proyecto</h3>
+                ${buildDescripcionProyecto(prefix)}
+            </div>
+            <div class="form-card">
+                <h3>5.4 Presupuesto del Proyecto y Necesidad a Financiar</h3>
+                ${buildPresupuestoProyecto(prefix, true)}
+            </div>
+        </div>`;
+    container.appendChild(div);
+    div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// =================== FILE LIST / UPLOAD ===================
+async function listFiles(input) {
+    const list = document.getElementById('fileList');
+    const session = API.getSession();
+    const obraId = session.obra_id;
+
+    // Si no hay sesión con obra_id solo mostramos los archivos localmente
+    if (!obraId) {
+        list.innerHTML = '';
+        Array.from(input.files).forEach(file => {
+            const li = document.createElement('li');
+            li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
+            li.innerHTML = `<span>📎</span><span style="flex:1;font-weight:600">${file.name}</span><span style="color:var(--text-light)">${(file.size/1024).toFixed(1)} KB</span>`;
+            list.appendChild(li);
+        });
+        return;
+    }
+
+    // Mostrar archivos seleccionados en estado "subiendo..."
+    list.innerHTML = '';
+    const filesToUpload = Array.from(input.files);
+    filesToUpload.forEach(file => {
+        const li = document.createElement('li');
+        li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
+        li.innerHTML = `<span>⏳</span><span style="flex:1;font-weight:600">${file.name}</span><span style="color:var(--text-light)">Subiendo...</span>`;
+        list.appendChild(li);
+    });
+
+    try {
+        await API.documentos.upload(obraId, filesToUpload);
+        await cargarDocumentos(); // refresca la lista desde el servidor
+    } catch (err) {
+        list.innerHTML = `<li style="color:red;font-size:13px;padding:8px">❌ Error al subir: ${err.message}</li>`;
+    }
+}
+
+async function cargarDocumentos() {
+    const list = document.getElementById('fileList');
+    const session = API.getSession();
+    const obraId = session.obra_id;
+    if (!obraId || !list) return;
+
+    try {
+        const docs = await API.documentos.getAll(obraId);
+        list.innerHTML = '';
+        if (!docs || docs.length === 0) {
+            list.innerHTML = '<li style="font-size:13px;color:var(--text-light);padding:8px">No hay documentos subidos aún.</li>';
+            return;
+        }
+        docs.forEach(doc => {
+            const kb = doc.tamano ? (doc.tamano / 1024).toFixed(1) + ' KB' : '';
+            const fecha = doc.fecha_subida ? new Date(doc.fecha_subida).toLocaleDateString('es-MX') : '';
+            const li = document.createElement('li');
+            li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
+            li.innerHTML = `
+                <span>📎</span>
+                <span style="flex:1;font-weight:600">${doc.nombre_original}</span>
+                <span style="color:var(--text-light)">${kb}</span>
+                <span style="color:var(--text-light);font-size:11px">${fecha}</span>
+                <a href="${API.documentos.descargarUrl(obraId, doc.id)}" download="${doc.nombre_original}"
+                   style="color:var(--green-dark);text-decoration:none;font-weight:700" title="Descargar">⬇</a>
+                <button onclick="eliminarDocumento(${doc.id})" style="background:none;border:none;cursor:pointer;color:#c00;font-size:15px;padding:0" title="Eliminar">🗑</button>`;
+            list.appendChild(li);
+        });
+    } catch (err) {
+        list.innerHTML = `<li style="font-size:13px;color:var(--text-light);padding:8px">No se pudieron cargar los documentos.</li>`;
+    }
+}
+
+async function eliminarDocumento(id) {
+    if (!confirm('¿Eliminar este documento?')) return;
+    try {
+        await API.documentos.delete(id);
+        const session = API.getSession();
+        await cargarDocumentos();
+    } catch (err) {
+        alert('Error al eliminar: ' + err.message);
+    }
+}
+
+// =================== INIT ===========
+document.addEventListener('DOMContentLoaded', () => {
+    goTo('welcome');
+    restaurarDatos();
+    initAutosave();
+    cargarDocumentos();
+
+    // Drop zone for documents
+    const dropZone = document.getElementById('drop-zone');
+    if (dropZone) {
+        dropZone.addEventListener('click', () => document.getElementById('fileUpload').click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--green-dark)'; });
+        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.style.borderColor = '';
+            listFiles({ files: e.dataTransfer.files });
+        });
+    }
+});
+</script>
+</body>
+</html>

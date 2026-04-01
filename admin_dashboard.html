@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador — Fundación Loyola</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- jsPDF para reportes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Sistema de diseño unificado -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Módulos JS del sistema -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="assets/images/logo_oficial_2021_page-0001.jpg" alt="Fundación Loyola">
+        <div class="role-badge">Administrador</div>
+    </div>
+    <nav>
+        <div class="nav-label">Gestión</div>
+        <button onclick="goTo('bienvenida')" id="nav-bienvenida">
+            <span class="nav-icon">🏠</span><span>Inicio</span>
+        </button>
+        <button onclick="goTo('obras')" id="nav-obras">
+            <span class="nav-icon">🏢</span><span>Gestión de Obras</span>
+        </button>
+        <button onclick="goTo('usuarios')" id="nav-usuarios">
+            <span class="nav-icon">👥</span><span>Usuarios</span>
+        </button>
+        <button onclick="goTo('contacto')" id="nav-contacto">
+            <span class="nav-icon">📞</span><span>Contacto con Obras</span>
+        </button>
+        <hr>
+        <div class="nav-label">Sistema</div>
+        <button onclick="goTo('estadisticas')" id="nav-estadisticas">
+            <span class="nav-icon">📊</span><span>Estadísticas</span>
+        </button>
+        <button onclick="goTo('proceso')" id="nav-proceso">
+            <span class="nav-icon">⏳</span><span>Proceso / Tiempos</span>
+        </button>
+        <button onclick="goTo('calendario')" id="nav-calendario">
+            <span class="nav-icon">📅</span><span>Fechas</span>
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-export" onclick="exportarDatos()">
+            <span>💾</span><span>Exportar datos</span>
+        </button>
+        <button onclick="generarReportePDF()">
+            <span>📄</span><span>Generar reporte PDF</span>
+        </button>
+        <button onclick="cerrarSesion()" style="margin-top:4px">
+            <span>🚪</span><span>Cerrar sesión</span>
+        </button>
+    </div>
+</aside>
+
+<!-- ══════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════ -->
+<div class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-title">Fundación Loyola</div>
+            <div class="topbar-badge">Admin</div>
+        </div>
+        <div class="topbar-right">Panel de Administrador &nbsp;›&nbsp; <span id="topbar-current">Inicio</span></div>
+    </div>
+
+    <div class="page-content">
+
+        <!-- ══════════════ BIENVENIDA ══════════════ -->
+        <div id="page-bienvenida" class="section-page active">
+            <div class="page-header">
+                <h2>Panel de Administrador</h2>
+                <p>Gestiona obras, usuarios y monitorea el sistema SNF 2025.</p>
+            </div>
+
+            <!-- Stat cards -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon green">🏢</div>
+                    <div class="stat-info">
+                        <h4>Obras Registradas</h4>
+                        <div class="stat-num" id="stat-obras">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">👥</div>
+                    <div class="stat-info">
+                        <h4>Usuarios</h4>
+                        <div class="stat-num" id="stat-usuarios">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon gold">📋</div>
+                    <div class="stat-info">
+                        <h4>Sondeos Activos</h4>
+                        <div class="stat-num gold" id="stat-sondeos">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon gray">🕐</div>
+                    <div class="stat-info">
+                        <h4>Última actualización</h4>
+                        <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-top:4px" id="stat-fecha">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="form-card">
+                <h3>Acciones Rápidas</h3>
+                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                    <button class="btn-primary" onclick="goTo('obras');abrirModalNuevaObra()">🏢 Nueva Obra</button>
+                    <button class="btn-primary" onclick="goTo('usuarios');abrirModalNuevoUsuario()">👤 Nuevo Usuario</button>
+                    <button class="btn-gold" onclick="generarReportePDF()">📄 Generar Reporte PDF</button>
+                    <button class="btn-secondary" onclick="exportarDatos()">💾 Exportar JSON</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ OBRAS ══════════════ -->
+        <div id="page-obras" class="section-page">
+            <div class="page-header">
+                <h2>🏢 Gestión de Obras</h2>
+                <p>Registra, edita y consulta las obras jesuitas en el sistema.</p>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+                <button class="btn-primary" onclick="abrirModalNuevaObra()">➕ Registrar Nueva Obra</button>
+                <input type="text" id="buscar-obra" placeholder="🔍 Buscar obra..."
+                    oninput="filtrarObras()"
+                    style="flex:1;min-width:180px;max-width:320px;padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px;outline:none">
+            </div>
+
+            <div id="obras-grid" class="obras-grid"></div>
+        </div>
+
+        <!-- ══════════════ USUARIOS ══════════════ -->
+        <div id="page-usuarios" class="section-page">
+            <div class="page-header">
+                <h2>👥 Gestión de Usuarios</h2>
+                <p>Administra los usuarios con acceso al sistema.</p>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+                <button class="btn-primary" onclick="abrirModalNuevoUsuario()">➕ Registrar Nuevo Usuario</button>
+            </div>
+
+            <div class="form-card" style="overflow:auto">
+                <h3>Usuarios Registrados</h3>
+                <table class="user-table" id="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Fecha de registro</th>
+                            <th>Obra asignada</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-usuarios"></tbody>
+                </table>
+                <div id="no-usuarios" style="display:none;text-align:center;padding:40px;color:var(--text-light);font-size:14px">
+                    No hay usuarios registrados aún.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ CONTACTO ══════════════ -->
+        <div id="page-contacto" class="section-page">
+            <div class="page-header">
+                <h2>📞 Contacto con las Obras</h2>
+                <p>Información de contacto enviada por las obras a través del sistema.</p>
+            </div>
+            <div id="contacto-content"></div>
+        </div>
+
+        <!-- ══════════════ ESTADÍSTICAS ══════════════ -->
+        <div id="page-estadisticas" class="section-page">
+            <div class="page-header">
+                <h2>📊 Estadísticas del Sistema</h2>
+                <p>Resumen general del estado de las obras y el sondeo.</p>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon green">🏢</div>
+                    <div class="stat-info"><h4>Obras Totales</h4><div class="stat-num" id="st2-obras">0</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">👥</div>
+                    <div class="stat-info"><h4>Usuarios</h4><div class="stat-num" id="st2-usuarios">0</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon gold">📋</div>
+                    <div class="stat-info"><h4>Sondeos con datos</h4><div class="stat-num gold" id="st2-sondeos">0</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon gray">💾</div>
+                    <div class="stat-info"><h4>Registros en sistema</h4><div class="stat-num" id="st2-registros">0</div></div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Acciones</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <button class="btn-gold" onclick="generarReportePDF()">📄 Generar Reporte PDF</button>
+                    <button class="btn-secondary" onclick="exportarDatos()">💾 Exportar JSON</button>
+                    <button class="btn-secondary" onclick="actualizarEstadisticas()">🔄 Actualizar</button>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <h3>Distribución de Roles</h3>
+                <div id="roles-chart" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px"></div>
+            </div>
+        </div>
+
+        <!-- ══════════════ PROCESO ══════════════ -->
+        <div id="page-proceso" class="section-page">
+            <div class="page-header">
+                <h2>⏳ Proceso / Tiempos</h2>
+                <p>Gestión de tiempos y estados del proceso SNF 2025.</p>
+            </div>
+            <div class="info-box">
+                Este módulo muestra el estado general del proceso SNF 2025 y los tiempos estimados por etapa.
+            </div>
+            <div class="form-card">
+                <h3>Timeline del Proceso SNF 2025</h3>
+                <div class="proceso-timeline">
+                    <div class="timeline-item">
+                        <h4>📢 Apertura del Sondeo</h4>
+                        <p>Envío del formato SNF a todas las obras jesuitas del sector social y pastoral.</p>
+                        <div class="tl-date">Enero 2026</div>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>📝 Período de Llenado</h4>
+                        <p>Las obras completan el Sondeo a través de la plataforma digital.</p>
+                        <div class="tl-date">Enero – Marzo 2026</div>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>📬 Recepción y Revisión</h4>
+                        <p>El equipo de Fundación Loyola recibe, revisa y valida los sondeos enviados.</p>
+                        <div class="tl-date">Marzo – Abril 2026</div>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>📊 Análisis y Estrategia</h4>
+                        <p>Análisis de necesidades, elaboración de fichas técnicas y definición de estrategias de procuración.</p>
+                        <div class="tl-date">Abril – Mayo 2026</div>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>🤝 Acompañamiento</h4>
+                        <p>Implementación de las estrategias de apoyo y acompañamiento a las obras.</p>
+                        <div class="tl-date">Mayo 2026 en adelante</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-card">
+                <h3>Contacto para dudas del proceso</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coordinador de Vinculación Institucional</label>
+                        <input type="text" value="Sergio Anzures" readonly style="background:#f8faf9">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo</label>
+                        <input type="email" value="vinculacion@fundacionloyola.mx" readonly style="background:#f8faf9">
+                    </div>
+                    <div class="form-group">
+                        <label>Soporte</label>
+                        <input type="email" value="soporteaobras@fundacionloyola.mx" readonly style="background:#f8faf9">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ CALENDARIO ══════════════ -->
+        <div id="page-calendario" class="section-page">
+            <div class="page-header"><h2>📅 Fechas Importantes</h2></div>
+            <div class="form-card">
+                <iframe
+                    src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FMexico_City&showPrint=0&src=c2VydmljaW9zb2NpYWxAZnVuZGFjaW9ubG95b2xhLm14&src=ZXMubWV4aWNhbiNob2xpZGF5QGdyb3VwLnYuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&color=%23039BE5&color=%230B8043"
+                    style="border:none;border-radius:8px" width="100%" height="620" frameborder="0" scrolling="no" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+    </div><!-- end page-content -->
+</div><!-- end main -->
+
+<!-- ══════════════════════════════════════════
+     MODAL: NUEVA OBRA
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-nueva-obra">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-nueva-obra')">✕</button>
+        <h3 id="modal-obra-title">🏢 Registrar Nueva Obra</h3>
+        <p>Completa los datos de la obra para registrarla en el sistema.</p>
+        <input type="hidden" id="edit-obra-index" value="">
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Nombre de la Obra *</label>
+            <input type="text" id="input-obra-nombre" placeholder="Nombre completo de la obra">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Dirección *</label>
+            <input type="text" id="input-obra-direccion" placeholder="Calle, número, colonia, ciudad">
+        </div>
+        <div class="form-row" style="margin-bottom:14px">
+            <div class="form-group">
+                <label>Teléfono *</label>
+                <input type="tel" id="input-obra-telefono" placeholder="(33) 1234-5678">
+            </div>
+            <div class="form-group">
+                <label>Estado</label>
+                <input type="text" id="input-obra-estado" placeholder="Ej. Jalisco">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Correo de contacto</label>
+            <input type="email" id="input-obra-correo" placeholder="correo@obra.mx">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-nueva-obra')">Cancelar</button>
+            <button class="btn-primary" onclick="guardarObra()">💾 Guardar Obra</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL: NUEVO USUARIO
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-nuevo-usuario">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-nuevo-usuario')">✕</button>
+        <h3>👤 Registrar Nuevo Usuario</h3>
+        <p>El usuario podrá iniciar sesión con estas credenciales para acceder al sistema.</p>
+        <div class="warn-box">Las contraseñas se almacenan de forma segura en la base de datos con bcrypt.</div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Nombre de usuario * (mín. 4 caracteres)</label>
+            <input type="text" id="input-user-nombre" placeholder="usuario123" minlength="4" autocomplete="off">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Contraseña * (mín. 6 caracteres)</label>
+            <input type="password" id="input-user-pass" placeholder="Contraseña segura" minlength="6" autocomplete="new-password">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Rol</label>
+            <select id="input-user-rol" onchange="toggleObraSelect()">
+                <option value="usuario">Usuario de Obra</option>
+                <option value="admin">Administrador</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:14px" id="user-obra-group">
+            <label>Obra asignada *</label>
+            <select id="input-user-obra">
+                <option value="">— Selecciona una obra —</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-nuevo-usuario')">Cancelar</button>
+            <button class="btn-primary" onclick="guardarUsuario()">💾 Registrar Usuario</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL: DETALLE OBRA
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-detalle-obra">
+    <div class="modal" style="max-width:600px">
+        <button class="modal-close" onclick="cerrarModal('modal-detalle-obra')">✕</button>
+        <h3 id="detalle-obra-nombre">Nombre de la Obra</h3>
+        <div id="detalle-obra-body" style="margin-bottom:16px"></div>
+        <div class="modal-actions" id="detalle-obra-actions"></div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ <span id="toast-msg">Operación exitosa</span></div>
+
+<script>
+// ══════════════════════════════════════════════
+// AUTH CHECK
+// ══════════════════════════════════════════════
+(function() {
+    const s = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+    if (!s.token || s.rol !== 'admin') window.location.href = 'Inicio.html';
+})();
+
+// ══════════════════════════════════════════════
+// MODULE-LEVEL CACHE
+// ══════════════════════════════════════════════
+let _obras = [];
+let _usuarios = [];
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+const PAGES = ['bienvenida','obras','usuarios','contacto','estadisticas','proceso','calendario'];
+const PAGE_TITLES = {
+    bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
+    contacto:'Contacto con Obras', estadisticas:'Estadísticas',
+    proceso:'Proceso / Tiempos', calendario:'Fechas'
+};
+
+function goTo(page) {
+    PAGES.forEach(p => {
+        document.getElementById('page-'+p)?.classList.remove('active');
+        document.getElementById('nav-'+p)?.classList.remove('active');
+    });
+    document.getElementById('page-'+page)?.classList.add('active');
+    document.getElementById('nav-'+page)?.classList.add('active');
+    document.getElementById('topbar-current').textContent = PAGE_TITLES[page] || page;
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    // Load data for section
+    if (page === 'obras')         renderObras();
+    if (page === 'usuarios')      renderUsuarios();
+    if (page === 'contacto')      renderContactos();
+    if (page === 'estadisticas')  actualizarEstadisticas();
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, color) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.style.background = color || 'var(--green-dark)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ══════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════════════
+// OBRAS
+// ══════════════════════════════════════════════
+async function abrirModalNuevaObra(obraId = null) {
+    document.getElementById('modal-obra-title').textContent = obraId ? '✏️ Editar Obra' : '🏢 Registrar Nueva Obra';
+    document.getElementById('edit-obra-index').value = obraId || '';
+
+    if (obraId) {
+        const o = _obras.find(x => x.id === obraId);
+        if (o) {
+            document.getElementById('input-obra-nombre').value    = o.nombre_obra || '';
+            document.getElementById('input-obra-direccion').value = o.direccion || '';
+            document.getElementById('input-obra-telefono').value  = o.telefono || '';
+            document.getElementById('input-obra-estado').value    = o.estado || '';
+            document.getElementById('input-obra-correo').value    = o.correo || '';
+        }
+    } else {
+        ['input-obra-nombre','input-obra-direccion','input-obra-telefono','input-obra-estado','input-obra-correo']
+            .forEach(id => document.getElementById(id).value = '');
+    }
+    abrirModal('modal-nueva-obra');
+}
+
+async function guardarObra() {
+    const nombre    = document.getElementById('input-obra-nombre').value.trim();
+    const direccion = document.getElementById('input-obra-direccion').value.trim();
+    const telefono  = document.getElementById('input-obra-telefono').value.trim();
+    const estado    = document.getElementById('input-obra-estado').value.trim();
+    const correo    = document.getElementById('input-obra-correo').value.trim();
+    const editId    = document.getElementById('edit-obra-index').value;
+
+    if (!nombre || !direccion || !telefono) {
+        showToast('⚠️ Nombre, dirección y teléfono son obligatorios', '#c47a00');
+        return;
+    }
+
+    try {
+        if (editId) {
+            await API.obras.update(editId, { nombre_obra: nombre, direccion, telefono, estado, correo });
+            showToast(`✅ Obra "${nombre}" actualizada`);
+        } else {
+            await API.obras.create({ nombre_obra: nombre, direccion, telefono, estado, correo });
+            showToast(`✅ Obra "${nombre}" registrada correctamente`);
+        }
+        cerrarModal('modal-nueva-obra');
+        await renderObras();
+        actualizarEstadisticas();
+    } catch(err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
+    }
+}
+
+async function renderObras(filtro = '') {
+    const grid = document.getElementById('obras-grid');
+    if (!grid) return;
+    grid.innerHTML = '<p style="padding:20px;color:var(--text-light)">Cargando obras...</p>';
+    try {
+        _obras = await API.obras.getAll();
+        const q = filtro.toLowerCase();
+        const filtradas = filtro
+            ? _obras.filter(o => o.nombre_obra?.toLowerCase().includes(q) || o.estado?.toLowerCase().includes(q))
+            : _obras;
+
+        if (filtradas.length === 0) {
+            grid.innerHTML = `<div class="obra-empty" style="grid-column:1/-1"><div class="empty-icon">🏗️</div>${_obras.length === 0 ? '<p>No hay obras registradas.</p><p style="font-size:13px;margin-top:6px">Haz clic en <strong>+ Registrar Nueva Obra</strong> para comenzar.</p>' : '<p>No se encontraron obras con ese criterio.</p>'}</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtradas.map(o => `
+        <div class="obra-card" onclick="verDetalleObra('${o.id}')">
+            <div class="tag-active">Activa</div>
+            <div class="obra-name">${esc(o.nombre_obra)}</div>
+            <div class="obra-detail">📍 ${esc(o.direccion || 'Sin dirección')}</div>
+            <div class="obra-detail">📞 ${esc(o.telefono || 'Sin teléfono')}</div>
+            ${o.estado ? `<div class="obra-detail">🗺️ ${esc(o.estado)}</div>` : ''}
+            ${o.correo ? `<div class="obra-detail">✉️ ${esc(o.correo)}</div>` : ''}
+            <div class="obra-date">Registrada: ${o.fecha_registro ? new Date(o.fecha_registro).toLocaleDateString('es-MX') : '—'}</div>
+            <div class="obra-actions" onclick="event.stopPropagation()">
+                <button class="btn-secondary" style="font-size:12px;padding:6px 12px" onclick="abrirModalNuevaObra('${o.id}')">✏️ Editar</button>
+                <button class="btn-danger" style="font-size:12px;padding:6px 12px" onclick="eliminarObra('${o.id}')">🗑️ Eliminar</button>
+            </div>
+        </div>`).join('');
+    } catch(err) {
+        grid.innerHTML = `<p style="color:red;padding:20px">Error al cargar obras: ${esc(err.message)}</p>`;
+    }
+}
+
+function filtrarObras() {
+    renderObras(document.getElementById('buscar-obra').value);
+}
+
+function verDetalleObra(obraId) {
+    const o = _obras.find(x => x.id === obraId);
+    if (!o) return;
+
+    document.getElementById('detalle-obra-nombre').textContent = '🏢 ' + o.nombre_obra;
+    document.getElementById('detalle-obra-body').innerHTML = `
+        <div style="display:grid;gap:8px;margin-bottom:12px">
+            <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Dirección</span><span style="font-size:13px">${esc(o.direccion||'—')}</span></div>
+            <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Teléfono</span><span style="font-size:13px">${esc(o.telefono||'—')}</span></div>
+            <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Estado</span><span style="font-size:13px">${esc(o.estado||'—')}</span></div>
+            <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Correo</span><span style="font-size:13px">${esc(o.correo||'—')}</span></div>
+            <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Registrada</span><span style="font-size:13px">${o.fecha_registro ? new Date(o.fecha_registro).toLocaleString('es-MX') : '—'}</span></div>
+        </div>`;
+    document.getElementById('detalle-obra-actions').innerHTML = `
+        <button class="btn-secondary" onclick="cerrarModal('modal-detalle-obra')">Cerrar</button>
+        <button class="btn-secondary" onclick="cerrarModal('modal-detalle-obra');abrirModalNuevaObra('${o.id}')">✏️ Editar</button>
+        <button class="btn-danger" onclick="cerrarModal('modal-detalle-obra');eliminarObra('${o.id}')">🗑️ Eliminar</button>`;
+    abrirModal('modal-detalle-obra');
+}
+
+async function eliminarObra(obraId) {
+    const o = _obras.find(x => x.id === obraId);
+    if (!o) return;
+    if (!confirm(`⚠️ ¿Eliminar la obra "${o.nombre_obra}"? Esta acción no se puede deshacer.`)) return;
+    try {
+        await API.obras.delete(obraId);
+        showToast(`🗑️ Obra "${o.nombre_obra}" eliminada`, '#7a3030');
+        await renderObras();
+        actualizarEstadisticas();
+    } catch(err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
+    }
+}
+
+// ══════════════════════════════════════════════
+// USUARIOS
+// ══════════════════════════════════════════════
+async function abrirModalNuevoUsuario() {
+    ['input-user-nombre','input-user-pass'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('input-user-rol').value = 'usuario';
+
+    // Populate obra dropdown
+    const obraSelect = document.getElementById('input-user-obra');
+    if (obraSelect) {
+        obraSelect.innerHTML = '<option value="">— Selecciona una obra —</option>';
+        if (_obras.length === 0) {
+            try { _obras = await API.obras.getAll(); } catch {}
+        }
+        _obras.forEach(o => {
+            const opt = document.createElement('option');
+            opt.value = o.id;
+            opt.textContent = o.nombre_obra;
+            obraSelect.appendChild(opt);
+        });
+    }
+
+    toggleObraSelect();
+    abrirModal('modal-nuevo-usuario');
+}
+
+function toggleObraSelect() {
+    const rol = document.getElementById('input-user-rol').value;
+    const group = document.getElementById('user-obra-group');
+    if (group) group.style.display = rol === 'usuario' ? '' : 'none';
+}
+
+async function guardarUsuario() {
+    const nombre  = document.getElementById('input-user-nombre').value.trim();
+    const pass    = document.getElementById('input-user-pass').value.trim();
+    const rol     = document.getElementById('input-user-rol').value;
+    const obra_id = document.getElementById('input-user-obra')?.value || null;
+
+    if (!nombre || !pass) { showToast('⚠️ Completa todos los campos', '#c47a00'); return; }
+    if (nombre.length < 4) { showToast('⚠️ El usuario debe tener al menos 4 caracteres', '#c47a00'); return; }
+    if (pass.length < 6)   { showToast('⚠️ La contraseña debe tener al menos 6 caracteres', '#c47a00'); return; }
+    if (rol === 'usuario' && !obra_id) { showToast('⚠️ Debes asignar una obra al usuario', '#c47a00'); return; }
+
+    try {
+        await API.usuarios.create({
+            usuario: nombre,
+            contrasena: pass,
+            rol,
+            obra_id: rol === 'usuario' ? (obra_id || null) : null
+        });
+        showToast(`✅ Usuario "${nombre}" registrado`);
+        cerrarModal('modal-nuevo-usuario');
+        await renderUsuarios();
+        actualizarEstadisticas();
+    } catch(err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
+    }
+}
+
+async function renderUsuarios() {
+    const tbody = document.getElementById('tbody-usuarios');
+    const noMsg = document.getElementById('no-usuarios');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:20px">Cargando usuarios...</td></tr>';
+    try {
+        _usuarios = await API.usuarios.getAll();
+
+        if (_usuarios.length === 0) {
+            tbody.innerHTML = '';
+            noMsg.style.display = 'block';
+            return;
+        }
+        noMsg.style.display = 'none';
+
+        const obraMap = {};
+        _obras.forEach(o => { obraMap[o.id] = o.nombre_obra; });
+
+        tbody.innerHTML = _usuarios.map(u => `
+            <tr>
+                <td><strong>${esc(u.usuario)}</strong></td>
+                <td><span class="role-badge ${u.rol === 'admin' ? 'admin' : 'usuario'}">${u.rol === 'admin' ? 'Admin' : 'Usuario'}</span></td>
+                <td>${u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-MX') : '—'}</td>
+                <td>
+                    ${u.obra_id
+                        ? `<span style="font-size:12px;color:var(--green-dark);font-weight:600">${esc(obraMap[u.obra_id] || u.obra_id)}</span>`
+                        : `<span style="font-size:12px;color:var(--text-light)">Sin obra</span>`}
+                </td>
+                <td><span style="color:var(--green-dark);font-weight:700;font-size:12px">● Activo</span></td>
+                <td>
+                    <button class="btn-danger" style="font-size:11px;padding:5px 10px" onclick="eliminarUsuario('${u.id}')">🗑️ Eliminar</button>
+                </td>
+            </tr>`).join('');
+    } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:red;padding:20px">Error: ${esc(err.message)}</td></tr>`;
+    }
+}
+
+async function eliminarUsuario(userId) {
+    const u = _usuarios.find(x => x.id === userId);
+    const nombre = u?.usuario || userId;
+    if (!confirm(`⚠️ ¿Eliminar al usuario "${nombre}"?`)) return;
+    try {
+        await API.usuarios.delete(userId);
+        showToast(`🗑️ Usuario "${nombre}" eliminado`, '#7a3030');
+        await renderUsuarios();
+        actualizarEstadisticas();
+    } catch(err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
+    }
+}
+
+// ══════════════════════════════════════════════
+// CONTACTO
+// ══════════════════════════════════════════════
+function renderContactos() {
+    const container = document.getElementById('contacto-content');
+    container.innerHTML = `<div class="obra-empty"><div class="empty-icon">📭</div><p>No hay información de contacto registrada aún.</p><p style="font-size:13px;margin-top:6px">La información se recibe cuando una obra completa el formulario de Contacto desde su panel.</p></div>`;
+}
+
+// ══════════════════════════════════════════════
+// ESTADÍSTICAS
+// ══════════════════════════════════════════════
+async function actualizarEstadisticas() {
+    try {
+        const [obras, usuarios] = await Promise.all([
+            API.obras.getAll().catch(() => []),
+            API.usuarios.getAll().catch(() => [])
+        ]);
+        _obras = obras;
+        _usuarios = usuarios;
+
+        const now = new Date().toLocaleString('es-MX', {dateStyle:'short', timeStyle:'short'});
+        ['stat-obras','st2-obras'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = obras.length; });
+        ['stat-usuarios','st2-usuarios'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = usuarios.length; });
+        ['stat-sondeos','st2-sondeos'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
+        ['st2-registros'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = obras.length + usuarios.length; });
+        const stFecha = document.getElementById('stat-fecha'); if(stFecha) stFecha.textContent = now;
+
+        const rolesContainer = document.getElementById('roles-chart');
+        if (rolesContainer) {
+            const admins   = usuarios.filter(u => u.rol === 'admin').length;
+            const normales = usuarios.filter(u => u.rol !== 'admin').length;
+            rolesContainer.innerHTML = [
+                ['Administradores', admins, '#c9a84c'],
+                ['Usuarios de Obra', normales, '#0D6835'],
+            ].map(([label, count, color]) => `
+                <div style="background:var(--white);border:1.5px solid var(--green-brd);border-radius:10px;padding:16px 20px;min-width:160px;text-align:center">
+                    <div style="font-size:28px;font-weight:800;color:${color}">${count}</div>
+                    <div style="font-size:12px;font-weight:700;color:var(--text-mid);margin-top:4px">${label}</div>
+                </div>`).join('');
+        }
+    } catch(err) {
+        console.error('Error actualizando estadísticas:', err);
+    }
+}
+
+// ══════════════════════════════════════════════
+// EXPORT JSON
+// ══════════════════════════════════════════════
+async function exportarDatos() {
+    try {
+        const [obras, usuarios] = await Promise.all([API.obras.getAll(), API.usuarios.getAll()]);
+        const data = { obras, usuarios, fechaExportacion: new Date().toISOString(), version: '3.0' };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `fundacion_loyola_admin_${Date.now()}.json`;
+        a.click();
+        showToast('💾 Datos exportados correctamente');
+    } catch(err) {
+        showToast('❌ Error al exportar: ' + err.message, '#c0392b');
+    }
+}
+
+// ══════════════════════════════════════════════
+// GENERAR REPORTE PDF
+// ══════════════════════════════════════════════
+async function generarReportePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'p', unit:'mm', format:'a4' });
+    const W = doc.internal.pageSize.getWidth();
+    const M = 14;
+    let y = 0;
+
+    function header() {
+        doc.setFillColor(13,104,53);
+        doc.rect(0,0,W,16,'F');
+        doc.setTextColor(255,255,255);
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(10);
+        doc.text('Fundación Loyola — Panel de Administrador', M, 11);
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, W-M, 11, {align:'right'});
+        y = 24;
+    }
+    function sectionTitle(t) {
+        if (y > 260) { doc.addPage(); header(); }
+        doc.setFillColor(232,245,238);
+        doc.rect(M-2,y-4,W-M*2+4,9,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(13,104,53);
+        doc.text(t, M, y+2); y += 10; doc.setTextColor(40,40,40);
+    }
+
+    header();
+    doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(13,104,53);
+    doc.text('Reporte General SNF 2025', W/2, y, {align:'center'}); y += 8;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
+    doc.text(`Fecha: ${new Date().toLocaleString('es-MX')}`, W/2, y, {align:'center'}); y += 12;
+
+    const obras    = _obras.length ? _obras : await API.obras.getAll().catch(() => []);
+    const usuarios = _usuarios.length ? _usuarios : await API.usuarios.getAll().catch(() => []);
+
+    sectionTitle('Resumen Ejecutivo');
+    doc.autoTable({
+        startY: y,
+        head: [['Indicador','Valor']],
+        body: [
+            ['Total de obras registradas', obras.length],
+            ['Total de usuarios', usuarios.length],
+            ['Fecha del reporte', new Date().toLocaleDateString('es-MX')],
+        ],
+        margin: {left:M,right:M},
+        styles: {fontSize:10, cellPadding:3},
+        headStyles: {fillColor:[13,104,53], textColor:255, fontStyle:'bold'},
+        theme:'grid'
+    });
+    y = doc.lastAutoTable.finalY + 8;
+
+    if (obras.length > 0) {
+        sectionTitle('Obras Registradas');
+        doc.autoTable({
+            startY: y,
+            head: [['Nombre','Dirección','Teléfono','Estado','Fecha']],
+            body: obras.map(o => [o.nombre_obra||'—', o.direccion||'—', o.telefono||'—', o.estado||'—', o.fecha_registro ? new Date(o.fecha_registro).toLocaleDateString('es-MX'):'—']),
+            margin: {left:M,right:M},
+            styles: {fontSize:9, cellPadding:2},
+            headStyles: {fillColor:[13,104,53], textColor:255, fontStyle:'bold'},
+            alternateRowStyles: {fillColor:[232,245,238]},
+            theme:'grid'
+        });
+        y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if (usuarios.length > 0) {
+        sectionTitle('Usuarios Registrados');
+        doc.autoTable({
+            startY: y,
+            head: [['Usuario','Rol','Fecha de registro']],
+            body: usuarios.map(u => [u.usuario||'—', u.rol||'usuario', u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-MX'):'—']),
+            margin: {left:M,right:M},
+            styles: {fontSize:9, cellPadding:2},
+            headStyles: {fillColor:[13,104,53], textColor:255, fontStyle:'bold'},
+            alternateRowStyles: {fillColor:[232,245,238]},
+            theme:'grid'
+        });
+    }
+
+    // Footer on all pages
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i=1; i<=totalPages; i++) {
+        doc.setPage(i);
+        doc.setFillColor(13,104,53);
+        doc.rect(0,285,W,12,'F');
+        doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(255,255,255);
+        doc.text('Fundación Loyola — Confidencial', M, 292);
+        doc.text(`Página ${i} de ${totalPages}`, W-M, 292, {align:'right'});
+    }
+
+    doc.save(`reporte_admin_${Date.now()}.pdf`);
+    showToast('📄 Reporte PDF generado');
+}
+
+// ══════════════════════════════════════════════
+// CERRAR SESIÓN
+// ══════════════════════════════════════════════
+async function cerrarSesion() {
+    if (confirm('¿Está seguro que desea cerrar sesión?')) {
+        try { await API.auth.logout(); } catch {}
+        sessionStorage.removeItem('usuarioActual');
+        window.location.href = 'Inicio.html';
+    }
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    actualizarEstadisticas();
+    // Auto-refresh stats every 30s
+    setInterval(actualizarEstadisticas, 30000);
+});
+</script>
+</body>
+</html>
