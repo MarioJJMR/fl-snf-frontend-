@@ -7,7 +7,7 @@ const CONFIG = {
 
   // ── API ──────────────────────────────────────────────────────────────
   // Cambia esta URL al desplegar en producción.
-  API_BASE: 'https://TU-PROYECTO.up.railway.app/api', // ← reemplaza con tu URL de Railway
+  API_BASE: 'https://fl-snf-backend-production.up.railway.app/api',
 
   // ── EmailJS ───────────────────────────────────────────────────────────
   // Regístrate en https://emailjs.com y reemplaza los valores.
