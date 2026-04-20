@@ -42,8 +42,8 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
 
   /* Tipografía */
-  --font-body:    'Nunito', 'Segoe UI', sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Lato', 'Segoe UI', sans-serif;
+  --font-display: 'Lato', 'Segoe UI', sans-serif;
 
   /* Transiciones */
   --t: 0.2s ease;

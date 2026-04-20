@@ -6,7 +6,7 @@
     <title>Panel de Administrador — Fundación Loyola</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
     <!-- jsPDF para reportes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -166,6 +166,7 @@
                         <tr>
                             <th>Usuario</th>
                             <th>Rol</th>
+                            <th>Email Google</th>
                             <th>Fecha de registro</th>
                             <th>Obra asignada</th>
                             <th>Estado</th>
@@ -352,6 +353,10 @@
         <div class="form-group" style="margin-bottom:14px">
             <label>Nombre de usuario * (mín. 4 caracteres)</label>
             <input type="text" id="input-user-nombre" placeholder="usuario123" minlength="4" autocomplete="off">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Correo Gmail (para login con Google)</label>
+            <input type="email" id="input-user-email" placeholder="correo@gmail.com" autocomplete="off">
         </div>
         <div class="form-group" style="margin-bottom:14px">
             <label>Contraseña * (mín. 6 caracteres)</label>
@@ -584,7 +589,7 @@ async function eliminarObra(obraId) {
 // USUARIOS
 // ══════════════════════════════════════════════
 async function abrirModalNuevoUsuario() {
-    ['input-user-nombre','input-user-pass'].forEach(id => document.getElementById(id).value = '');
+    ['input-user-nombre','input-user-email','input-user-pass'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('input-user-rol').value = 'usuario';
 
     // Populate obra dropdown
@@ -614,6 +619,7 @@ function toggleObraSelect() {
 
 async function guardarUsuario() {
     const nombre  = document.getElementById('input-user-nombre').value.trim();
+    const email   = document.getElementById('input-user-email').value.trim() || null;
     const pass    = document.getElementById('input-user-pass').value.trim();
     const rol     = document.getElementById('input-user-rol').value;
     const obra_id = document.getElementById('input-user-obra')?.value || null;
@@ -628,6 +634,7 @@ async function guardarUsuario() {
             usuario: nombre,
             contrasena: pass,
             rol,
+            email,
             obra_id: rol === 'usuario' ? (obra_id || null) : null
         });
         showToast(`✅ Usuario "${nombre}" registrado`);
@@ -644,7 +651,7 @@ async function renderUsuarios() {
     const noMsg = document.getElementById('no-usuarios');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:20px">Cargando usuarios...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:20px">Cargando usuarios...</td></tr>';
     try {
         _usuarios = await API.usuarios.getAll();
 
@@ -662,6 +669,7 @@ async function renderUsuarios() {
             <tr>
                 <td><strong>${esc(u.usuario)}</strong></td>
                 <td><span class="role-badge ${u.rol === 'admin' ? 'admin' : 'usuario'}">${u.rol === 'admin' ? 'Admin' : 'Usuario'}</span></td>
+                <td style="font-size:12px">${u.email ? esc(u.email) : '<span style="color:var(--text-light)">—</span>'}</td>
                 <td>${u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-MX') : '—'}</td>
                 <td>
                     ${u.obra_id
@@ -674,7 +682,7 @@ async function renderUsuarios() {
                 </td>
             </tr>`).join('');
     } catch(err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color:red;padding:20px">Error: ${esc(err.message)}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red;padding:20px">Error: ${esc(err.message)}</td></tr>`;
     }
 }
 
