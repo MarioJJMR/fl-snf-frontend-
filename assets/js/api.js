@@ -75,6 +75,9 @@ const API = {
     login(usuario, contrasena) {
       return API.post('/auth/login', { usuario, contrasena });
     },
+    loginGoogle(id_token) {
+      return API.post('/auth/google', { id_token });
+    },
     logout() {
       return API.post('/auth/logout');
     },

@@ -17,6 +17,10 @@ const CONFIG = {
     templateId: 'TU_TEMPLATE_ID'   // Email Templates
   },
 
+  // ── Google OAuth ──────────────────────────────────────────────────────
+  // Reemplaza con tu Google Client ID desde console.cloud.google.com
+  GOOGLE_CLIENT_ID: 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+
   // ── Timeouts ──────────────────────────────────────────────────────────
   REQUEST_TIMEOUT_MS: 10000  // 10 segundos
 };

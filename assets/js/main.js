@@ -77,7 +77,7 @@ const Storage = {
   _getObraId() {
     try {
       const s = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
-      return s.obraId || s.id || null;
+      return s.obraId || null;
     } catch { return null; }
   },
 

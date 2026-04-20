@@ -1176,8 +1176,8 @@ function recolectarTodosLosDatos() {
 async function guardarTodo(silent = false) {
     try {
         const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
-        const obraId = session.obraId || session.id;
-       // if (!obraId) { console.warn('Sin obraId en sesión'); return; }
+        const obraId = session.obraId;
+        if (!obraId) { console.warn('Sin obraId en sesión'); return; }
 
         const data = {
             formData: recolectarTodosLosDatos(),
@@ -1199,7 +1199,7 @@ async function guardarTodo(silent = false) {
 async function restaurarDatos() {
     try {
         const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
-        const obraId = session.obraId || session.id;
+        const obraId = session.obraId;
         if (!obraId) return;
 
         const data = await API.formularios.get(obraId, 'sondeo_general');
