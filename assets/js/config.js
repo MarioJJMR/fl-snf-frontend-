@@ -19,7 +19,7 @@ const CONFIG = {
 
   // ── Google OAuth ──────────────────────────────────────────────────────
   // Reemplaza con tu Google Client ID desde console.cloud.google.com
-  GOOGLE_CLIENT_ID: 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+  GOOGLE_CLIENT_ID: '541500948890-d2ipv871f902omto134ipr606it0pq58.apps.googleusercontent.com',
 
   // ── Timeouts ──────────────────────────────────────────────────────────
   REQUEST_TIMEOUT_MS: 10000  // 10 segundos
