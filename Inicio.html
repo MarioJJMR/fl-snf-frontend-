@@ -188,6 +188,59 @@
     @media (max-width: 480px) {
       .login-card { padding: 28px 18px; margin: 16px; }
     }
+
+    /* Modal recuperar contraseña */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      margin: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      border-top: 6px solid #1c3050;
+      position: relative;
+      animation: fadeInUp 0.3s ease;
+    }
+    .modal-box h3 { color: #1c3050; font-size: 20px; font-weight: 900; margin: 0 0 8px; }
+    .modal-box p  { font-size: 13.5px; color: #4a5568; margin: 0 0 18px; }
+    .modal-box input {
+      width: 100%; padding: 13px;
+      border: 2px solid #c4d4e8;
+      border-radius: 8px; outline: none;
+      font-size: 14px; font-family: 'Lato', sans-serif;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+    .modal-box input:focus { border-color: #1c3050; box-shadow: 0 0 0 3px rgba(28,48,80,0.1); }
+    .modal-box .btn-enviar {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #1c3050, #2a4a78);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700; font-family: 'Lato', sans-serif;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-box .btn-enviar:hover    { opacity: 0.9; transform: translateY(-1px); }
+    .modal-box .btn-enviar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .modal-box .btn-cerrar {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; font-size: 20px;
+      cursor: pointer; color: #8a96a8; line-height: 1;
+    }
+    .modal-box .btn-cerrar:hover { color: #1c3050; }
+    #msg-forgot { min-height: 18px; font-size: 13px; font-weight: 700; margin-top: 10px; text-align: center; }
+    #msg-forgot.error   { color: #d94040; }
+    #msg-forgot.success { color: #27ae60; }
   </style>
 </head>
 <body>
@@ -241,7 +294,19 @@
     </button>
 
     <p id="mensaje" role="alert"></p>
-    <a href="#" class="forgot-link" onclick="alert('Contacte al administrador del sistema para restablecer su contraseña.');return false;">¿Olvidé mi contraseña?</a>
+    <a href="#" class="forgot-link" onclick="abrirForgot();return false;">¿Olvidé mi contraseña?</a>
+  </div>
+
+  <!-- Modal: Recuperar contraseña -->
+  <div class="modal-overlay" id="modal-forgot">
+    <div class="modal-box">
+      <button class="btn-cerrar" onclick="cerrarForgot()" title="Cerrar">&times;</button>
+      <h3>Recuperar Contraseña</h3>
+      <p>Ingresa tu correo electrónico y recibirás un enlace para restablecer tu contraseña.</p>
+      <input type="email" id="forgot-email" placeholder="tu@correo.com" autocomplete="email">
+      <button class="btn-enviar" id="btn-forgot" onclick="enviarForgot()">Enviar enlace</button>
+      <p id="msg-forgot"></p>
+    </div>
   </div>
 
   <script>
@@ -340,6 +405,54 @@
       const form = document.getElementById('loginForm') || document.querySelector('form');
       if (form) form.addEventListener('submit', handleLogin);
     });
+
+    /* ─── Forgot password ───────────────────────── */
+    function abrirForgot() {
+      document.getElementById('modal-forgot').classList.add('open');
+      document.getElementById('forgot-email').value = '';
+      document.getElementById('msg-forgot').textContent = '';
+      document.getElementById('msg-forgot').className = '';
+      document.getElementById('btn-forgot').disabled = false;
+      document.getElementById('btn-forgot').textContent = 'Enviar enlace';
+      setTimeout(() => document.getElementById('forgot-email').focus(), 50);
+    }
+    function cerrarForgot() {
+      document.getElementById('modal-forgot').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') cerrarForgot();
+    });
+    async function enviarForgot() {
+      const email = document.getElementById('forgot-email').value.trim();
+      const btn   = document.getElementById('btn-forgot');
+      const msg   = document.getElementById('msg-forgot');
+      if (!email) {
+        msg.textContent = 'Por favor ingresa tu correo electrónico.';
+        msg.className = 'error';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      msg.textContent = '';
+      msg.className = '';
+      try {
+        const base = (window.CONFIG && CONFIG.API_BASE) || 'https://fl-snf-backend-production.up.railway.app/api';
+        const res  = await fetch(`${base}/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || 'Si el correo está registrado, recibirás un enlace en breve.';
+        msg.className = 'success';
+        btn.textContent = '✓ Enviado';
+      } catch {
+        msg.textContent = 'Error al conectar con el servidor. Intenta de nuevo.';
+        msg.className = 'error';
+        btn.disabled = false;
+        btn.textContent = 'Enviar enlace';
+      }
+    }
 
     /* ─── Slideshow ─────────────────────────────── */
     (function initSlideshow() {
