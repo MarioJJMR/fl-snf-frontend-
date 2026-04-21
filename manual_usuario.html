@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Usuario — Obra Jesuita · FL-SNF · Fundación Loyola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:     #1c3050;
+      --secondary:   #2a4a78;
+      --light-bg:    #eef3fb;
+      --border:      #c4d4e8;
+      --gold:        #b8963a;
+      --bg:          #f4f6f9;
+      --white:       #ffffff;
+      --text:        #111827;
+      --text-mid:    #4a5568;
+      --text-light:  #8a96a8;
+      --code-bg:     #111827;
+      --radius:      10px;
+      --shadow:      0 2px 16px rgba(28,48,80,0.10);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #fff;
+      padding: 56px 48px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: 40%;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: rgba(184,150,58,0.08);
+    }
+    header .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      color: rgba(255,255,255,0.9);
+    }
+    header h1 {
+      font-size: 38px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    header .subtitle {
+      font-size: 18px;
+      font-weight: 300;
+      opacity: 0.82;
+      margin-bottom: 28px;
+    }
+    header .meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    header .meta span {
+      font-size: 13px;
+      opacity: 0.72;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    header .meta span strong {
+      font-weight: 700;
+      opacity: 1;
+      color: rgba(255,255,255,0.95);
+    }
+    header .gold-line {
+      width: 56px;
+      height: 4px;
+      background: var(--gold);
+      border-radius: 2px;
+      margin: 20px 0 0;
+    }
+
+    /* ── STICKY NAV ── */
+    nav.toc {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      scrollbar-width: none;
+    }
+    nav.toc::-webkit-scrollbar { display: none; }
+    nav.toc a {
+      display: block;
+      padding: 14px 16px;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+      letter-spacing: 0.2px;
+    }
+    nav.toc a:hover,
+    nav.toc a.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 52px 40px 80px;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      margin-bottom: 64px;
+      scroll-margin-top: 56px;
+    }
+    section h2 {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--primary);
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    section h2 .sec-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    section h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 32px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    section h3::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      background: var(--gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    section h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 22px 0 10px;
+    }
+    p { margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card:last-child { margin-bottom: 0; }
+
+    /* ── GRIDS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 14px;
+    }
+    .callout .callout-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    /* Tip — green */
+    .callout-tip {
+      background: #edfaf3;
+      border: 1px solid #a3d9b8;
+      color: #1a5c38;
+    }
+    .callout-tip .callout-title { color: #1a5c38; }
+    /* Warning — yellow */
+    .callout-warn {
+      background: #fffbea;
+      border: 1px solid #e8cf72;
+      color: #6b4a00;
+    }
+    .callout-warn .callout-title { color: #6b4a00; }
+    /* Info — blue */
+    .callout-info {
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      color: var(--secondary);
+    }
+    .callout-info .callout-title { color: var(--primary); }
+    /* Danger — red */
+    .callout-danger {
+      background: #fef2f2;
+      border: 1px solid #f0b8b8;
+      color: #7a1e1e;
+    }
+    .callout-danger .callout-title { color: #7a1e1e; }
+
+    /* ── STEP LIST ── */
+    .steps {
+      list-style: none;
+      counter-reset: step;
+      margin: 16px 0;
+    }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 16px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    .steps li::before {
+      content: counter(step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .steps li .step-body { flex: 1; }
+    .steps li .step-body strong { color: var(--primary); }
+
+    /* ── BULLET LIST ── */
+    .bullet-list {
+      list-style: none;
+      margin: 12px 0;
+    }
+    .bullet-list li {
+      padding: 5px 0 5px 22px;
+      position: relative;
+      font-size: 14px;
+    }
+    .bullet-list li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 12px;
+      top: 7px;
+    }
+
+    /* ── SCREENSHOT PLACEHOLDER ── */
+    .screenshot {
+      background: linear-gradient(135deg, var(--light-bg) 0%, #dde8f8 100%);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+      margin: 18px 0;
+      color: var(--text-mid);
+      font-size: 13px;
+    }
+    .screenshot .ss-icon { font-size: 36px; opacity: 0.5; margin-bottom: 8px; }
+    .screenshot .ss-label {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--primary);
+      opacity: 0.7;
+    }
+    .screenshot .ss-sub {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ── FIELD TABLE ── */
+    .field-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 12px 0;
+    }
+    .field-table th {
+      background: var(--light-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 9px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    .field-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #e8edf4;
+      vertical-align: top;
+      color: var(--text);
+    }
+    .field-table tr:last-child td { border-bottom: none; }
+    .field-table tr:hover td { background: #f7f9fc; }
+    .field-table .field-name {
+      font-weight: 700;
+      color: var(--secondary);
+      white-space: nowrap;
+    }
+    .field-table .req {
+      display: inline-block;
+      background: #fde8e8;
+      color: #8a2020;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .field-table .opt {
+      display: inline-block;
+      background: #edf7ed;
+      color: #2d6a2d;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    /* ── INLINE CODE ── */
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      background: var(--light-bg);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* ── PROGRESS BAR VISUAL ── */
+    .progress-demo {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 16px 0;
+    }
+    .progress-demo .pd-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-mid);
+      margin-bottom: 14px;
+    }
+    .progress-track {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--text-mid);
+    }
+    .progress-item.done {
+      background: #edfaf3;
+      border-color: #a3d9b8;
+      color: #1a5c38;
+    }
+    .progress-item .pi-icon { font-size: 11px; }
+    .progress-bar-outer {
+      background: #e2e8f0;
+      border-radius: 10px;
+      height: 10px;
+      margin: 12px 0 6px;
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.5s;
+    }
+    .progress-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: right;
+    }
+
+    /* ── BUTTON DEMO ── */
+    .btn-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--primary);
+      color: #fff;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: default;
+      user-select: none;
+    }
+    .btn-demo.gold {
+      background: var(--gold);
+    }
+    .btn-demo.outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    /* ── INFO CHIPS ── */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--light-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3px 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 2px;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+      margin: 16px 0;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -25px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid var(--white);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    .timeline-item.current::before {
+      background: var(--gold);
+      box-shadow: 0 0 0 2px var(--gold);
+    }
+    .timeline-date {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      margin-bottom: 3px;
+    }
+    .timeline-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .timeline-sub {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-top: 3px;
+    }
+
+    /* ── CONTACT CARD ── */
+    .contact-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      box-shadow: var(--shadow);
+    }
+    .contact-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .contact-info .contact-name {
+      font-weight: 900;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .contact-info .contact-role {
+      font-size: 12.5px;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+    .contact-info a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+    .contact-info a:hover { text-decoration: underline; }
+
+    /* ── FILE NAMING BOX ── */
+    .file-name-box {
+      background: var(--code-bg);
+      color: #a8c8e8;
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      margin: 14px 0;
+      text-align: center;
+    }
+    .file-name-box .fn-bracket { color: #4a6a8a; }
+    .file-name-box .fn-fixed   { color: #7eb8d8; font-weight: 700; }
+    .file-name-box .fn-var     { color: #f0c060; }
+
+    /* ── SECTION COVER CARD ── */
+    .sec-cover {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 22px 28px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .sec-cover .sec-cover-num {
+      font-size: 42px;
+      font-weight: 900;
+      opacity: 0.25;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .sec-cover .sec-cover-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+    .sec-cover .sec-cover-sub {
+      font-size: 13px;
+      opacity: 0.75;
+      font-weight: 300;
+      margin-top: 4px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      nav.toc { display: none !important; }
+      header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .sec-cover { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .steps li::before { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      section { page-break-inside: avoid; }
+      main { padding: 20px; }
+      body { font-size: 13px; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      header { padding: 32px 20px 28px; }
+      header h1 { font-size: 26px; }
+      nav.toc { padding: 0 8px; }
+      main { padding: 28px 18px 60px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .sec-cover .sec-cover-num { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ HEADER ═══ -->
+<header>
+  <div class="header-badge">Sistema FL-SNF 2025 &nbsp;·&nbsp; Fundación Loyola</div>
+  <h1>Manual de Usuario — Obra Jesuita</h1>
+  <p class="subtitle">Sondeo de Necesidades y Financiamiento &nbsp;·&nbsp; Panel de la Obra</p>
+  <div class="gold-line"></div>
+  <div class="meta">
+    <span><strong>Versión:</strong>&nbsp;v1.0 · Abril 2026</span>
+    <span><strong>Audiencia:</strong>&nbsp;Responsable de llenado por obra</span>
+    <span><strong>Sistema:</strong>&nbsp;SNF 2025</span>
+    <span><strong>Soporte:</strong>&nbsp;soporteaobras@fundacionloyola.mx</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════ NAV ═══════ -->
+<nav class="toc" id="top-nav">
+  <a href="#introduccion">Introducción</a>
+  <a href="#login">1. Inicio de Sesión</a>
+  <a href="#panel">2. Panel de Inicio</a>
+  <a href="#sec-datos">3. Datos de la Obra</a>
+  <a href="#sec-presupuesto">4. Presupuesto</a>
+  <a href="#sec-vigentes">5. Proyectos Vigentes</a>
+  <a href="#sec-financiar">6. Proyectos a Financiar</a>
+  <a href="#sec-necesidades">7. Necesidades</a>
+  <a href="#sec-contexto">8. Contexto</a>
+  <a href="#sec-impacto">9. Impacto</a>
+  <a href="#documentos">10. Documentos</a>
+  <a href="#calendario">11. Calendario</a>
+  <a href="#consejos">12. Consejos</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ MAIN ═══════ -->
+<main>
+
+  <!-- ══ INTRODUCCIÓN ══════════════════════════════════════════ -->
+  <section id="introduccion">
+    <h2><span class="sec-num">ℹ</span> Introducción</h2>
+
+    <div class="card">
+      <p>Bienvenido al <strong>Sistema FL-SNF (Sondeo de Necesidades y Financiamiento) 2025</strong> de la Fundación Loyola. Este sistema permite a cada obra jesuita registrar y reportar sus datos institucionales, presupuesto, proyectos, necesidades materiales, contexto demográfico e impacto social para el ciclo de planeación <strong>2025–2026</strong>.</p>
+      <p>Este manual está dirigido al <strong>responsable de llenado</strong> asignado por la obra. Su cuenta fue creada por un administrador de Fundación Loyola y le da acceso exclusivo a la información de su obra.</p>
+    </div>
+
+    <h3>¿Qué es el SNF?</h3>
+    <p>El Sondeo de Necesidades y Financiamiento es el proceso anual mediante el cual las obras jesuitas reportan su situación operativa, sus proyectos y sus necesidades ante Fundación Loyola, con el fin de gestionar apoyos y financiamiento para el siguiente ejercicio.</p>
+
+    <h3>Calendario del Proceso SNF 2025</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">Enero 2026</div>
+        <div class="timeline-label">Apertura del Sistema</div>
+        <div class="timeline-sub">El sistema FL-SNF abre para captura. Se envían credenciales a los responsables de cada obra.</div>
+      </div>
+      <div class="timeline-item current">
+        <div class="timeline-date">Enero – Marzo 2026</div>
+        <div class="timeline-label">Periodo de Llenado</div>
+        <div class="timeline-sub">Las obras completan las 7 secciones del sondeo. El sistema permanece abierto para edición durante este periodo.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Marzo – Abril 2026</div>
+        <div class="timeline-label">Recepción y Revisión</div>
+        <div class="timeline-sub">Fundación Loyola recibe y revisa los sondeos. Se pueden solicitar aclaraciones.</div>
+      </div>
+    </div>
+
+    <h3>Contacto</h3>
+    <div class="grid-2">
+      <div class="contact-card">
+        <div class="contact-avatar">👤</div>
+        <div class="contact-info">
+          <div class="contact-name">Sergio Anzures</div>
+          <div class="contact-role">Vinculación — Fundación Loyola</div>
+          <a href="mailto:vinculacion@fundacionloyola.mx">vinculacion@fundacionloyola.mx</a>
+          <div style="font-size:12px; color:var(--text-light); margin-top:4px;">Lunes a viernes, 9:00–17:30</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-avatar">🛠</div>
+        <div class="contact-info">
+          <div class="contact-name">Soporte Técnico</div>
+          <div class="contact-role">Problemas con acceso o sistema</div>
+          <a href="mailto:soporteaobras@fundacionloyola.mx">soporteaobras@fundacionloyola.mx</a>
+          <div style="font-size:12px; color:var(--text-light); margin-top:4px;">Lunes a viernes, 9:00–17:30</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Convención de Nombres de Archivo</h3>
+    <p>Todos los documentos que suba al sistema deben nombrarse según el siguiente formato:</p>
+    <div class="file-name-box">
+      <span class="fn-fixed">SNF_2025_</span><span class="fn-bracket">[</span><span class="fn-var">NOMBRE DE LA OBRA</span><span class="fn-bracket">]</span>
+    </div>
+    <p style="font-size:13px; color:var(--text-mid);">Ejemplo: <code>SNF_2025_CEFAM_GUADALAJARA</code> &nbsp;|&nbsp; <code>SNF_2025_ITESO</code></p>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">ℹ️</div>
+      <div>
+        <div class="callout-title">Sesión y Seguridad</div>
+        La sesión expira automáticamente después de <strong>8 horas</strong> de inactividad. Si esto ocurre, simplemente vuelva a iniciar sesión en <code>Inicio.html</code>. Sus datos guardados no se perderán.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 1. LOGIN ═══════════════════════════════════════════════ -->
+  <section id="login">
+    <h2><span class="sec-num">1</span> Inicio de Sesión</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">01</div>
+      <div>
+        <div class="sec-cover-title">Acceso al sistema</div>
+        <div class="sec-cover-sub">Archivo: Inicio.html — Página de autenticación</div>
+      </div>
+    </div>
+
+    <p>Para ingresar al sistema FL-SNF diríjase a la página de inicio de sesión (<code>Inicio.html</code>). Existen dos métodos de acceso:</p>
+
+    <h3>Método A — Usuario y Contraseña</h3>
+    <ol class="steps">
+      <li><div class="step-body">Abra el navegador y acceda a la URL del sistema FL-SNF proporcionada por el administrador.</div></li>
+      <li><div class="step-body">En la pantalla de inicio escriba su <strong>Usuario</strong> (correo electrónico registrado) en el campo correspondiente.</div></li>
+      <li><div class="step-body">Escriba su <strong>Contraseña</strong> en el campo de contraseña.</div></li>
+      <li><div class="step-body">Haga clic en el botón <strong>"Iniciar Sesión"</strong>.</div></li>
+      <li><div class="step-body">Si los datos son correctos, el sistema le redirigirá automáticamente al <strong>Panel de Inicio</strong> (<code>index.html</code>).</div></li>
+    </ol>
+
+    <h3>Método B — Continuar con Google</h3>
+    <ol class="steps">
+      <li><div class="step-body">Haga clic en el botón <strong>"Continuar con Google"</strong> en la pantalla de inicio de sesión.</div></li>
+      <li><div class="step-body">Se abrirá una ventana de autenticación de Google. Seleccione o ingrese su cuenta de Gmail.</div></li>
+      <li><div class="step-body"><strong>Importante:</strong> El correo de Gmail debe ser exactamente el mismo que el administrador registró para su obra. De lo contrario, el acceso será denegado.</div></li>
+      <li><div class="step-body">Una vez autenticado por Google, el sistema lo redirigirá al Panel de Inicio.</div></li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="ss-icon">🖥️</div>
+      <div class="ss-label">Pantalla de Inicio de Sesión — Inicio.html</div>
+      <div class="ss-sub">Muestra campos de usuario/contraseña y botón "Continuar con Google"</div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Correo de Google</div>
+        Si usa el acceso con Google, asegúrese de que el correo Gmail coincida <strong>exactamente</strong> con el registrado por el administrador. Si tiene varias cuentas Google activas en su navegador, seleccione la correcta.
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">✅</div>
+      <div>
+        <div class="callout-title">¿Olvidó su contraseña?</div>
+        Contacte a soporte en <a href="mailto:soporteaobras@fundacionloyola.mx" style="color:inherit;font-weight:700;">soporteaobras@fundacionloyola.mx</a> para restablecerla. Si utiliza el acceso con Google, simplemente haga clic en "Continuar con Google".
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 2. PANEL DE INICIO ══════════════════════════════════════ -->
+  <section id="panel">
+    <h2><span class="sec-num">2</span> Panel de Inicio</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">02</div>
+      <div>
+        <div class="sec-cover-title">Panel Principal de la Obra</div>
+        <div class="sec-cover-sub">Archivo: index.html — Vista de inicio tras el login</div>
+      </div>
+    </div>
+
+    <p>Al iniciar sesión exitosamente, el sistema muestra el <strong>Panel de Inicio</strong>. Desde aquí puede acceder a todas las secciones del sondeo y monitorear su progreso.</p>
+
+    <h3>Elementos del Panel</h3>
+
+    <h4>A. Barra de Progreso</h4>
+    <p>En la parte superior del panel encontrará la barra de progreso del sondeo, que muestra el estado de completitud de las 7 secciones:</p>
+
+    <div class="progress-demo">
+      <div class="pd-title">Estado del Sondeo — Secciones</div>
+      <div class="progress-track">
+        <div class="progress-item done"><span class="pi-icon">✓</span> Datos de Obra</div>
+        <div class="progress-item done"><span class="pi-icon">✓</span> Presupuesto</div>
+        <div class="progress-item"><span class="pi-icon">○</span> Proy. Vigentes</div>
+        <div class="progress-item"><span class="pi-icon">○</span> Proy. a Financiar</div>
+        <div class="progress-item"><span class="pi-icon">○</span> Necesidades</div>
+        <div class="progress-item"><span class="pi-icon">○</span> Contexto</div>
+        <div class="progress-item"><span class="pi-icon">○</span> Impacto</div>
+      </div>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" style="width: 28%;"></div>
+      </div>
+      <div class="progress-pct">28% completado</div>
+    </div>
+
+    <ul class="bullet-list">
+      <li><strong>○ (círculo vacío)</strong> — Sección pendiente: aún no se han guardado datos en esta sección.</li>
+      <li><strong>✓ (palomita verde)</strong> — Sección guardada: se han capturado y guardado datos al menos una vez.</li>
+      <li>El <strong>porcentaje</strong> a la derecha refleja el avance total sobre las 7 secciones.</li>
+      <li>La barra se actualiza automáticamente cada vez que guarda una sección.</li>
+    </ul>
+
+    <h4>B. Tarjetas de Navegación</h4>
+    <p>El panel presenta <strong>tarjetas</strong> para cada sección del sondeo. Cada tarjeta muestra el nombre de la sección, su estado actual (pendiente/guardado) y un botón para acceder. Haga clic en cualquier tarjeta para navegar directamente a esa sección.</p>
+
+    <div class="screenshot">
+      <div class="ss-icon">🗂️</div>
+      <div class="ss-label">Panel de Inicio — Tarjetas de Sección</div>
+      <div class="ss-sub">Barra de progreso en la parte superior + 7 tarjetas de navegación</div>
+    </div>
+
+    <h4>C. Cuadro Informativo</h4>
+    <div class="card">
+      <p><strong>Propósito del Sondeo:</strong> El SNF 2025 permite a Fundación Loyola conocer la situación actual de cada obra jesuita en México — sus proyectos, necesidades de financiamiento, contexto comunitario e impacto social — para orientar el apoyo institucional del siguiente ejercicio.</p>
+      <p style="margin-bottom:0;"><strong>Periodo de captura:</strong> Enero – Marzo 2026 &nbsp;|&nbsp; <strong>Horario de soporte:</strong> Lunes a viernes, 9:00–17:30 hrs.</p>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">💾</div>
+      <div>
+        <div class="callout-title">Datos Pre-cargados</div>
+        Si su obra ya capturó información en sesiones anteriores, el sistema <strong>cargará automáticamente</strong> los datos guardados al iniciar sesión. No es necesario volver a capturar desde cero — simplemente revise y actualice lo que sea necesario.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 3. SECCIÓN 2 — DATOS DE LA OBRA ══════════════════════════ -->
+  <section id="sec-datos">
+    <h2><span class="sec-num">3</span> Sección 2 — Datos de la Obra</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§2</div>
+      <div>
+        <div class="sec-cover-title">Datos de la Obra</div>
+        <div class="sec-cover-sub">Información institucional, contactos y colaboradores de la obra</div>
+      </div>
+    </div>
+
+    <p>Esta sección concentra la información institucional completa de la obra. Se divide en <strong>7 subsecciones</strong>. Complete todas las subsecciones antes de guardar.</p>
+
+    <!-- 2.1 -->
+    <h3>2.1 Datos Generales</h3>
+    <p>Información de identificación oficial de la obra ante Fundación Loyola:</p>
+
+    <table class="field-table">
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Descripción</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Nombre de la Obra <span class="req">Req</span></td>
+          <td>Nombre completo y oficial de la obra jesuita.</td>
+          <td>Texto libre</td>
+        </tr>
+        <tr>
+          <td class="field-name">RFC <span class="req">Req</span></td>
+          <td>Registro Federal de Contribuyentes de la obra (formato SAT).</td>
+          <td>Texto (13 caracteres)</td>
+        </tr>
+        <tr>
+          <td class="field-name">Estado <span class="req">Req</span></td>
+          <td>Estado de la república donde opera la obra.</td>
+          <td>Texto libre</td>
+        </tr>
+        <tr>
+          <td class="field-name">Dirección <span class="req">Req</span></td>
+          <td>Domicilio fiscal o principal de la obra.</td>
+          <td>Texto libre</td>
+        </tr>
+        <tr>
+          <td class="field-name">Teléfono <span class="req">Req</span></td>
+          <td>Número telefónico principal con lada.</td>
+          <td>Numérico</td>
+        </tr>
+        <tr>
+          <td class="field-name">Personalidad Jurídica <span class="req">Req</span></td>
+          <td>Figura legal bajo la que opera la obra.</td>
+          <td>Lista desplegable: Asociación Civil / IAP / Sociedad Civil / Asociación Religiosa</td>
+        </tr>
+        <tr>
+          <td class="field-name">Donataria Autorizada <span class="opt">Opt</span></td>
+          <td>Indica si la obra cuenta con el carácter de Donataria Autorizada por el SAT.</td>
+          <td>Interruptor Sí / No</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 2.2 -->
+    <h3>2.2 Planeación General</h3>
+    <p>Información estratégica de la obra correspondiente a su última planeación institucional:</p>
+
+    <table class="field-table">
+      <thead>
+        <tr><th>Campo</th><th>Descripción</th><th>Tipo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Fecha Última Planeación <span class="req">Req</span></td>
+          <td>Fecha en que se realizó la planeación institucional más reciente.</td>
+          <td>Fecha (DD/MM/AAAA)</td>
+        </tr>
+        <tr>
+          <td class="field-name">Periodo <span class="req">Req</span></td>
+          <td>Años que cubre el plan institucional vigente (ej. 2024–2027).</td>
+          <td>Texto libre</td>
+        </tr>
+        <tr>
+          <td class="field-name">Misión <span class="req">Req</span></td>
+          <td>Declaración de misión institucional de la obra.</td>
+          <td>Texto largo</td>
+        </tr>
+        <tr>
+          <td class="field-name">Visión <span class="req">Req</span></td>
+          <td>Declaración de visión institucional de la obra.</td>
+          <td>Texto largo</td>
+        </tr>
+        <tr>
+          <td class="field-name">Objetivo General <span class="req">Req</span></td>
+          <td>Objetivo central del plan institucional vigente.</td>
+          <td>Texto largo</td>
+        </tr>
+        <tr>
+          <td class="field-name">Objetivos Estratégicos <span class="opt">Opt</span></td>
+          <td>Objetivos específicos derivados del objetivo general.</td>
+          <td>Texto largo (lista)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 2.3–2.6 -->
+    <h3>2.3 – 2.6 Datos de Contacto</h3>
+    <p>Para cada uno de los cuatro roles institucionales, capture los datos de la persona responsable. Los campos son los mismos para cada rol:</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>2.3 Director/a</h4>
+        <ul class="bullet-list">
+          <li>Nombre completo</li>
+          <li>Teléfono directo</li>
+          <li>Correo electrónico</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>2.4 Administración</h4>
+        <ul class="bullet-list">
+          <li>Nombre completo</li>
+          <li>Teléfono directo</li>
+          <li>Correo electrónico</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>2.5 Resp. de Proyectos</h4>
+        <ul class="bullet-list">
+          <li>Nombre completo</li>
+          <li>Teléfono directo</li>
+          <li>Correo electrónico</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>2.6 Resp. del Llenado</h4>
+        <ul class="bullet-list">
+          <li>Nombre completo</li>
+          <li>Teléfono directo</li>
+          <li>Correo electrónico</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">ℹ️</div>
+      <div>
+        <div class="callout-title">Responsable del Llenado</div>
+        El <strong>Responsable del Llenado</strong> (sección 2.6) es la persona que completa este formulario. Asegúrese de que su correo electrónico sea correcto, ya que Fundación Loyola lo usará para enviar notificaciones sobre el proceso SNF.
+      </div>
+    </div>
+
+    <!-- 2.7 -->
+    <h3>2.7 Colaboradores</h3>
+    <p>Registre el número de colaboradores de la obra por categoría. El <strong>Total</strong> se calcula automáticamente:</p>
+
+    <table class="field-table">
+      <thead>
+        <tr><th>Categoría de Colaborador</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Jesuitas</td>
+          <td>Número de sacerdotes y hermanos de la Compañía de Jesús que colaboran activamente.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Sacerdotes Diocesanos</td>
+          <td>Sacerdotes del clero diocesano que colaboran con la obra.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Religiosas/os</td>
+          <td>Miembros de congregaciones religiosas (no jesuitas) que colaboran con la obra.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Personal Laico Remunerado</td>
+          <td>Personal laico con contrato de trabajo o relación laboral formal.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Personal Laico Voluntario</td>
+          <td>Laicos que colaboran de manera voluntaria sin remuneración económica.</td>
+        </tr>
+        <tr>
+          <td class="field-name"><strong>Total</strong></td>
+          <td><em>Calculado automáticamente</em> como suma de todas las categorías anteriores.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Guardar Sección 2</h3>
+    <p>Una vez completados todos los campos, haga clic en el botón al final de la sección:</p>
+    <div style="margin: 14px 0;">
+      <span class="btn-demo">💾 Guardar Sección 2</span>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Guarde antes de salir</div>
+        Si navega a otra sección o cierra el navegador <strong>sin guardar</strong>, los cambios realizados en la Sección 2 se perderán. La barra de progreso solo se actualizará después de guardar correctamente.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 4. SECCIÓN 3 — PRESUPUESTO ════════════════════════════════ -->
+  <section id="sec-presupuesto">
+    <h2><span class="sec-num">4</span> Sección 3 — Presupuesto</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§3</div>
+      <div>
+        <div class="sec-cover-title">Presupuesto 2026</div>
+        <div class="sec-cover-sub">Gastos operativos y fuentes de financiamiento proyectados</div>
+      </div>
+    </div>
+
+    <p>Esta sección captura el <strong>presupuesto proyectado para 2026</strong> de la obra, organizado en dos grandes tablas: Gastos y Fuentes de Financiamiento.</p>
+
+    <h3>Tabla de Gastos (Egresos)</h3>
+    <p>Registre todos los rubros de gasto operativo proyectados para el ejercicio 2026. Incluya:</p>
+    <ul class="bullet-list">
+      <li>Gastos de personal (nómina, honorarios, cuotas IMSS)</li>
+      <li>Gastos de operación (servicios, arrendamientos, suministros)</li>
+      <li>Gastos de programas y proyectos</li>
+      <li>Gastos de administración</li>
+      <li>Inversiones y adquisiciones planeadas</li>
+    </ul>
+
+    <div class="screenshot">
+      <div class="ss-icon">📊</div>
+      <div class="ss-label">Tabla de Gastos — Sección 3</div>
+      <div class="ss-sub">Tabla editable con rubros de gasto, montos mensuales y totales anuales</div>
+    </div>
+
+    <h3>Tabla de Fuentes de Financiamiento (Ingresos)</h3>
+    <p>Registre todas las fuentes de donde provienen o se proyectan los recursos para 2026:</p>
+    <ul class="bullet-list">
+      <li>Fondos propios y autofinanciamiento</li>
+      <li>Apoyos de la Compañía de Jesús (Provincia)</li>
+      <li>Fondos de Fundación Loyola (solicitar)</li>
+      <li>Donativos de personas físicas y morales</li>
+      <li>Recursos gubernamentales y convocatorias</li>
+      <li>Fondos internacionales o de cooperación</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div>
+        <div class="callout-title">Consejo de Llenado</div>
+        Asegúrese de que el total de <strong>Fuentes de Financiamiento</strong> sea igual al total de <strong>Gastos</strong> para presentar un presupuesto balanceado. Si existe un déficit, esto será la base para la solicitud de apoyo a Fundación Loyola.
+      </div>
+    </div>
+
+    <h3>Guardar Presupuesto</h3>
+    <div style="margin: 14px 0;">
+      <span class="btn-demo">💾 Guardar Presupuesto</span>
+    </div>
+  </section>
+
+  <!-- ══ 5. SECCIÓN 4 — PROYECTOS VIGENTES ═════════════════════════ -->
+  <section id="sec-vigentes">
+    <h2><span class="sec-num">5</span> Sección 4 — Proyectos Vigentes</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§4</div>
+      <div>
+        <div class="sec-cover-title">Proyectos Vigentes</div>
+        <div class="sec-cover-sub">Proyectos activos en operación durante el ciclo actual</div>
+      </div>
+    </div>
+
+    <p>Registre en esta sección todos los proyectos que su obra tiene <strong>actualmente en operación</strong>. Un proyecto vigente es aquel que ya cuenta con financiamiento y está siendo ejecutado.</p>
+
+    <h3>Cómo Agregar Proyectos</h3>
+    <ol class="steps">
+      <li><div class="step-body">Haga clic en el botón <strong>"➕ Agregar Proyecto"</strong> para añadir una nueva fila a la tabla.</div></li>
+      <li><div class="step-body">Complete los campos de la nueva fila (ver tabla de campos abajo).</div></li>
+      <li><div class="step-body">Repita el proceso para cada proyecto vigente de la obra.</div></li>
+      <li><div class="step-body">Para eliminar un proyecto, haga clic en el ícono de eliminar (🗑) al final de la fila.</div></li>
+      <li><div class="step-body">Cuando haya registrado todos los proyectos, haga clic en <strong>"💾 Guardar"</strong>.</div></li>
+    </ol>
+
+    <h3>Campos por Proyecto</h3>
+    <table class="field-table">
+      <thead>
+        <tr><th>Campo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Nombre del Proyecto <span class="req">Req</span></td>
+          <td>Nombre oficial o de referencia del proyecto en operación.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Descripción <span class="req">Req</span></td>
+          <td>Breve descripción del proyecto: qué hace, a quién atiende, cuál es su metodología.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Beneficiarios <span class="req">Req</span></td>
+          <td>Número aproximado de personas beneficiadas directa o indirectamente.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Presupuesto <span class="req">Req</span></td>
+          <td>Monto total del proyecto en pesos mexicanos (MXN).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">ℹ️</div>
+      <div>
+        <div class="callout-title">Proyectos vs. Programas</div>
+        Incluya únicamente proyectos con inicio, fin y presupuesto definidos. Los programas permanentes de la obra se capturan en la sección de Impacto Social (Sección 8).
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 6. SECCIÓN 5 — PROYECTOS A FINANCIAR ══════════════════════ -->
+  <section id="sec-financiar">
+    <h2><span class="sec-num">6</span> Sección 5 — Proyectos a Financiar</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§5</div>
+      <div>
+        <div class="sec-cover-title">Proyectos a Financiar</div>
+        <div class="sec-cover-sub">Proyectos nuevos o existentes que requieren financiamiento</div>
+      </div>
+    </div>
+
+    <p>En esta sección registre los proyectos que su obra <strong>busca financiar</strong> durante el siguiente ejercicio y para los cuales solicita o requiere apoyo. Estos proyectos pueden ser nuevos o continuación de proyectos existentes con déficit.</p>
+
+    <h3>Campos por Proyecto a Financiar</h3>
+    <table class="field-table">
+      <thead>
+        <tr><th>Campo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Nombre del Proyecto <span class="req">Req</span></td>
+          <td>Nombre del proyecto que requiere financiamiento.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Objetivo <span class="req">Req</span></td>
+          <td>¿Qué busca lograr este proyecto? Describa el objetivo central.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Monto Requerido <span class="req">Req</span></td>
+          <td>Cantidad total solicitada o necesaria para ejecutar el proyecto (MXN).</td>
+        </tr>
+        <tr>
+          <td class="field-name">Justificación <span class="req">Req</span></td>
+          <td>¿Por qué es prioritario este proyecto? Explique su relevancia y urgencia.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ol class="steps">
+      <li><div class="step-body">Haga clic en <strong>"➕ Agregar Proyecto"</strong> para añadir un proyecto a financiar.</div></li>
+      <li><div class="step-body">Complete todos los campos requeridos para cada proyecto.</div></li>
+      <li><div class="step-body">Sea específico en la <strong>justificación</strong>: Fundación Loyola usa esta información para priorizar los apoyos.</div></li>
+      <li><div class="step-body">Guarde la sección con <strong>"💾 Guardar"</strong> al terminar.</div></li>
+    </ol>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div>
+        <div class="callout-title">Detalle en la Justificación</div>
+        Una justificación sólida aumenta las posibilidades de obtener financiamiento. Mencione la población beneficiada, el problema específico que atiende y el impacto esperado.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 7. SECCIÓN 6 — NECESIDADES MATERIALES ═════════════════════ -->
+  <section id="sec-necesidades">
+    <h2><span class="sec-num">7</span> Sección 6 — Necesidades Materiales</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§6</div>
+      <div>
+        <div class="sec-cover-title">Necesidades Materiales</div>
+        <div class="sec-cover-sub">Equipo, infraestructura y materiales requeridos por la obra</div>
+      </div>
+    </div>
+
+    <p>Registre aquí las <strong>necesidades de bienes, equipo e infraestructura</strong> que la obra requiere para operar adecuadamente o para mejorar su capacidad de atención.</p>
+
+    <h3>Campos por Necesidad</h3>
+    <table class="field-table">
+      <thead>
+        <tr><th>Campo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="field-name">Descripción <span class="req">Req</span></td>
+          <td>Nombre y descripción del artículo, equipo o trabajo necesario.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Cantidad <span class="req">Req</span></td>
+          <td>Número de unidades requeridas.</td>
+        </tr>
+        <tr>
+          <td class="field-name">Costo Estimado <span class="req">Req</span></td>
+          <td>Costo aproximado total en pesos mexicanos (MXN).</td>
+        </tr>
+        <tr>
+          <td class="field-name">Justificación <span class="req">Req</span></td>
+          <td>Explique por qué es necesario este bien o equipo para la operación de la obra.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ol class="steps">
+      <li><div class="step-body">Haga clic en el botón para agregar un ítem a la lista de necesidades.</div></li>
+      <li><div class="step-body">Complete la descripción detallada del artículo o necesidad.</div></li>
+      <li><div class="step-body">Indique la cantidad requerida y el costo estimado.</div></li>
+      <li><div class="step-body">Incluya una justificación clara de por qué la obra requiere este artículo.</div></li>
+      <li><div class="step-body">Repita para cada necesidad material identificada.</div></li>
+      <li><div class="step-body">Guarde la sección al finalizar.</div></li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="ss-icon">📋</div>
+      <div class="ss-label">Sección 6 — Tabla de Necesidades Materiales</div>
+      <div class="ss-sub">Tabla con columnas: Descripción / Cantidad / Costo Estimado / Justificación</div>
+    </div>
+  </section>
+
+  <!-- ══ 8. SECCIÓN 7 — CONTEXTO DEMOGRÁFICO ════════════════════════ -->
+  <section id="sec-contexto">
+    <h2><span class="sec-num">8</span> Sección 7 — Contexto Demográfico</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§7</div>
+      <div>
+        <div class="sec-cover-title">Contexto Demográfico</div>
+        <div class="sec-cover-sub">Características de la comunidad y zona de atención de la obra</div>
+      </div>
+    </div>
+
+    <p>Esta sección describe el <strong>contexto demográfico y social</strong> de la comunidad que atiende la obra. La información permite a Fundación Loyola comprender el entorno en el que opera cada obra jesuita.</p>
+
+    <h3>Información a Capturar</h3>
+    <ul class="bullet-list">
+      <li><strong>Población Atendida:</strong> Número aproximado de personas que la obra atiende directa e indirectamente.</li>
+      <li><strong>Área Geográfica:</strong> Colonias, municipios o regiones donde opera la obra.</li>
+      <li><strong>Indicadores de Vulnerabilidad:</strong> Características de la población: pobreza, marginación, violencia, migración, discapacidad, etc.</li>
+      <li><strong>Contexto Socioeconómico:</strong> Descripción del nivel socioeconómico predominante de la comunidad.</li>
+      <li><strong>Retos del Entorno:</strong> Principales problemas sociales que enfrenta la comunidad y que motivan la labor de la obra.</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div>
+        <div class="callout-title">Datos Cualitativos y Cuantitativos</div>
+        Combine datos estadísticos (cifras del INEGI, CONEVAL) con información cualitativa de la realidad local. Esto enriquece el diagnóstico y facilita la evaluación de impacto.
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li><div class="step-body">Describa el <strong>área geográfica</strong> de influencia de la obra (municipio, alcaldía, colonia, región).</div></li>
+      <li><div class="step-body">Indique la <strong>población total</strong> del área y la que atiende directamente la obra.</div></li>
+      <li><div class="step-body">Describa los principales <strong>indicadores de vulnerabilidad</strong> de la comunidad.</div></li>
+      <li><div class="step-body">Mencione los principales <strong>retos sociales</strong> que justifican la presencia de la obra en esa zona.</div></li>
+      <li><div class="step-body">Guarde la sección con <strong>"💾 Guardar"</strong>.</div></li>
+    </ol>
+  </section>
+
+  <!-- ══ 9. SECCIÓN 8 — IMPACTO ════════════════════════════════════ -->
+  <section id="sec-impacto">
+    <h2><span class="sec-num">9</span> Sección 8 — Impacto Social</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">§8</div>
+      <div>
+        <div class="sec-cover-title">Impacto Social</div>
+        <div class="sec-cover-sub">Resultados y logros de la obra en el último periodo</div>
+      </div>
+    </div>
+
+    <p>En esta sección se reportan los <strong>resultados e impacto social</strong> generado por la obra durante el periodo más reciente. Es la evidencia de la labor jesuita en la comunidad.</p>
+
+    <h3>Información a Capturar</h3>
+    <ul class="bullet-list">
+      <li><strong>Beneficiarios Alcanzados:</strong> Total de personas beneficiadas directa e indirectamente por los programas de la obra.</li>
+      <li><strong>Programas en Operación:</strong> Listado de los programas permanentes de la obra (educación, salud, desarrollo comunitario, etc.).</li>
+      <li><strong>Métricas de Éxito:</strong> Indicadores clave que demuestran el cumplimiento de los objetivos de la obra.</li>
+      <li><strong>Historias de Impacto:</strong> Casos o testimonios representativos del cambio generado por la obra.</li>
+      <li><strong>Alianzas y Redes:</strong> Organizaciones, instituciones o redes con las que colabora la obra.</li>
+    </ul>
+
+    <h3>Métricas de Éxito Sugeridas</h3>
+    <div class="card">
+      <div class="grid-3">
+        <div>
+          <h4 style="margin-top:0;">Cobertura</h4>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li>Personas atendidas</li>
+            <li>Familias beneficiadas</li>
+            <li>Comunidades servidas</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin-top:0;">Proceso</h4>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li>Servicios prestados</li>
+            <li>Talleres / sesiones</li>
+            <li>Horas de atención</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin-top:0;">Resultado</h4>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li>Cambios en condiciones</li>
+            <li>Egresados / graduados</li>
+            <li>Empleos generados</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li><div class="step-body">Registre el <strong>total de beneficiarios</strong> atendidos directa e indirectamente.</div></li>
+      <li><div class="step-body">Describa brevemente cada uno de los <strong>programas permanentes</strong> de la obra.</div></li>
+      <li><div class="step-body">Capture las <strong>métricas clave</strong> que reflejan los resultados de la obra.</div></li>
+      <li><div class="step-body">Si cuenta con casos de éxito o testimonios, inclúyalos en el campo correspondiente.</div></li>
+      <li><div class="step-body">Guarde la sección con <strong>"💾 Guardar"</strong>.</div></li>
+    </ol>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">✅</div>
+      <div>
+        <div class="callout-title">Al guardar la Sección 8</div>
+        Al guardar esta última sección, la barra de progreso marcará el <strong>100% de completitud</strong> del sondeo, siempre y cuando las otras 6 secciones también estén guardadas. Recibirá una confirmación en pantalla.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 10. DOCUMENTOS ════════════════════════════════════════════ -->
+  <section id="documentos">
+    <h2><span class="sec-num">10</span> Gestión de Documentos</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">📎</div>
+      <div>
+        <div class="sec-cover-title">Subir y Gestionar Documentos</div>
+        <div class="sec-cover-sub">Archivos de soporte para el sondeo de la obra</div>
+      </div>
+    </div>
+
+    <p>El módulo de documentos le permite adjuntar archivos de respaldo para su sondeo: estados financieros, planes institucionales, actas, informes, fotografías, etc. El sistema acepta <strong>cualquier tipo de archivo</strong>.</p>
+
+    <h3>Subir Documentos</h3>
+    <ol class="steps">
+      <li><div class="step-body">Haga clic en el botón <strong>"📎 Subir Documentos"</strong> en la sección de documentos.</div></li>
+      <li><div class="step-body">Se abrirá el explorador de archivos de su computadora.</div></li>
+      <li><div class="step-body">Seleccione uno o varios archivos a la vez (puede usar Ctrl+clic o Shift+clic para selección múltiple).</div></li>
+      <li><div class="step-body">Confirme la selección. Los archivos comenzarán a cargarse al servidor.</div></li>
+      <li><div class="step-body">Espere a que aparezca la confirmación de carga exitosa antes de cerrar la pantalla.</div></li>
+    </ol>
+
+    <h3>Visualizar Documentos Cargados</h3>
+    <p>Todos los documentos subidos por su obra aparecen en la lista de documentos con la siguiente información:</p>
+    <div class="card">
+      <table class="field-table" style="margin:0;">
+        <thead>
+          <tr><th>Columna</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="field-name">Nombre del Archivo</td>
+            <td>Nombre original del archivo tal como fue subido.</td>
+          </tr>
+          <tr>
+            <td class="field-name">Tamaño</td>
+            <td>Peso del archivo en KB o MB.</td>
+          </tr>
+          <tr>
+            <td class="field-name">Fecha de Carga</td>
+            <td>Fecha y hora en que se subió el archivo al sistema.</td>
+          </tr>
+          <tr>
+            <td class="field-name">Acciones</td>
+            <td>Botones para <strong>descargar</strong> (⬇) o <strong>eliminar</strong> (🗑) el archivo.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Descargar un Documento</h3>
+    <ol class="steps">
+      <li><div class="step-body">Localice el archivo en la lista de documentos.</div></li>
+      <li><div class="step-body">Haga clic en el botón de descarga (⬇) al lado derecho del archivo.</div></li>
+      <li><div class="step-body">El archivo se descargará automáticamente a su carpeta de Descargas.</div></li>
+    </ol>
+
+    <h3>Eliminar un Documento</h3>
+    <ol class="steps">
+      <li><div class="step-body">Localice el archivo en la lista de documentos.</div></li>
+      <li><div class="step-body">Haga clic en el ícono de papelera (🗑) al lado del archivo.</div></li>
+      <li><div class="step-body">Confirme la acción en el diálogo de confirmación.</div></li>
+      <li><div class="step-body">El archivo será eliminado permanentemente del servidor.</div></li>
+    </ol>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Eliminación permanente</div>
+        La eliminación de documentos es <strong>irreversible</strong>. Solo podrá eliminar documentos que pertenezcan a su obra. Si necesita eliminar un documento que no puede borrar, contacte a soporte.
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">📄</div>
+      <div>
+        <div class="callout-title">Convención de Nombres</div>
+        Recuerde nombrar sus archivos con el formato oficial antes de subirlos: <code>SNF_2025_[NOMBRE DE LA OBRA]</code>. Esto facilita la identificación y revisión por parte de Fundación Loyola.
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">📎</div>
+      <div class="ss-label">Módulo de Documentos</div>
+      <div class="ss-sub">Lista de archivos con columnas: Nombre / Tamaño / Fecha / Acciones (Descargar · Eliminar)</div>
+    </div>
+  </section>
+
+  <!-- ══ 11. CALENDARIO ════════════════════════════════════════════ -->
+  <section id="calendario">
+    <h2><span class="sec-num">11</span> Calendario Institucional</h2>
+
+    <div class="sec-cover">
+      <div class="sec-cover-num">📅</div>
+      <div>
+        <div class="sec-cover-title">Calendario SNF 2025</div>
+        <div class="sec-cover-sub">Fechas importantes del proceso integradas en el panel</div>
+      </div>
+    </div>
+
+    <p>El panel incluye un <strong>Google Calendar institucional</strong> embebido con las fechas importantes del proceso SNF 2025. Este calendario es de solo lectura y es mantenido por Fundación Loyola.</p>
+
+    <h3>Cómo Consultar el Calendario</h3>
+    <ol class="steps">
+      <li><div class="step-body">Diríjase a la sección de <strong>Calendario</strong> dentro del panel de la obra.</div></li>
+      <li><div class="step-body">El calendario de Google se cargará incrustado en la página.</div></li>
+      <li><div class="step-body">Puede navegar por las fechas haciendo clic en las flechas de mes/semana dentro del calendario.</div></li>
+      <li><div class="step-body">Haga clic sobre un evento para ver sus detalles (descripción, hora, lugar).</div></li>
+    </ol>
+
+    <h3>Fechas Clave del SNF 2025</h3>
+    <div class="card">
+      <div class="timeline" style="margin:0; padding-left: 28px;">
+        <div class="timeline-item">
+          <div class="timeline-date">Enero 2026</div>
+          <div class="timeline-label">Apertura del Sistema</div>
+          <div class="timeline-sub">Inicio del periodo de captura. Se envían accesos a los responsables de obra.</div>
+        </div>
+        <div class="timeline-item current">
+          <div class="timeline-date">Enero – Marzo 2026</div>
+          <div class="timeline-label">Llenado del Sondeo</div>
+          <div class="timeline-sub">Periodo oficial para capturar las 7 secciones del SNF. El sistema permanece abierto.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Marzo – Abril 2026</div>
+          <div class="timeline-label">Recepción y Revisión</div>
+          <div class="timeline-sub">Fundación Loyola recibe, consolida y revisa los sondeos de todas las obras.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Abril 2026 en adelante</div>
+          <div class="timeline-label">Seguimiento</div>
+          <div class="timeline-sub">Se contacta a las obras para aclaraciones o para comunicar resultados del proceso.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <div class="callout-title">Fechas Límite</div>
+        Asegúrese de completar y guardar las 7 secciones <strong>antes del cierre del periodo de llenado (Marzo 2026)</strong>. Una vez cerrado el sistema, no se podrán registrar cambios sin autorización del administrador.
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">📅</div>
+      <div class="ss-label">Google Calendar Embebido — Calendario Institucional SNF 2025</div>
+      <div class="ss-sub">Muestra eventos importantes del proceso: apertura, cierres, reuniones, entregas</div>
+    </div>
+  </section>
+
+  <!-- ══ 12. CONSEJOS Y PREGUNTAS FRECUENTES ═══════════════════════ -->
+  <section id="consejos">
+    <h2><span class="sec-num">12</span> Consejos y Preguntas Frecuentes</h2>
+
+    <h3>Mejores Prácticas</h3>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💾</div>
+      <div>
+        <div class="callout-title">Guarde frecuentemente</div>
+        Los datos se guardan <strong>por sección</strong>. Siempre haga clic en <strong>"💾 Guardar"</strong> antes de navegar a otra sección o cerrar el navegador. No hay guardado automático entre secciones.
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">🔄</div>
+      <div>
+        <div class="callout-title">Retome donde lo dejó</div>
+        Sus datos se cargan automáticamente al iniciar sesión. Puede completar el sondeo en varias sesiones sin perder lo que ya guardó. La barra de progreso le mostrará el estado de cada sección.
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-icon">📊</div>
+      <div>
+        <div class="callout-title">Barra de Progreso</div>
+        La barra de progreso en el panel refleja cuántas de las 7 secciones han sido guardadas al menos una vez. Una sección guardada no significa que esté completa — puede seguir editándola y re-guardándola cuantas veces necesite.
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⏱️</div>
+      <div>
+        <div class="callout-title">Sesión de 8 horas</div>
+        La sesión expira automáticamente después de <strong>8 horas</strong>. Si detecta que fue redirigido a la pantalla de inicio, vuelva a ingresar. Sus datos guardados estarán intactos; solo perderá cambios no guardados de la sesión activa.
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">🌐</div>
+      <div>
+        <div class="callout-title">Navegadores Recomendados</div>
+        Para una mejor experiencia use <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong> en su versión más reciente. Evite Internet Explorer. Si usa el acceso con Google, asegúrese de estar activo en la cuenta correcta.
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Preguntas Frecuentes</h3>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <h4 style="margin-top:0; color:var(--primary);">¿Puedo editar una sección que ya guardé?</h4>
+      <p style="margin:0;">Sí. Puede editar y guardar cualquier sección las veces que necesite mientras el sistema esté abierto (enero–marzo 2026). Cada vez que guarda, los datos más recientes reemplazan a los anteriores.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <h4 style="margin-top:0; color:var(--primary);">¿Qué pasa si dos personas de mi obra llenan al mismo tiempo?</h4>
+      <p style="margin:0;">Se recomienda que solo una persona llene el sistema a la vez. Si dos personas guardan la misma sección simultáneamente, los datos de la segunda persona sobrescriben a los de la primera. Coordinen el llenado entre el equipo de la obra.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <h4 style="margin-top:0; color:var(--primary);">¿Puedo descargar o imprimir mi sondeo?</h4>
+      <p style="margin:0;">Por el momento no existe una función de descarga en PDF desde el panel. Si requiere una copia de respaldo, puede usar la función de impresión del navegador (Ctrl+P) en cada sección. Los documentos que suba quedan disponibles para descarga individual.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <h4 style="margin-top:0; color:var(--primary);">No puedo iniciar sesión con Google, ¿qué hago?</h4>
+      <p style="margin:0;">Verifique que el correo Gmail con el que intenta acceder sea exactamente el registrado por el administrador. Si el correo es correcto y sigue sin acceso, contacte a <a href="mailto:soporteaobras@fundacionloyola.mx" style="color:var(--secondary);font-weight:700;">soporteaobras@fundacionloyola.mx</a>.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 14px;">
+      <h4 style="margin-top:0; color:var(--primary);">¿Por qué no se actualiza la barra de progreso?</h4>
+      <p style="margin:0;">La barra se actualiza únicamente después de <strong>guardar</strong> exitosamente una sección (haciendo clic en el botón "💾 Guardar"). Si no ve el cambio, intente recargar la página (F5) después de guardar.</p>
+    </div>
+
+    <div class="card">
+      <h4 style="margin-top:0; color:var(--primary);">¿Cuándo puedo esperar respuesta de Fundación Loyola?</h4>
+      <p style="margin:0;">El equipo de vinculación revisará los sondeos durante el periodo de recepción (marzo–abril 2026). Si tienen preguntas o comentarios sobre su sondeo, le contactarán al correo del responsable del llenado registrado en la Sección 2.6.</p>
+    </div>
+
+    <hr class="divider">
+
+    <h3>Resumen de Secciones del Sondeo</h3>
+
+    <table class="field-table">
+      <thead>
+        <tr>
+          <th>Sección</th>
+          <th>Nombre</th>
+          <th>Contenido Principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>§2</strong></td>
+          <td>Datos de la Obra</td>
+          <td>Datos generales, planeación, contactos y colaboradores</td>
+        </tr>
+        <tr>
+          <td><strong>§3</strong></td>
+          <td>Presupuesto</td>
+          <td>Gastos y fuentes de financiamiento para 2026</td>
+        </tr>
+        <tr>
+          <td><strong>§4</strong></td>
+          <td>Proyectos Vigentes</td>
+          <td>Proyectos activos: nombre, descripción, beneficiarios, presupuesto</td>
+        </tr>
+        <tr>
+          <td><strong>§5</strong></td>
+          <td>Proyectos a Financiar</td>
+          <td>Proyectos que requieren financiamiento: nombre, objetivo, monto, justificación</td>
+        </tr>
+        <tr>
+          <td><strong>§6</strong></td>
+          <td>Necesidades Materiales</td>
+          <td>Bienes y equipos necesarios: descripción, cantidad, costo, justificación</td>
+        </tr>
+        <tr>
+          <td><strong>§7</strong></td>
+          <td>Contexto Demográfico</td>
+          <td>Población, área geográfica, indicadores de vulnerabilidad</td>
+        </tr>
+        <tr>
+          <td><strong>§8</strong></td>
+          <td>Impacto Social</td>
+          <td>Beneficiarios alcanzados, programas, métricas de éxito</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <h3>Información de Contacto y Soporte</h3>
+    <div class="grid-2">
+      <div class="contact-card">
+        <div class="contact-avatar">👤</div>
+        <div class="contact-info">
+          <div class="contact-name">Sergio Anzures</div>
+          <div class="contact-role">Vinculación — Proceso SNF</div>
+          <a href="mailto:vinculacion@fundacionloyola.mx">vinculacion@fundacionloyola.mx</a>
+          <div style="font-size:12px; color:var(--text-light); margin-top:4px;">L–V 9:00–17:30 hrs</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-avatar">🛠</div>
+        <div class="contact-info">
+          <div class="contact-name">Soporte Técnico FL-SNF</div>
+          <div class="contact-role">Accesos, errores, documentos</div>
+          <a href="mailto:soporteaobras@fundacionloyola.mx">soporteaobras@fundacionloyola.mx</a>
+          <div style="font-size:12px; color:var(--text-light); margin-top:4px;">L–V 9:00–17:30 hrs</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════ FOOTER ═══ -->
+<footer style="
+  background: var(--primary);
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+  padding: 28px 24px;
+  font-size: 12.5px;
+  line-height: 1.7;
+">
+  <div style="font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 4px;">
+    Sistema FL-SNF 2025 &nbsp;·&nbsp; Fundación Loyola
+  </div>
+  <div>Manual de Usuario — Obra Jesuita &nbsp;|&nbsp; Versión 1.0 &nbsp;|&nbsp; Abril 2026</div>
+  <div style="margin-top:6px;">
+    Soporte: <a href="mailto:soporteaobras@fundacionloyola.mx" style="color:rgba(255,255,255,0.75); text-decoration:none; font-weight:700;">soporteaobras@fundacionloyola.mx</a>
+    &nbsp;·&nbsp;
+    Vinculación: <a href="mailto:vinculacion@fundacionloyola.mx" style="color:rgba(255,255,255,0.75); text-decoration:none; font-weight:700;">vinculacion@fundacionloyola.mx</a>
+  </div>
+</footer>
+
+<script>
+  // Highlight active nav link based on scroll position
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav.toc a');
+
+  function updateNav() {
+    let current = '';
+    sections.forEach(section => {
+      const top = section.getBoundingClientRect().top;
+      if (top <= 80) current = section.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // Smooth scroll for nav links
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) {
+          const offset = 60;
+          const top = target.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>

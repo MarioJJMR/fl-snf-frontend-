@@ -383,6 +383,51 @@
 </div>
 
 <!-- ══════════════════════════════════════════
+     MODAL: EDITAR USUARIO
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-editar-usuario">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-editar-usuario')">✕</button>
+        <h3>✏️ Editar Usuario</h3>
+        <p>Modifica los datos del usuario. Deja la contraseña en blanco para mantener la actual.</p>
+        <input type="hidden" id="edit-user-id">
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Nombre de usuario</label>
+            <input type="text" id="edit-user-nombre" disabled style="background:#f4f6f9;color:var(--text-light)">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Nombre completo</label>
+            <input type="text" id="edit-user-nombreCompleto" placeholder="Nombre completo" autocomplete="off">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Correo Gmail (para login con Google)</label>
+            <input type="email" id="edit-user-email" placeholder="correo@gmail.com" autocomplete="off">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Nueva contraseña (opcional)</label>
+            <input type="password" id="edit-user-pass" placeholder="Dejar en blanco para no cambiar" autocomplete="new-password">
+        </div>
+        <div class="form-group" style="margin-bottom:14px">
+            <label>Rol</label>
+            <select id="edit-user-rol" onchange="toggleEditObraSelect()">
+                <option value="usuario">Usuario de Obra</option>
+                <option value="admin">Administrador</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:14px" id="edit-user-obra-group">
+            <label>Obra asignada</label>
+            <select id="edit-user-obra">
+                <option value="">— Sin obra —</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-editar-usuario')">Cancelar</button>
+            <button class="btn-primary" onclick="guardarEdicionUsuario()">💾 Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
      MODAL: DETALLE OBRA
 ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-detalle-obra">
@@ -677,12 +722,72 @@ async function renderUsuarios() {
                         : `<span style="font-size:12px;color:var(--text-light)">Sin obra</span>`}
                 </td>
                 <td><span style="color:var(--green-dark);font-weight:700;font-size:12px">● Activo</span></td>
-                <td>
-                    <button class="btn-danger" style="font-size:11px;padding:5px 10px" onclick="eliminarUsuario('${u.id}')">🗑️ Eliminar</button>
+                <td style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="btn-secondary" style="font-size:11px;padding:5px 10px" onclick="abrirModalEditarUsuario('${u.id}')">✏️ Editar</button>
+                    <button class="btn-danger"    style="font-size:11px;padding:5px 10px" onclick="eliminarUsuario('${u.id}')">🗑️ Eliminar</button>
                 </td>
             </tr>`).join('');
     } catch(err) {
         tbody.innerHTML = `<tr><td colspan="6" style="color:red;padding:20px">Error: ${esc(err.message)}</td></tr>`;
+    }
+}
+
+async function abrirModalEditarUsuario(userId) {
+    const u = _usuarios.find(x => x.id === userId);
+    if (!u) return;
+
+    document.getElementById('edit-user-id').value            = u.id;
+    document.getElementById('edit-user-nombre').value        = u.usuario;
+    document.getElementById('edit-user-nombreCompleto').value = u.nombre || '';
+    document.getElementById('edit-user-email').value         = u.email || '';
+    document.getElementById('edit-user-pass').value          = '';
+    document.getElementById('edit-user-rol').value           = u.rol || 'usuario';
+
+    const obraSelect = document.getElementById('edit-user-obra');
+    obraSelect.innerHTML = '<option value="">— Sin obra —</option>';
+    if (_obras.length === 0) {
+        try { _obras = await API.obras.getAll(); } catch {}
+    }
+    _obras.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o.id;
+        opt.textContent = o.nombre_obra;
+        if (o.id === u.obra_id) opt.selected = true;
+        obraSelect.appendChild(opt);
+    });
+
+    toggleEditObraSelect();
+    abrirModal('modal-editar-usuario');
+}
+
+function toggleEditObraSelect() {
+    const rol = document.getElementById('edit-user-rol').value;
+    const group = document.getElementById('edit-user-obra-group');
+    if (group) group.style.display = rol === 'usuario' ? '' : 'none';
+}
+
+async function guardarEdicionUsuario() {
+    const id             = document.getElementById('edit-user-id').value;
+    const nombre         = document.getElementById('edit-user-nombreCompleto').value.trim();
+    const email          = document.getElementById('edit-user-email').value.trim() || null;
+    const contrasena     = document.getElementById('edit-user-pass').value.trim() || undefined;
+    const rol            = document.getElementById('edit-user-rol').value;
+    const obra_id        = document.getElementById('edit-user-obra').value || null;
+
+    if (!nombre) { showToast('⚠️ El nombre completo es requerido', '#c47a00'); return; }
+    if (contrasena && contrasena.length < 6) { showToast('⚠️ La contraseña debe tener al menos 6 caracteres', '#c47a00'); return; }
+
+    const payload = { nombre, email, rol, obra_id: rol === 'usuario' ? obra_id : null };
+    if (contrasena) payload.contrasena = contrasena;
+
+    try {
+        await API.usuarios.update(id, payload);
+        showToast('✅ Usuario actualizado correctamente');
+        cerrarModal('modal-editar-usuario');
+        await renderUsuarios();
+        actualizarEstadisticas();
+    } catch (err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
     }
 }
 

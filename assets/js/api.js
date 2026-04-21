@@ -119,6 +119,11 @@ const API = {
     delete(id)                { return API.delete(`/proyectos/${id}`); }
   },
 
+  // ── Correo ────────────────────────────────────────────────────────
+  correo: {
+    enviarSondeo(data) { return API.post('/correo/sondeo', data); }
+  },
+
   // ── Documentos ────────────────────────────────────────────────────
   documentos: {
     getAll(obraId) {

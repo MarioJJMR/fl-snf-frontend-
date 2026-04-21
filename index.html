@@ -10,8 +10,6 @@
     <!-- jsPDF para generación de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <!-- EmailJS para envío de correo sin backend -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <!-- Sistema de diseño unificado -->
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
@@ -1017,8 +1015,8 @@
         <h3>📧 Enviar Sondeo por Correo</h3>
         <p>El sondeo se enviará a la Fundación Loyola junto con un PDF adjunto. Completa los datos del remitente.</p>
 
-        <div class="warn-box" style="margin-bottom:16px">
-            ⚠️ <strong>Configuración requerida:</strong> Para activar el envío de correos, configura tu cuenta de <strong>EmailJS</strong> con el Service ID y Template ID correspondientes. <a href="https://www.emailjs.com" target="_blank" style="color:var(--green-dark)">emailjs.com</a>
+        <div class="info-box" style="margin-bottom:16px;font-size:13px">
+            📬 El sondeo se enviará desde el servidor a <strong>vinculacion@fundacionloyola.mx</strong> con copia a <strong>soporteaobras@fundacionloyola.mx</strong>.
         </div>
 
         <div class="form-group">
@@ -1054,9 +1052,6 @@
 <script src="assets/js/config.js"></script>
 <script src="assets/js/api.js"></script>
 <script>
-// =================== CONFIG EMAILJS ===================
-// Edita assets/js/config.js para configurar las credenciales de EmailJS.
-const EMAILJS_CONFIG = CONFIG.EMAILJS;
 
 // =================== STORAGE KEY ===================
 const LS_KEY = 'fl_snf_2025';
@@ -1536,7 +1531,7 @@ function generarPDF() {
 }
 
 // =================== EMAIL SEND ===================
-function enviarCorreo() {
+async function enviarCorreo() {
     const nombre  = document.getElementById('email-nombre')?.value?.trim();
     const from    = document.getElementById('email-from')?.value?.trim();
     const obra    = document.getElementById('email-obra')?.value?.trim();
@@ -1551,40 +1546,16 @@ function enviarCorreo() {
     btn.innerHTML = '<span class="spinner"></span> Enviando...';
     btn.disabled = true;
 
-    // Check EmailJS is configured
-    if (EMAILJS_CONFIG.publicKey === 'TU_PUBLIC_KEY') {
-        setTimeout(() => {
-            btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
-            cerrarModal('modal-correo');
-            showToast('⚠️ Configura EmailJS en el código para habilitar el envío real. Los datos están listos.', '#c47a00');
-        }, 1000);
-        return;
-    }
-
-    // Initialize EmailJS
-    emailjs.init(EMAILJS_CONFIG.publicKey);
-
-    // Build summary text for email body
-    const resumen = buildResumenTexto();
-
-    emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
-        from_name:    nombre,
-        from_email:   from,
-        obra_nombre:  obra,
-        mensaje:      mensaje || 'Sin mensaje adicional.',
-        resumen_snf:  resumen,
-        fecha:        new Date().toLocaleDateString('es-MX'),
-        to_email:     'vinculacion@fundacionloyola.mx',
-        cc_email:     'soporteaobras@fundacionloyola.mx'
-    }).then(() => {
+    try {
+        const resumen = buildResumenTexto();
+        await API.correo.enviarSondeo({ nombre, from, obra, mensaje, resumen });
         btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
         cerrarModal('modal-correo');
         showToast('📧 Sondeo enviado correctamente a Fundación Loyola');
-    }).catch(err => {
-        console.error('EmailJS error:', err);
+    } catch (err) {
         btn.innerHTML = '📧 Enviar Sondeo'; btn.disabled = false;
-        showToast('❌ Error al enviar. Verifica tu configuración de EmailJS.', '#c43a3a');
-    });
+        showToast('❌ ' + (err.message || 'Error al enviar el correo'), '#c43a3a');
+    }
 }
 
 function buildResumenTexto() {

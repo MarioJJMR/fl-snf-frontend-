@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitectura — FL-SNF · Fundación Loyola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:       #1c3050;
+      --green-mid:   #2a4a78;
+      --green-light: #eef3fb;
+      --green-brd:   #c4d4e8;
+      --gold:        #b8963a;
+      --bg:          #f4f6f9;
+      --white:       #ffffff;
+      --text:        #111827;
+      --text-mid:    #4a5568;
+      --text-light:  #8a96a8;
+      --code-bg:     #111827;
+      --radius:      10px;
+      --shadow:      0 2px 16px rgba(28,48,80,0.10);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--green), var(--green-mid));
+      color: #fff;
+      padding: 48px 40px 40px;
+    }
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    header h1 { font-size: 36px; font-weight: 900; margin-bottom: 6px; }
+    header p  { font-size: 16px; opacity: 0.85; font-weight: 300; }
+    header .meta {
+      display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap;
+    }
+    header .meta span {
+      font-size: 13px; opacity: 0.75;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── Nav ── */
+    nav.toc {
+      background: var(--white);
+      border-bottom: 1px solid var(--green-brd);
+      padding: 0 40px;
+      display: flex; gap: 0; overflow-x: auto;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    nav.toc a {
+      display: block; padding: 14px 18px;
+      color: var(--text-mid); text-decoration: none;
+      font-size: 13px; font-weight: 700;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    nav.toc a:hover { color: var(--green); border-bottom-color: var(--green); }
+
+    /* ── Layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+
+    section { margin-bottom: 60px; }
+    section h2 {
+      font-size: 22px; font-weight: 900; color: var(--green);
+      padding-bottom: 10px; margin-bottom: 24px;
+      border-bottom: 2px solid var(--green-brd);
+      display: flex; align-items: center; gap: 10px;
+    }
+    section h2 .icon { font-size: 20px; }
+    section h3 {
+      font-size: 15px; font-weight: 700; color: var(--text-mid);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 28px 0 12px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--green-brd);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    @media (max-width: 700px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      main { padding: 24px 16px; }
+      header { padding: 28px 16px; }
+      nav.toc { padding: 0 8px; }
+    }
+
+    /* ── Stack pill cards ── */
+    .pill-card {
+      background: var(--white);
+      border: 1px solid var(--green-brd);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .pill-card .label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; color: var(--text-light); margin-bottom: 8px;
+    }
+    .pill-card .value {
+      font-size: 16px; font-weight: 700; color: var(--text);
+    }
+    .pill-card .sub {
+      font-size: 12px; color: var(--text-light); margin-top: 4px;
+    }
+    .pill-card .dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; margin-right: 6px; vertical-align: middle;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    th {
+      background: var(--green-light);
+      color: var(--green);
+      font-weight: 700; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      padding: 10px 14px; text-align: left;
+      border-bottom: 2px solid var(--green-brd);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e8edf4;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7f9fc; }
+    .pk   { color: var(--gold); font-weight: 700; }
+    .fk   { color: #2a4a78; font-weight: 700; }
+    .type { color: var(--text-light); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+    /* ── Code / mono ── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      background: #eef3fb;
+      color: var(--green);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    pre {
+      background: var(--code-bg);
+      color: #a8c8e8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+    pre .c  { color: #4a6a8a; }
+    pre .k  { color: #7eb8d8; font-weight: 700; }
+    pre .s  { color: #f0c060; }
+    pre .n  { color: #e0eeff; }
+    pre .p  { color: #a0b8c8; }
+
+    /* ── Badges ── */
+    .badge-green  { background: #dde8f8; color: #1c3050; }
+    .badge-blue   { background: #dce8fb; color: #1c3a70; }
+    .badge-gold   { background: #fdf0d0; color: #7a5a10; }
+    .badge-gray   { background: #edf0f5; color: #4a5568; }
+    .badge-red    { background: #fde8e8; color: #8a2020; }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px; border-radius: 12px;
+      font-size: 11px; font-weight: 700;
+    }
+
+    /* ── Method badges ── */
+    .get    { background: #dde8f8; color: #1c3050; }
+    .post   { background: #d8f0e8; color: #1a5a38; }
+    .put    { background: #fdf0d0; color: #7a5a10; }
+    .delete { background: #fde8e8; color: #8a2020; }
+    .method {
+      display: inline-block;
+      padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 52px; text-align: center;
+    }
+
+    /* ── Architecture diagram ── */
+    .arch-diagram {
+      background: var(--code-bg);
+      border-radius: var(--radius);
+      padding: 32px;
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .arch-layer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .arch-box {
+      border-radius: 10px;
+      padding: 16px 22px;
+      text-align: center;
+      min-width: 150px;
+    }
+    .arch-box .title { font-weight: 900; font-size: 13px; margin-bottom: 4px; }
+    .arch-box .desc  { font-size: 11px; opacity: 0.75; }
+    .arch-box.frontend { background: #1c3a70; color: #fff; }
+    .arch-box.backend  { background: #1c3050; color: #fff; }
+    .arch-box.db       { background: #8a6a20; color: #fff; }
+    .arch-box.google   { background: #6a2020; color: #fff; }
+    .arch-box.railway  { background: #1a2035; color: #fff; border: 1px solid #3a4a70; }
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      color: #6a8ab0;
+      font-size: 20px;
+      padding: 0 12px;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .arch-arrow span { font-size: 10px; color: #6a8ab0; white-space: nowrap; }
+    .arch-sub {
+      color: #6a8ab0;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* ── ER Diagram (SVG) ── */
+    .er-wrapper {
+      background: var(--white);
+      border: 1px solid var(--green-brd);
+      border-radius: var(--radius);
+      padding: 24px;
+      overflow-x: auto;
+    }
+    .er-wrapper svg { min-width: 900px; }
+
+    /* ── Flow auth ── */
+    .flow {
+      display: flex; gap: 0; align-items: center; flex-wrap: wrap;
+      background: var(--code-bg); border-radius: var(--radius); padding: 20px 24px;
+    }
+    .flow-step {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #a8c8e8;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      min-width: 120px;
+    }
+    .flow-arrow { color: #6a8ab0; padding: 0 8px; font-size: 18px; }
+
+    /* ── Hosting cards ── */
+    .host-card {
+      background: var(--white);
+      border: 1px solid var(--green-brd);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+    }
+    .host-card .service {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; color: var(--text-light); margin-bottom: 6px;
+    }
+    .host-card .url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; color: var(--green); font-weight: 700;
+      word-break: break-all;
+    }
+    .host-card .env-list { margin-top: 12px; }
+    .host-card .env-item {
+      display: flex; gap: 8px; align-items: baseline;
+      font-size: 12.5px; padding: 4px 0;
+      border-bottom: 1px dashed #dde4ee;
+    }
+    .host-card .env-item:last-child { border-bottom: none; }
+    .host-card .env-key {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--gold); font-size: 12px; min-width: 180px;
+    }
+    .host-card .env-val { color: var(--text-light); font-size: 12px; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-light);
+      font-size: 13px;
+      border-top: 1px solid var(--green-brd);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="badge">Documentación Técnica</div>
+  <h1>FL-SNF · Fundación Loyola</h1>
+  <p>Arquitectura, Stack Tecnológico y Diagrama Entidad-Relación</p>
+  <div class="meta">
+    <span>📅 Versión 1.0 · Abril 2026</span>
+    <span>🌿 Sistema de Necesidades y Financiamiento 2025</span>
+    <span>☁️ Hosteado en Railway</span>
+    <span>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="white" style="vertical-align:middle;opacity:0.8"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      &nbsp;<a href="https://github.com/MarioJJMR/fl-snf-backend-.git" target="_blank" style="color:rgba(255,255,255,0.85);text-decoration:underline;">Repo Backend</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/MarioJJMR/fl-snf-frontend-.git" target="_blank" style="color:rgba(255,255,255,0.85);text-decoration:underline;">Repo Frontend</a>
+    </span>
+  </div>
+</header>
+
+<!-- ══ NAV ═════════════════════════════════════════════════════════════════ -->
+<nav class="toc">
+  <a href="#resumen">Resumen</a>
+  <a href="#arquitectura">Arquitectura</a>
+  <a href="#stack">Stack</a>
+  <a href="#auth">Autenticación</a>
+  <a href="#api">API REST</a>
+  <a href="#er">Entidad-Relación</a>
+  <a href="#schema">Schema DB</a>
+  <a href="#hosting">Hosting</a>
+</nav>
+
+<main>
+
+  <!-- ══ RESUMEN ═══════════════════════════════════════════════════════════ -->
+  <section id="resumen">
+    <h2><span class="icon">📋</span> Resumen del Sistema</h2>
+    <p style="font-size:15px; color:var(--text-mid); margin-bottom:24px; max-width:780px;">
+      Plataforma web interna para que las obras jesuitas de Fundación Loyola completen el
+      <strong>Sondeo de Necesidades y Financiamiento (SNF) 2025</strong>. El sistema centraliza
+      el llenado de formularios, gestión documental, y permite al equipo administrador
+      monitorear el avance y generar reportes.
+    </p>
+    <div class="grid-3">
+      <div class="pill-card">
+        <div class="label">Tipo de Sistema</div>
+        <div class="value">Web App Interna</div>
+        <div class="sub">SPA Vanilla JS + REST API</div>
+      </div>
+      <div class="pill-card">
+        <div class="label">Roles</div>
+        <div class="value">Admin · Usuario de Obra</div>
+        <div class="sub">Paneles separados por rol</div>
+      </div>
+      <div class="pill-card">
+        <div class="label">Autenticación</div>
+        <div class="value">JWT + Google OAuth</div>
+        <div class="sub">Login con usuario/contraseña o Gmail</div>
+      </div>
+      <div class="pill-card">
+        <div class="label">Base de Datos</div>
+        <div class="value">MySQL · 6 tablas</div>
+        <div class="sub">Railway · datos JSON para formularios flexibles</div>
+      </div>
+      <div class="pill-card">
+        <div class="label">Funcionalidades Clave</div>
+        <div class="value">CRUD · PDF · Docs · Proyectos</div>
+        <div class="sub">Formularios dinámicos, exportación JSON, calendario</div>
+      </div>
+      <div class="pill-card">
+        <div class="label">Infraestructura</div>
+        <div class="value">Railway (3 servicios)</div>
+        <div class="sub">Frontend · Backend · MySQL en la nube</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ARQUITECTURA ══════════════════════════════════════════════════════ -->
+  <section id="arquitectura">
+    <h2><span class="icon">🏗️</span> Arquitectura General</h2>
+
+    <div class="arch-diagram">
+      <!-- Usuario -->
+      <div class="arch-layer">
+        <div class="arch-box" style="background:#2d3a5a;color:#fff;border:1px solid #4466aa">
+          <div class="title">🌐 Navegador</div>
+          <div class="desc">Chrome / Firefox<br>Windows / móvil</div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">
+        <div>⇄</div>
+        <span>HTTPS</span>
+      </div>
+
+      <!-- Frontend -->
+      <div class="arch-layer">
+        <div class="arch-box frontend">
+          <div class="title">Frontend</div>
+          <div class="desc">Vanilla HTML/CSS/JS<br>Railway Static</div>
+        </div>
+        <div class="arch-sub">fl-snf-frontend-production<br>.up.railway.app</div>
+      </div>
+
+      <div class="arch-arrow">
+        <div>⇄</div>
+        <span>REST/JSON</span>
+        <span>Bearer JWT</span>
+      </div>
+
+      <!-- Backend -->
+      <div class="arch-layer">
+        <div class="arch-box backend">
+          <div class="title">Backend</div>
+          <div class="desc">Node.js + Express<br>Railway Service</div>
+        </div>
+        <div class="arch-sub">fl-snf-backend-production<br>.up.railway.app</div>
+      </div>
+
+      <div class="arch-arrow">
+        <div>⇄</div>
+        <span>mysql2</span>
+        <span>pool</span>
+      </div>
+
+      <!-- DB -->
+      <div class="arch-layer">
+        <div class="arch-box db">
+          <div class="title">MySQL</div>
+          <div class="desc">Railway DB Plugin<br>6 tablas</div>
+        </div>
+        <div class="arch-sub">interchange.proxy<br>.rlwy.net:18335</div>
+      </div>
+    </div>
+
+    <!-- Google externo -->
+    <div style="display:flex; align-items:center; gap:12px; margin-top:16px; flex-wrap:wrap;">
+      <div style="background:var(--code-bg); color:#a8c8e8; border-radius:8px; padding:10px 16px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+        Frontend ──── Google Identity Services (CDN) ──→ <span style="color:#f0c060;">popup OAuth</span> ──→ id_token<br>
+        id_token ──→ Backend POST /api/auth/google ──→ <span style="color:#7ec8a0;">google-auth-library</span> verifica contra GCP_CLIENT_ID
+      </div>
+    </div>
+
+    <h3>Separación de responsabilidades</h3>
+    <div class="card">
+      <table>
+        <thead><tr><th>Capa</th><th>Responsabilidad</th><th>Tecnología</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-blue">Frontend</span></td>
+            <td>Renderizado de UI, navegación SPA, manejo de sesión en <code>sessionStorage</code>, llamadas a la API con JWT automático, generación de PDFs en cliente</td>
+            <td>Vanilla JS · jsPDF · Google Identity Services</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-green">Backend</span></td>
+            <td>Validación, autenticación JWT, lógica de negocio, acceso a BD, subida de archivos con multer, CORS dinámico</td>
+            <td>Node.js · Express · jsonwebtoken · bcryptjs</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-gold">Base de datos</span></td>
+            <td>Persistencia de usuarios, obras, formularios (JSON), proyectos, documentos y blacklist de tokens revocados</td>
+            <td>MySQL 8 · Railway Plugin</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ STACK ═════════════════════════════════════════════════════════════ -->
+  <section id="stack">
+    <h2><span class="icon">⚙️</span> Stack Tecnológico</h2>
+
+    <h3>Frontend</h3>
+    <div class="card" style="margin-bottom:16px;">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Tecnología / Detalle</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Base</strong></td><td>HTML5 + CSS3 + JavaScript ES2020 — sin framework ni bundler</td></tr>
+          <tr><td><strong>Páginas</strong></td><td><code>Inicio.html</code> (login) · <code>index.html</code> (panel usuario) · <code>admin_dashboard.html</code> (panel admin)</td></tr>
+          <tr><td><strong>Routing</strong></td><td>Manual — <code>goTo(sectionId)</code> toggle de clase <code>.active</code> en secciones <code>.section-page</code></td></tr>
+          <tr><td><strong>HTTP Client</strong></td><td><code>api.js</code> — objeto global <code>API</code>, adjunta Bearer JWT automáticamente, timeout 10s con <code>AbortController</code>, redirige a login en 401</td></tr>
+          <tr><td><strong>Sesión</strong></td><td><code>sessionStorage</code> clave <code>usuarioActual</code> — guarda <code>token</code>, <code>id</code>, <code>rol</code>, <code>nombre</code>, <code>obraId</code></td></tr>
+          <tr><td><strong>Configuración</strong></td><td><code>config.js</code> — <code>API_BASE</code>, <code>GOOGLE_CLIENT_ID</code>, <code>EMAILJS</code>, <code>REQUEST_TIMEOUT_MS</code></td></tr>
+          <tr><td><strong>Tipografía</strong></td><td>Lato 300/400/700/900 — Google Fonts</td></tr>
+          <tr><td><strong>PDFs</strong></td><td>jsPDF v2.5.1 + jspdf-autotable v3.8.2 (generación en cliente)</td></tr>
+          <tr><td><strong>Email</strong></td><td>EmailJS v4 (envío de correos sin backend)</td></tr>
+          <tr><td><strong>OAuth</strong></td><td>Google Identity Services — flujo <em>popup</em>, entrega <code>id_token</code> al callback <code>handleGoogleCredential</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Backend</h3>
+    <div class="card" style="margin-bottom:16px;">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Tecnología / Detalle</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Runtime</strong></td><td>Node.js + Express.js v4.18.2</td></tr>
+          <tr><td><strong>Puerto</strong></td><td><code>process.env.PORT</code> (Railway) o <code>3001</code> local</td></tr>
+          <tr><td><strong>CORS</strong></td><td>Whitelist dinámica: <code>FRONTEND_URL</code> + regex <code>*.up.railway.app</code> + <code>*.netlify.app</code> + localhost</td></tr>
+          <tr><td><strong>JWT</strong></td><td><code>jsonwebtoken</code> — payload: <code>id, usuario, rol, obra_id, jti</code> · expiración por <code>JWT_EXPIRES_IN</code></td></tr>
+          <tr><td><strong>Google OAuth</strong></td><td><code>google-auth-library</code> — verifica <code>id_token</code> contra <code>GCP_CLIENT_ID</code> · busca usuario por email en BD</td></tr>
+          <tr><td><strong>Contraseñas</strong></td><td><code>bcryptjs</code> · 10 salt rounds</td></tr>
+          <tr><td><strong>Logout real</strong></td><td>Cada JWT tiene <code>jti</code> único (uuid v4) · al logout se inserta en <code>sesiones_revocadas</code> · cada request valida que el <code>jti</code> no esté revocado</td></tr>
+          <tr><td><strong>Base de datos</strong></td><td><code>mysql2/promise</code> · pool de 10 conexiones · prepared statements · sin ORM</td></tr>
+          <tr><td><strong>Archivos</strong></td><td><code>multer</code> — subida multipart en <code>/api/documentos/:obraId</code></td></tr>
+          <tr><td><strong>Health check</strong></td><td><code>GET /api/health</code> — reporta uptime, ambiente y estado de la BD</td></tr>
+          <tr><td><strong>Estructura</strong></td><td><code>/routes</code> · <code>/controllers</code> · <code>/middleware</code> · <code>/helpers</code> · <code>/db</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Dependencias principales (package.json)</h3>
+    <div class="card">
+      <table>
+        <thead><tr><th>Paquete</th><th>Versión</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td><code>express</code></td><td>4.18.2</td><td>Framework HTTP</td></tr>
+          <tr><td><code>jsonwebtoken</code></td><td>9.0.0</td><td>Firma y verificación JWT</td></tr>
+          <tr><td><code>bcryptjs</code></td><td>2.4.3</td><td>Hash de contraseñas</td></tr>
+          <tr><td><code>google-auth-library</code></td><td>10.6.2</td><td>Verificación de tokens Google</td></tr>
+          <tr><td><code>mysql2</code></td><td>3.20.0</td><td>Driver MySQL con Promises</td></tr>
+          <tr><td><code>multer</code></td><td>—</td><td>Upload de archivos multipart</td></tr>
+          <tr><td><code>uuid</code></td><td>—</td><td>Generación de IDs únicos (jti)</td></tr>
+          <tr><td><code>cors</code></td><td>—</td><td>Middleware CORS dinámico</td></tr>
+          <tr><td><code>dotenv</code></td><td>—</td><td>Variables de entorno</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ AUTH ══════════════════════════════════════════════════════════════ -->
+  <section id="auth">
+    <h2><span class="icon">🔐</span> Flujos de Autenticación</h2>
+
+    <h3>Login con usuario / contraseña</h3>
+    <div class="flow" style="margin-bottom:16px;">
+      <div class="flow-step">Usuario ingresa<br>usuario + pass</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">POST /api/auth/login</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">bcrypt.compare<br>contra BD</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">jwt.sign<br>+ jti (uuid)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">sessionStorage<br>.usuarioActual</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Redirect<br>panel rol</div>
+    </div>
+
+    <h3>Login con Google (OAuth 2.0 — flujo popup)</h3>
+    <div class="flow" style="margin-bottom:16px;">
+      <div class="flow-step">Clic en<br>"Continuar con Google"</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Google Identity<br>Services popup</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Google devuelve<br>id_token</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">POST /api/auth/google<br>{ id_token }</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">verifyGoogleToken<br>valida con GCP</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Busca email<br>en usuarios BD</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">jwt.sign<br>+ jti</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">sessionStorage<br>→ panel</div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--gold);">
+      <strong style="color:var(--gold);">⚠ Lista blanca</strong> — El login con Google solo funciona si el email ya existe en la tabla <code>usuarios</code> con <code>activo = 1</code>.
+      El admin debe registrar al usuario y asignar su correo Gmail desde el panel antes de que pueda autenticarse con Google.
+    </div>
+
+    <h3>Logout y revocación de tokens</h3>
+    <div class="flow">
+      <div class="flow-step">POST /api/logout<br>(Bearer JWT)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Extrae jti + exp<br>del payload</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">INSERT INTO<br>sesiones_revocadas</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Próximas requests<br>con ese jti → 401</div>
+    </div>
+  </section>
+
+  <!-- ══ API ════════════════════════════════════════════════════════════════ -->
+  <section id="api">
+    <h2><span class="icon">🔌</span> API REST</h2>
+    <p style="font-size:13.5px; color:var(--text-mid); margin-bottom:20px;">
+      Base URL producción: <code>https://fl-snf-backend-production.up.railway.app/api</code>
+      &nbsp;·&nbsp; Todos los endpoints protegidos requieren header <code>Authorization: Bearer &lt;token&gt;</code>
+    </p>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Método</th><th>Endpoint</th><th>Auth</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">AUTH</td></tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><code>/auth/login</code></td>
+            <td><span class="badge badge-gray">Público</span></td>
+            <td>Login con usuario y contraseña → JWT</td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><code>/auth/google</code></td>
+            <td><span class="badge badge-gray">Público</span></td>
+            <td>Login con Google <code>id_token</code> → JWT (email debe existir en BD)</td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><code>/auth/logout</code></td>
+            <td><span class="badge badge-green">JWT</span></td>
+            <td>Revoca el token (jti → blacklist)</td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><code>/auth/me</code></td>
+            <td><span class="badge badge-green">JWT</span></td>
+            <td>Devuelve los datos del usuario autenticado</td>
+          </tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">OBRAS</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/obras</code></td><td><span class="badge badge-green">JWT</span></td><td>Listar todas las obras activas</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/obras/:id</code></td><td><span class="badge badge-green">JWT</span></td><td>Detalle de una obra</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/obras</code></td><td><span class="badge badge-gold">Admin</span></td><td>Crear nueva obra</td></tr>
+          <tr><td><span class="method put">PUT</span></td><td><code>/obras/:id</code></td><td><span class="badge badge-gold">Admin</span></td><td>Actualizar obra</td></tr>
+          <tr><td><span class="method delete">DEL</span></td><td><code>/obras/:id</code></td><td><span class="badge badge-gold">Admin</span></td><td>Eliminar obra (soft delete)</td></tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">USUARIOS</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/usuarios</code></td><td><span class="badge badge-gold">Admin</span></td><td>Listar usuarios activos (incluye email)</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/usuarios</code></td><td><span class="badge badge-gold">Admin</span></td><td>Crear usuario (acepta <code>email</code> para Google OAuth)</td></tr>
+          <tr><td><span class="method put">PUT</span></td><td><code>/usuarios/:id</code></td><td><span class="badge badge-gold">Admin</span></td><td>Actualizar usuario (nombre, rol, email, obra_id)</td></tr>
+          <tr><td><span class="method delete">DEL</span></td><td><code>/usuarios/:id</code></td><td><span class="badge badge-gold">Admin</span></td><td>Desactivar usuario (soft delete)</td></tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">FORMULARIOS</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/formularios/:obraId</code></td><td><span class="badge badge-green">JWT</span></td><td>Todos los formularios de una obra</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/formularios/:obraId/:formKey</code></td><td><span class="badge badge-green">JWT</span></td><td>Formulario específico por clave</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/formularios/:obraId/:formKey</code></td><td><span class="badge badge-green">JWT</span></td><td>Guardar / actualizar formulario (upsert)</td></tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">PROYECTOS</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/proyectos/:obraId</code></td><td><span class="badge badge-green">JWT</span></td><td>Todos los proyectos de una obra</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/proyectos/:obraId/:tipo</code></td><td><span class="badge badge-green">JWT</span></td><td>Proyectos por tipo (<code>vigente</code> | <code>financiar</code>)</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/proyectos/:obraId/:tipo</code></td><td><span class="badge badge-green">JWT</span></td><td>Crear proyecto</td></tr>
+          <tr><td><span class="method put">PUT</span></td><td><code>/proyectos/:id</code></td><td><span class="badge badge-green">JWT</span></td><td>Actualizar proyecto (JSON_MERGE_PATCH)</td></tr>
+          <tr><td><span class="method delete">DEL</span></td><td><code>/proyectos/:id</code></td><td><span class="badge badge-green">JWT</span></td><td>Eliminar proyecto</td></tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">DOCUMENTOS</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/documentos/:obraId</code></td><td><span class="badge badge-green">JWT</span></td><td>Listar documentos de una obra</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/documentos/:obraId</code></td><td><span class="badge badge-green">JWT</span></td><td>Subir archivos (multipart/form-data, campo <code>archivos</code>)</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/documentos/:obraId/descargar/:id</code></td><td><span class="badge badge-green">JWT</span></td><td>Descargar archivo (solo documentos de la propia obra)</td></tr>
+          <tr><td><span class="method delete">DEL</span></td><td><code>/documentos/:id</code></td><td><span class="badge badge-green">JWT</span></td><td>Eliminar documento y archivo de disco</td></tr>
+
+          <tr><td colspan="4" style="background:var(--green-light);font-weight:700;color:var(--green);font-size:12px;letter-spacing:0.5px;">SISTEMA</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/health</code></td><td><span class="badge badge-gray">Público</span></td><td>Estado del servidor: uptime, ambiente y conexión a BD</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ ER DIAGRAM ════════════════════════════════════════════════════════ -->
+  <section id="er">
+    <h2><span class="icon">🗄️</span> Diagrama Entidad-Relación</h2>
+    <div class="er-wrapper">
+      <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#6a8ab0"/>
+          </marker>
+          <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a4a78"/>
+          </marker>
+        </defs>
+
+        <!-- ── USUARIOS (center-left) ── -->
+        <g transform="translate(30, 180)">
+          <rect width="200" height="260" rx="8" fill="#fff" stroke="#1c3050" stroke-width="2"/>
+          <rect width="200" height="32" rx="8" fill="#1c3050"/>
+          <rect width="200" height="8" y="24" fill="#1c3050"/>
+          <text x="100" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="13" font-weight="700">usuarios</text>
+          <!-- fields -->
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  id</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(36)</text>
+          <line x1="8" y1="60" x2="192" y2="60" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">usuario</text>
+          <text x="90" y="74"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(50) UNIQUE</text>
+          <line x1="8" y1="80" x2="192" y2="80" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="94"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">contrasena</text>
+          <text x="90" y="94"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(100) bcrypt</text>
+          <line x1="8" y1="100" x2="192" y2="100" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="114" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">rol</text>
+          <text x="90" y="114" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">ENUM(admin,usuario)</text>
+          <line x1="8" y1="120" x2="192" y2="120" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="134" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">nombre</text>
+          <text x="90" y="134" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(100)</text>
+          <line x1="8" y1="140" x2="192" y2="140" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="154" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">email</text>
+          <text x="90" y="154" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(150) UNIQUE</text>
+          <line x1="8" y1="160" x2="192" y2="160" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="174" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  obra_id</text>
+          <text x="90" y="174" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ obras.id</text>
+          <line x1="8" y1="180" x2="192" y2="180" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="194" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">activo</text>
+          <text x="90" y="194" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">TINYINT(1)</text>
+          <line x1="8" y1="200" x2="192" y2="200" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="214" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">fecha_registro</text>
+          <text x="110" y="214" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DATETIME</text>
+          <line x1="8" y1="220" x2="192" y2="220" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="246" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">Soft delete via activo=0</text>
+          <text x="12" y="259" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">Pass → bcrypt 10 rounds</text>
+        </g>
+
+        <!-- ── OBRAS (center) ── -->
+        <g transform="translate(310, 60)">
+          <rect width="210" height="320" rx="8" fill="#fff" stroke="#1c3050" stroke-width="2"/>
+          <rect width="210" height="32" rx="8" fill="#1c3050"/>
+          <rect width="210" height="8" y="24" fill="#1c3050"/>
+          <text x="105" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="13" font-weight="700">obras</text>
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  id</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(36)</text>
+          <line x1="8" y1="60" x2="202" y2="60" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">nombre_obra</text>
+          <text x="110" y="74" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(150)</text>
+          <line x1="8" y1="80" x2="202" y2="80" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="94"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">rfc</text>
+          <text x="90" y="94"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(20)</text>
+          <line x1="8" y1="100" x2="202" y2="100" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="114" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">estado</text>
+          <text x="90" y="114" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(50)</text>
+          <line x1="8" y1="120" x2="202" y2="120" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="134" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">direccion</text>
+          <text x="90" y="134" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(255)</text>
+          <line x1="8" y1="140" x2="202" y2="140" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="154" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">telefono</text>
+          <text x="90" y="154" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(20)</text>
+          <line x1="8" y1="160" x2="202" y2="160" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="174" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">correo</text>
+          <text x="90" y="174" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(100)</text>
+          <line x1="8" y1="180" x2="202" y2="180" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="194" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">personalidad_juridica</text>
+          <text x="166" y="194" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VC(100)</text>
+          <line x1="8" y1="200" x2="202" y2="200" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="214" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">donataria</text>
+          <text x="90" y="214" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(10)</text>
+          <line x1="8" y1="220" x2="202" y2="220" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="234" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">activo</text>
+          <text x="90" y="234" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">TINYINT(1)</text>
+          <line x1="8" y1="240" x2="202" y2="240" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="254" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  creado_por</text>
+          <text x="110" y="254" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ usuarios.id</text>
+          <line x1="8" y1="260" x2="202" y2="260" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="274" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">fecha_registro</text>
+          <text x="110" y="274" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DATETIME</text>
+          <line x1="8" y1="280" x2="202" y2="280" stroke="#dde4ee" stroke-width="1"/>
+          <text x="12" y="307" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">ON DELETE SET NULL (creado_por)</text>
+        </g>
+
+        <!-- ── FORMULARIOS (right-top) ── -->
+        <g transform="translate(610, 40)">
+          <rect width="210" height="200" rx="8" fill="#fff" stroke="#1c3a70" stroke-width="2"/>
+          <rect width="210" height="32" rx="8" fill="#1c3a70"/>
+          <rect width="210" height="8" y="24" fill="#1c3a70"/>
+          <text x="105" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="13" font-weight="700">formularios</text>
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  id</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">INT AUTO_INCREMENT</text>
+          <line x1="8" y1="60" x2="202" y2="60" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  obra_id</text>
+          <text x="90" y="74"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ obras.id</text>
+          <line x1="8" y1="80" x2="202" y2="80" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="94"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">form_key</text>
+          <text x="90" y="94"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(50)</text>
+          <line x1="8" y1="100" x2="202" y2="100" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="114" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">datos</text>
+          <text x="90" y="114" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">JSON (flexible)</text>
+          <line x1="8" y1="120" x2="202" y2="120" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="134" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  actualizado_por</text>
+          <text x="148" y="134" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">usr.id</text>
+          <line x1="8" y1="140" x2="202" y2="140" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="154" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">fecha_actualizacion</text>
+          <text x="152" y="154" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DT</text>
+          <line x1="8" y1="160" x2="202" y2="160" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="186" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">UNIQUE(obra_id, form_key)</text>
+        </g>
+
+        <!-- ── PROYECTOS (right-mid) ── -->
+        <g transform="translate(610, 270)">
+          <rect width="210" height="210" rx="8" fill="#fff" stroke="#1c3a70" stroke-width="2"/>
+          <rect width="210" height="32" rx="8" fill="#1c3a70"/>
+          <rect width="210" height="8" y="24" fill="#1c3a70"/>
+          <text x="105" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="13" font-weight="700">proyectos</text>
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  id</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">INT AUTO_INCREMENT</text>
+          <line x1="8" y1="60" x2="202" y2="60" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  obra_id</text>
+          <text x="90" y="74"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ obras.id</text>
+          <line x1="8" y1="80" x2="202" y2="80" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="94"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">tipo</text>
+          <text x="90" y="94"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">ENUM(vigente,financiar)</text>
+          <line x1="8" y1="100" x2="202" y2="100" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="114" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">datos</text>
+          <text x="90" y="114" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">JSON (flexible)</text>
+          <line x1="8" y1="120" x2="202" y2="120" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="134" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  creado_por</text>
+          <text x="110" y="134" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ usuarios.id</text>
+          <line x1="8" y1="140" x2="202" y2="140" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="154" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  actualizado_por</text>
+          <text x="148" y="154" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">usr.id</text>
+          <line x1="8" y1="160" x2="202" y2="160" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="174" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">fecha_registro</text>
+          <text x="120" y="174" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DATETIME</text>
+          <line x1="8" y1="180" x2="202" y2="180" stroke="#e8eef8" stroke-width="1"/>
+          <text x="12" y="200" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">JSON_MERGE_PATCH en update</text>
+        </g>
+
+        <!-- ── DOCUMENTOS (bottom-right) ── -->
+        <g transform="translate(310, 440)">
+          <rect width="210" height="200" rx="8" fill="#fff" stroke="#8a6a20" stroke-width="2"/>
+          <rect width="210" height="32" rx="8" fill="#8a6a20"/>
+          <rect width="210" height="8" y="24" fill="#8a6a20"/>
+          <text x="105" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="13" font-weight="700">documentos</text>
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  id</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">INT AUTO_INCREMENT</text>
+          <line x1="8" y1="60" x2="202" y2="60" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  obra_id</text>
+          <text x="90" y="74"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ obras.id</text>
+          <line x1="8" y1="80" x2="202" y2="80" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="94"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">nombre_original</text>
+          <text x="130" y="94" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR</text>
+          <line x1="8" y1="100" x2="202" y2="100" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="114" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">nombre_archivo</text>
+          <text x="130" y="114" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR (disco)</text>
+          <line x1="8" y1="120" x2="202" y2="120" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="134" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">mime_type · tamano</text>
+          <text x="155" y="134" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">INT</text>
+          <line x1="8" y1="140" x2="202" y2="140" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="154" font-family="Lato,sans-serif" font-size="11" fill="#2a4a78" font-weight="700">FK  subido_por</text>
+          <text x="110" y="154" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">→ usuarios.id</text>
+          <line x1="8" y1="160" x2="202" y2="160" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="174" font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">fecha_subida</text>
+          <text x="110" y="174" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DATETIME</text>
+          <line x1="8" y1="180" x2="202" y2="180" stroke="#f0e8d8" stroke-width="1"/>
+          <text x="12" y="196" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">Archivos físicos via multer</text>
+        </g>
+
+        <!-- ── SESIONES_REVOCADAS (bottom-left) ── -->
+        <g transform="translate(30, 500)">
+          <rect width="200" height="110" rx="8" fill="#fff" stroke="#8a2020" stroke-width="2"/>
+          <rect width="200" height="32" rx="8" fill="#8a2020"/>
+          <rect width="200" height="8" y="24" fill="#8a2020"/>
+          <text x="100" y="21" text-anchor="middle" fill="white" font-family="Lato,sans-serif" font-size="12" font-weight="700">sesiones_revocadas</text>
+          <text x="12" y="54"  font-family="Lato,sans-serif" font-size="11" fill="#c9a84c" font-weight="700">PK  jti</text>
+          <text x="90" y="54"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">VARCHAR(36) uuid</text>
+          <line x1="8" y1="60" x2="192" y2="60" stroke="#fde8e8" stroke-width="1"/>
+          <text x="12" y="74"  font-family="Lato,sans-serif" font-size="11" fill="#1a2b22">expira_en</text>
+          <text x="90" y="74"  font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">DATETIME + INDEX</text>
+          <line x1="8" y1="80" x2="192" y2="80" stroke="#fde8e8" stroke-width="1"/>
+          <text x="12" y="100" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0" font-style="italic">JWT blacklist · sin FK</text>
+        </g>
+
+        <!-- ══ RELACIONES ══ -->
+
+        <!-- usuarios.obra_id → obras.id  (N usuarios : 1 obra) -->
+        <line x1="230" y1="354" x2="310" y2="240" stroke="#2a6ac4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-blue)"/>
+        <text x="238" y="310" font-family="Lato,sans-serif" font-size="10" fill="#2a4a78">N:1</text>
+
+        <!-- obras.creado_por → usuarios.id -->
+        <line x1="310" y1="314" x2="230" y2="300" stroke="#6a8ab0" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)"/>
+        <text x="248" y="295" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">creado_por</text>
+
+        <!-- obras → formularios -->
+        <line x1="520" y1="140" x2="610" y2="140" stroke="#6a8ab0" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="540" y="133" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">1</text>
+        <text x="592" y="133" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">N</text>
+
+        <!-- obras → proyectos -->
+        <line x1="520" y1="220" x2="560" y2="380" stroke="#6a8ab0" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="560" y1="380" x2="610" y2="380" stroke="#6a8ab0" stroke-width="1.5"/>
+        <text x="535" y="373" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">1:N</text>
+
+        <!-- obras → documentos -->
+        <line x1="415" y1="380" x2="415" y2="440" stroke="#6a8ab0" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="420" y="415" font-family="Lato,sans-serif" font-size="10" fill="#6a8ab0">1:N</text>
+
+        <!-- usuarios → sesiones_revocadas (lógico, no FK) -->
+        <line x1="130" y1="440" x2="130" y2="500" stroke="#8a2020" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="135" y="475" font-family="Lato,sans-serif" font-size="10" fill="#8a2020">jti logout</text>
+
+        <!-- leyenda -->
+        <g transform="translate(30, 10)">
+          <rect width="260" height="28" rx="6" fill="#f4f6f9" stroke="#c4d4e8" stroke-width="1"/>
+          <line x1="10" y1="14" x2="35" y2="14" stroke="#6a8ab0" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="40" y="18" font-family="Lato,sans-serif" font-size="10" fill="#4a6558">Relación FK</text>
+          <line x1="100" y1="14" x2="125" y2="14" stroke="#2a6ac4" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrow-blue)"/>
+          <text x="130" y="18" font-family="Lato,sans-serif" font-size="10" fill="#4a6558">FK opcional</text>
+          <rect x="200" y="8" width="10" height="10" rx="2" fill="#c9a84c"/>
+          <text x="214" y="18" font-family="Lato,sans-serif" font-size="10" fill="#4a6558">PK</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ══ SCHEMA ════════════════════════════════════════════════════════════ -->
+  <section id="schema">
+    <h2><span class="icon">📊</span> Schema de Base de Datos</h2>
+
+    <h3>Tabla: usuarios</h3>
+    <div class="card" style="margin-bottom:16px;overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td class="type">VARCHAR(36)</td><td>PK · UUID</td><td>Identificador único generado con <code>uuid v4</code></td></tr>
+          <tr><td>usuario</td><td class="type">VARCHAR(50)</td><td>UNIQUE NOT NULL</td><td>Nombre de usuario para login tradicional</td></tr>
+          <tr><td>contrasena</td><td class="type">VARCHAR(100)</td><td>NOT NULL</td><td>Hash bcrypt con 10 salt rounds</td></tr>
+          <tr><td>rol</td><td class="type">ENUM</td><td>DEFAULT 'usuario'</td><td><code>admin</code> o <code>usuario</code></td></tr>
+          <tr><td>nombre</td><td class="type">VARCHAR(100)</td><td>NULL</td><td>Nombre completo o display name</td></tr>
+          <tr><td>email</td><td class="type">VARCHAR(150)</td><td>UNIQUE NULL</td><td>Correo Gmail para autenticación con Google OAuth</td></tr>
+          <tr><td class="fk">obra_id</td><td class="type">VARCHAR(36)</td><td>FK → obras.id · NULL</td><td>Obra asignada al usuario (solo rol usuario)</td></tr>
+          <tr><td>activo</td><td class="type">TINYINT(1)</td><td>DEFAULT 1</td><td>Soft delete — 0 = eliminado lógicamente</td></tr>
+          <tr><td>fecha_registro</td><td class="type">DATETIME</td><td>DEFAULT NOW()</td><td>Timestamp de creación</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: obras</h3>
+    <div class="card" style="margin-bottom:16px;overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td class="type">VARCHAR(36)</td><td>PK · UUID</td><td>Identificador único</td></tr>
+          <tr><td>nombre_obra</td><td class="type">VARCHAR(150)</td><td>NOT NULL</td><td>Nombre oficial de la obra jesuita</td></tr>
+          <tr><td>rfc</td><td class="type">VARCHAR(20)</td><td>NULL</td><td>RFC fiscal</td></tr>
+          <tr><td>estado</td><td class="type">VARCHAR(50)</td><td>NULL</td><td>Estado de la República</td></tr>
+          <tr><td>direccion</td><td class="type">VARCHAR(255)</td><td>NULL</td><td>Dirección completa</td></tr>
+          <tr><td>telefono</td><td class="type">VARCHAR(20)</td><td>NULL</td><td>Teléfono de contacto</td></tr>
+          <tr><td>correo</td><td class="type">VARCHAR(100)</td><td>NULL</td><td>Correo institucional de la obra</td></tr>
+          <tr><td>personalidad_juridica</td><td class="type">VARCHAR(100)</td><td>NULL</td><td>Tipo de constitución legal</td></tr>
+          <tr><td>donataria</td><td class="type">VARCHAR(10)</td><td>NULL</td><td>¿Es donataria autorizada?</td></tr>
+          <tr><td>activo</td><td class="type">TINYINT(1)</td><td>DEFAULT 1</td><td>Soft delete</td></tr>
+          <tr><td class="fk">creado_por</td><td class="type">VARCHAR(36)</td><td>FK → usuarios.id · ON DELETE SET NULL</td><td>Admin que registró la obra</td></tr>
+          <tr><td>fecha_registro</td><td class="type">DATETIME</td><td>DEFAULT NOW()</td><td>Timestamp de creación</td></tr>
+          <tr><td>fecha_actualizacion</td><td class="type">DATETIME</td><td>ON UPDATE NOW()</td><td>Auto-actualizado en cada UPDATE</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: formularios</h3>
+    <div class="card" style="margin-bottom:16px;overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td class="type">INT</td><td>PK · AUTO_INCREMENT</td><td>—</td></tr>
+          <tr><td class="fk">obra_id</td><td class="type">VARCHAR(36)</td><td>FK → obras.id · ON DELETE CASCADE</td><td>Obra dueña del formulario</td></tr>
+          <tr><td>form_key</td><td class="type">VARCHAR(50)</td><td>NOT NULL</td><td>Identificador del formulario (ej. <code>snf_general</code>)</td></tr>
+          <tr><td>datos</td><td class="type">JSON</td><td>NOT NULL</td><td>Datos flexibles del formulario — estructura varía por tipo</td></tr>
+          <tr><td class="fk">actualizado_por</td><td class="type">VARCHAR(36)</td><td>FK → usuarios.id · ON DELETE SET NULL</td><td>Último usuario que guardó</td></tr>
+          <tr><td>fecha_actualizacion</td><td class="type">DATETIME</td><td>ON UPDATE NOW()</td><td>—</td></tr>
+          <tr><td colspan="4" style="font-size:12px;color:var(--text-light);font-style:italic">UNIQUE KEY (obra_id, form_key) — cada obra tiene máximo un registro por tipo de formulario (upsert)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: proyectos</h3>
+    <div class="card" style="margin-bottom:16px;overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td class="type">INT</td><td>PK · AUTO_INCREMENT</td><td>—</td></tr>
+          <tr><td class="fk">obra_id</td><td class="type">VARCHAR(36)</td><td>FK → obras.id</td><td>Obra dueña del proyecto</td></tr>
+          <tr><td>tipo</td><td class="type">ENUM</td><td>NOT NULL</td><td><code>vigente</code> = proyectos actuales · <code>financiar</code> = proyectos a financiar</td></tr>
+          <tr><td>datos</td><td class="type">JSON</td><td>NOT NULL</td><td>Datos del proyecto — actualizados con <code>JSON_MERGE_PATCH</code></td></tr>
+          <tr><td class="fk">creado_por</td><td class="type">VARCHAR(36)</td><td>FK → usuarios.id</td><td>—</td></tr>
+          <tr><td class="fk">actualizado_por</td><td class="type">VARCHAR(36)</td><td>FK → usuarios.id</td><td>—</td></tr>
+          <tr><td>fecha_registro</td><td class="type">DATETIME</td><td>DEFAULT NOW()</td><td>—</td></tr>
+          <tr><td>fecha_actualizacion</td><td class="type">DATETIME</td><td>ON UPDATE NOW()</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: documentos</h3>
+    <div class="card" style="margin-bottom:16px;overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">id</td><td class="type">INT</td><td>PK · AUTO_INCREMENT</td><td>—</td></tr>
+          <tr><td class="fk">obra_id</td><td class="type">VARCHAR(36)</td><td>FK → obras.id</td><td>Obra propietaria del documento</td></tr>
+          <tr><td>nombre_original</td><td class="type">VARCHAR</td><td>NOT NULL</td><td>Nombre del archivo tal como lo subió el usuario</td></tr>
+          <tr><td>nombre_archivo</td><td class="type">VARCHAR</td><td>NOT NULL</td><td>Nombre generado por multer en disco del servidor</td></tr>
+          <tr><td>mime_type</td><td class="type">VARCHAR</td><td>—</td><td>Tipo MIME (ej. <code>application/pdf</code>)</td></tr>
+          <tr><td>tamano</td><td class="type">INT</td><td>—</td><td>Tamaño en bytes</td></tr>
+          <tr><td class="fk">subido_por</td><td class="type">VARCHAR(36)</td><td>FK → usuarios.id</td><td>Usuario que subió el archivo</td></tr>
+          <tr><td>fecha_subida</td><td class="type">DATETIME</td><td>DEFAULT NOW()</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Tabla: sesiones_revocadas</h3>
+    <div class="card" style="overflow:auto;">
+      <table>
+        <thead><tr><th>Campo</th><th>Tipo</th><th>Restricciones</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td class="pk">jti</td><td class="type">VARCHAR(36)</td><td>PK</td><td>JWT ID único (uuid v4) extraído del payload del token</td></tr>
+          <tr><td>expira_en</td><td class="type">DATETIME</td><td>NOT NULL · INDEX</td><td>Fecha de expiración original del JWT — permite limpiar registros vencidos</td></tr>
+          <tr><td colspan="4" style="font-size:12px;color:var(--text-light);font-style:italic">Sin FK — tabla independiente de blacklist. Cada request valida que el jti del token no aparezca aquí.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ HOSTING ═══════════════════════════════════════════════════════════ -->
+  <section id="hosting">
+    <h2><span class="icon">☁️</span> Hosting en Railway</h2>
+
+    <div class="grid-3" style="margin-bottom:24px;">
+      <div class="host-card">
+        <div class="service">Frontend</div>
+        <div class="url">fl-snf-frontend-production.up.railway.app</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-light)">Servicio estático · HTML/CSS/JS<br>Sin servidor de aplicaciones</div>
+      </div>
+      <div class="host-card">
+        <div class="service">Backend (API)</div>
+        <div class="url">fl-snf-backend-production.up.railway.app</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-light)">Node.js · Puerto dinámico<br>Express · Auto-redeploy en push</div>
+      </div>
+      <div class="host-card">
+        <div class="service">MySQL Database</div>
+        <div class="url">interchange.proxy.rlwy.net:18335</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-light)">Railway DB Plugin · base: <code>railway</code><br>Acceso via MYSQL_PUBLIC_URL</div>
+      </div>
+    </div>
+
+    <h3>Variables de entorno requeridas (Backend → Railway)</h3>
+    <div class="host-card">
+      <div class="env-list">
+        <div class="env-item">
+          <span class="env-key">MYSQL_PUBLIC_URL</span>
+          <span class="env-val">mysql://user:pass@host:port/railway — cadena de conexión completa generada por Railway</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">GCP_CLIENT_ID</span>
+          <span class="env-val">Client ID de Google OAuth 2.0 (console.cloud.google.com)</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">JWT_SECRET</span>
+          <span class="env-val">Clave secreta para firmar/verificar tokens JWT</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">JWT_EXPIRES_IN</span>
+          <span class="env-val">Duración del token (ej. <code>8h</code>, <code>24h</code>)</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">FRONTEND_URL</span>
+          <span class="env-val">URL exacta del frontend para CORS (ej. <code>https://fl-snf-frontend-production.up.railway.app</code>)</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">PORT</span>
+          <span class="env-val">Inyectado automáticamente por Railway — no configurar manualmente</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">NODE_ENV</span>
+          <span class="env-val"><code>production</code></span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Repositorios GitHub</h3>
+    <div class="host-card" style="margin-bottom:16px;">
+      <div class="env-list">
+        <div class="env-item">
+          <span class="env-key">Backend</span>
+          <span class="env-val"><a href="https://github.com/MarioJJMR/fl-snf-backend-.git" target="_blank" style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;">github.com/MarioJJMR/fl-snf-backend-</a></span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">Frontend</span>
+          <span class="env-val"><a href="https://github.com/MarioJJMR/fl-snf-frontend-.git" target="_blank" style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;">github.com/MarioJJMR/fl-snf-frontend-</a></span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Google Cloud Console (OAuth)</h3>
+    <div class="host-card">
+      <div class="env-list">
+        <div class="env-item">
+          <span class="env-key">Authorized JavaScript origins</span>
+          <span class="env-val">https://fl-snf-frontend-production.up.railway.app · http://localhost</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">Tipo de cliente</span>
+          <span class="env-val">Web application — flujo popup (sin redirect URIs)</span>
+        </div>
+        <div class="env-item">
+          <span class="env-key">Proyecto GCP</span>
+          <span class="env-val">algoritmoconsolodaciondeploy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  FL-SNF · Fundación Loyola · Documentación técnica generada el 21 de abril de 2026
+</footer>
+
+</body>
+</html>
