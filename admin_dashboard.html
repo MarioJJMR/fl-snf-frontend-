@@ -26,11 +26,15 @@
     <div class="sidebar-logo">
         <img src="assets/images/logo_oficial_2021_page-0001.jpg" alt="Fundación Loyola">
         <div class="role-badge">Administrador</div>
+        <div id="sidebar-username" style="font-size:0.78rem;color:#a0aec0;margin-top:4px;word-break:break-all;"></div>
     </div>
     <nav>
         <div class="nav-label">Gestión</div>
         <button onclick="goTo('bienvenida')" id="nav-bienvenida">
             <span class="nav-icon">🏠</span><span>Inicio</span>
+        </button>
+        <button onclick="cerrarSesion()">
+            <span class="nav-icon">🚪</span><span>Cerrar sesión</span>
         </button>
         <button onclick="goTo('obras')" id="nav-obras">
             <span class="nav-icon">🏢</span><span>Gestión de Obras</span>
@@ -449,6 +453,8 @@
 (function() {
     const s = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
     if (!s.token || s.rol !== 'admin') window.location.href = 'Inicio.html';
+    const nameEl = document.getElementById('sidebar-username');
+    if (nameEl && (s.nombre_completo || s.nombre)) nameEl.textContent = s.nombre_completo || s.nombre;
 })();
 
 // ══════════════════════════════════════════════

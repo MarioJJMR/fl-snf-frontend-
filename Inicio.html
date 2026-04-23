@@ -261,13 +261,13 @@
 
     <form id="loginForm" autocomplete="on">
       <input
-        type="text"
+        type="email"
         id="usuario"
         name="usuario"
-        placeholder="Usuario"
+        placeholder="Correo electrónico"
         required
-        autocomplete="username"
-        aria-label="Usuario"
+        autocomplete="email"
+        aria-label="Correo electrónico"
       >
       <input
         type="password"
@@ -338,13 +338,15 @@
           token,
           id: user.id,
           usuario: user.usuario,
+          email: user.email,
           rol: user.rol,
           nombre: user.nombre,
+          nombre_completo: user.nombre_completo || user.nombre,
           obraId: user.obra_id || null,
           timestamp: new Date().toISOString()
         }));
 
-        setMensaje(`Bienvenido, ${user.nombre || user.usuario}`, 'success');
+        setMensaje(`Bienvenido, ${user.nombre_completo || user.nombre || user.usuario}`, 'success');
 
         setTimeout(() => {
           window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
@@ -372,13 +374,15 @@
           token,
           id: user.id,
           usuario: user.usuario,
+          email: user.email,
           rol: user.rol,
           nombre: user.nombre,
+          nombre_completo: user.nombre_completo || user.nombre,
           obraId: user.obra_id || null,
           timestamp: new Date().toISOString()
         }));
 
-        setMensaje(`Bienvenido, ${user.nombre || user.usuario}`, 'success');
+        setMensaje(`Bienvenido, ${user.nombre_completo || user.nombre || user.usuario}`, 'success');
         setTimeout(() => {
           window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
         }, 900);
