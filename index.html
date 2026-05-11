@@ -1047,7 +1047,7 @@
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast">✅ <span id="toast-msg">Guardado correctamente</span></div>
+<div class="toast" id="toast"><span id="toast-msg">Guardado correctamente</span></div>
 
 <script src="assets/js/config.js"></script>
 <script src="assets/js/api.js"></script>
@@ -1069,7 +1069,343 @@ const pageTitles = {
 // Sections that count toward progress
 const SONDEO_SECTIONS = ['datosObra','presupuesto','proyectosVigentes','proyectosFinanciar','necesidadesMateriales','contextoDemografico','impacto'];
 
-function goTo(page) {
+function validarDatosObra() {
+    let faltantes = [];
+    let primeroInvalido = null;
+
+    const camposTexto = [
+        { id: 'nombreObra',           label: 'Nombre de la Obra' },
+        { id: 'rfc',                  label: 'RFC' },
+        { id: 'estado',               label: 'Estado' },
+        { id: 'direccionSede',        label: 'Dirección de la sede' },
+        { id: 'telefonoLocal',        label: 'Teléfono local' },
+        { id: 'fechaPlaneacion',      label: 'Fecha de última planeación' },
+        { id: 'periodoPlaneacion',    label: 'Periodo que abarca' },
+        { id: 'mision',               label: 'Misión' },
+        { id: 'vision',               label: 'Visión' },
+        { id: 'objetivoGeneral',      label: 'Objetivo General' },
+        { id: 'objetivosEstrategicos',label: 'Objetivos Estratégicos' },
+        { id: 'directorNombre',       label: 'Nombre del Director' },
+        { id: 'directorTel',          label: 'Teléfono del Director' },
+        { id: 'directorCorreo',       label: 'Correo del Director' },
+        { id: 'adminNombre',          label: 'Nombre del Administrador' },
+        { id: 'adminTel',             label: 'Teléfono del Administrador' },
+        { id: 'adminCorreo',          label: 'Correo del Administrador' },
+        { id: 'proyNombre',           label: 'Nombre Resp. de Proyectos' },
+        { id: 'proyTel',              label: 'Teléfono Resp. de Proyectos' },
+        { id: 'proyCorreo',           label: 'Correo Resp. de Proyectos' },
+        { id: 'llenadoNombre',        label: 'Nombre Resp. del llenado' },
+        { id: 'llenadoTel',           label: 'Teléfono Resp. del llenado' },
+        { id: 'llenadoCorreo',        label: 'Correo Resp. del llenado' },
+        { id: 'respContenidos',       label: 'Responsable de contenidos' },
+        { id: 'respContenidosTel',    label: 'Teléfono Resp. contenidos' },
+        { id: 'respContenidosCorreo', label: 'Correo Resp. contenidos' }
+    ];
+
+    const camposSelect = [
+        { id: 'personalidadJuridica',   label: 'Personalidad Jurídica' },
+        { id: 'frecuenciaPublicaciones', label: 'Frecuencia de publicaciones' }
+    ];
+
+    const camposToggle = [
+        { id: 'donataria',        label: 'Donataria Autorizada' },
+        { id: 'formatoRedes',     label: '¿Formato para redes?' },
+        { id: 'formatoFotos',     label: '¿Formato para fotos/videos?' },
+        { id: 'permisoImagenes',  label: '¿Permiso para publicar imágenes?' },
+        { id: 'compartirMaterial',label: '¿Compartir materiales?' }
+    ];
+
+    camposTexto.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value.trim();
+        el.classList.toggle('error', vacio);
+        if (vacio) { faltantes.push(label); if (!primeroInvalido) primeroInvalido = el; }
+    });
+
+    camposSelect.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value;
+        el.classList.toggle('error', vacio);
+        if (vacio) { faltantes.push(label); if (!primeroInvalido) primeroInvalido = el; }
+    });
+
+    camposToggle.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value;
+        const toggleGrupo = el.closest('.form-group')?.querySelector('.toggle-group');
+        if (toggleGrupo) toggleGrupo.classList.toggle('error', vacio);
+        if (vacio) { faltantes.push(label); if (!primeroInvalido) primeroInvalido = toggleGrupo; }
+    });
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof primeroInvalido.focus === 'function') primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+function validarPresupuesto() {
+    let faltantes = [];
+    let primeroInvalido = null;
+
+    function marcar(el, vacio) {
+        el.classList.toggle('error', vacio);
+        if (vacio && !primeroInvalido) primeroInvalido = el;
+    }
+
+    // Presupuesto anual
+    const presupAnual = document.getElementById('presupuestoAnual');
+    if (presupAnual) {
+        const vacio = !presupAnual.value || parseFloat(presupAnual.value) <= 0;
+        marcar(presupAnual, vacio);
+        if (vacio) faltantes.push('Presupuesto anual total 2026');
+    }
+
+    // Tabla Capital Humano
+    const tbodyCapHumano = document.getElementById('tbodyCapHumano');
+    if (tbodyCapHumano) {
+        let tablaError = false;
+        tbodyCapHumano.querySelectorAll('tr').forEach(fila => {
+            const inputs = fila.querySelectorAll('input[type="text"], input[type="number"]');
+            const desc = inputs[0], costo = inputs[1];
+            if (!desc || !costo) return;
+            const dv = !desc.value.trim(), cv = !costo.value;
+            marcar(desc, dv); marcar(costo, cv);
+            if (dv || cv) tablaError = true;
+        });
+        if (tablaError) faltantes.push('Capital Humano y Operativo (descripción y costo requeridos)');
+    }
+
+    // Tabla Materiales y Servicios
+    const tbodyMatServ = document.getElementById('tbodyMatServ');
+    if (tbodyMatServ) {
+        let tablaError = false;
+        tbodyMatServ.querySelectorAll('tr').forEach(fila => {
+            const inputs = fila.querySelectorAll('input[type="text"], input[type="number"]');
+            const desc = inputs[0], costo = inputs[1];
+            if (!desc || !costo) return;
+            const dv = !desc.value.trim(), cv = !costo.value;
+            marcar(desc, dv); marcar(costo, cv);
+            if (dv || cv) tablaError = true;
+        });
+        if (tablaError) faltantes.push('Materiales y Servicios (descripción y costo requeridos)');
+    }
+
+    // Tabla Financiamiento
+    const tbodyFin = document.getElementById('tbodyFinanciamiento');
+    if (tbodyFin) {
+        let tablaError = false;
+        tbodyFin.querySelectorAll('tr').forEach(fila => {
+            const inputs = fila.querySelectorAll('input[type="text"], input[type="number"]');
+            const fuente = inputs[0], monto = inputs[1];
+            if (!fuente || !monto) return;
+            const fv = !fuente.value.trim(), mv = !monto.value;
+            marcar(fuente, fv); marcar(monto, mv);
+            if (fv || mv) tablaError = true;
+        });
+        if (tablaError) faltantes.push('Fuentes de Financiamiento (fuente y monto requeridos)');
+    }
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof primeroInvalido.focus === 'function') primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+// ---- Helper para validar bloques de proyectos dinámicos ----
+function _validarProyectosBloques(containerId, etiqueta) {
+    const container = document.getElementById(containerId);
+    const bloques = container ? container.querySelectorAll('.proyecto-block') : [];
+    if (bloques.length === 0) return [`Debes agregar al menos un ${etiqueta}`];
+
+    let faltantes = [], primeroInvalido = null;
+    function marcar(el, vacio) {
+        el.classList.toggle('error', vacio);
+        if (vacio && !primeroInvalido) primeroInvalido = el;
+    }
+
+    bloques.forEach((bloque, idx) => {
+        const pref = bloque.id.replace('bloque-', '');
+        const num = idx + 1;
+        const lbl = n => `${etiqueta} ${num}: ${n}`;
+
+        // Campos texto/textarea/email/tel
+        [
+            [`${pref}-nombre`,          'Nombre del Proyecto'],
+            [`${pref}-temporalidad`,    'Temporalidad'],
+            [`${pref}-tematicas`,       'Temáticas'],
+            [`${pref}-responsable`,     'Responsable'],
+            [`${pref}-tel`,             'Teléfono'],
+            [`${pref}-correo`,          'Correo'],
+            [`${pref}-objetivo`,        'Objetivo'],
+            [`${pref}-realidad`,        'Realidad a responder'],
+            [`${pref}-descripcion`,     'Descripción'],
+            [`${pref}-lugar`,           'Lugar de desarrollo'],
+            [`${pref}-resultados`,      'Resultados esperados'],
+            [`${pref}-obj-estrategico`, 'Objetivos estratégicos'],
+            [`${pref}-carac-pobl`,      'Características de población'],
+        ].forEach(([id, nombre]) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const vacio = !el.value.trim();
+            marcar(el, vacio);
+            if (vacio) faltantes.push(lbl(nombre));
+        });
+
+        // Select causa
+        const causaEl = document.getElementById(`${pref}-causa`);
+        if (causaEl) {
+            const vacio = !causaEl.value;
+            marcar(causaEl, vacio);
+            if (vacio) faltantes.push(lbl('Causa que atiende'));
+        }
+
+        // Tablas de presupuesto del proyecto
+        [`${pref}-pres-ch`, `${pref}-pres-mat`].forEach(tbId => {
+            const tb = document.getElementById(tbId);
+            if (!tb) return;
+            let err = false;
+            tb.querySelectorAll('tr').forEach(fila => {
+                fila.querySelectorAll('input:not([readonly])').forEach(inp => {
+                    const v = !inp.value.trim();
+                    marcar(inp, v);
+                    if (v) err = true;
+                });
+            });
+            if (err) faltantes.push(lbl('Tabla de presupuesto incompleta'));
+        });
+    });
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (primeroInvalido.focus) primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+function validarProyectosVigentes() {
+    return _validarProyectosBloques('lista-proyectos-vigentes', 'Proyecto Vigente');
+}
+
+function validarProyectosFinanciar() {
+    return _validarProyectosBloques('lista-proyectos-financiar', 'Proyecto por Financiar');
+}
+
+function validarNecesidadesMateriales() {
+    let faltantes = [], primeroInvalido = null;
+    function marcar(el, vacio) {
+        el.classList.toggle('error', vacio);
+        if (vacio && !primeroInvalido) primeroInvalido = el;
+    }
+
+    [
+        { id: 'retosUrgentes',        label: 'Retos Materiales Urgentes' },
+        { id: 'necesidadesPrevistas', label: 'Necesidades Previstas' }
+    ].forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value.trim();
+        marcar(el, vacio);
+        if (vacio) faltantes.push(label);
+    });
+
+    const tb = document.getElementById('tbodyInsumos');
+    if (tb) {
+        let err = false;
+        tb.querySelectorAll('tr').forEach(fila => {
+            const sel = fila.querySelector('select');
+            const inputs = fila.querySelectorAll('input[type="text"], input[type="number"]:not([readonly])');
+            const desc = inputs[0], qty = inputs[1], cost = inputs[2];
+            if (sel)  { const v = !sel.value;        sel.classList.toggle('error', v);  if (v) { err = true; if (!primeroInvalido) primeroInvalido = sel; } }
+            if (desc) { const v = !desc.value.trim(); marcar(desc, v);  if (v) err = true; }
+            if (qty)  { const v = !qty.value;         marcar(qty, v);   if (v) err = true; }
+            if (cost) { const v = !cost.value;        marcar(cost, v);  if (v) err = true; }
+        });
+        if (err) faltantes.push('Tabla de insumos (concepto, descripción, cantidad y costo requeridos)');
+    }
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (primeroInvalido.focus) primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+function validarContextoDemografico() {
+    let faltantes = [], primeroInvalido = null;
+    function marcar(el, vacio) {
+        el.classList.toggle('error', vacio);
+        if (vacio && !primeroInvalido) primeroInvalido = el;
+    }
+
+    // Toggle tipoPoblacion
+    const tipoPob = document.getElementById('tipoPoblacion');
+    if (tipoPob) {
+        const vacio = !tipoPob.value;
+        const tg = tipoPob.closest('.form-group')?.querySelector('.toggle-group');
+        if (tg) tg.classList.toggle('error', vacio);
+        if (vacio) { faltantes.push('Tipo de Población'); if (!primeroInvalido) primeroInvalido = tg; }
+    }
+
+    [
+        { id: 'tamanoPoblacion',         label: 'Tamaño y Crecimiento Poblacional' },
+        { id: 'grupoPrincipal',          label: 'Grupo Poblacional Principal' },
+        { id: 'tamanoFamilias',          label: 'Tamaño promedio de familias' },
+        { id: 'situacionSocioeconomica', label: 'Situación Socioeconómica' },
+        { id: 'condicionesEducativas',   label: 'Condiciones Educativas' },
+        { id: 'oportunidadesRecreacion', label: 'Oportunidades de Recreación' },
+        { id: 'empleoDesempleo',         label: 'Ocupación y Empleo' },
+        { id: 'condicionesSalud',        label: 'Condiciones de Salud' },
+        { id: 'enfermedadesComunes',     label: 'Enfermedades o Problemas de Salud' },
+        { id: 'accesoServicios',         label: 'Acceso a Servicios Básicos' },
+        { id: 'identidadCultural',       label: 'Diversidad Cultural' },
+    ].forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value.trim();
+        marcar(el, vacio);
+        if (vacio) faltantes.push(label);
+    });
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (primeroInvalido.focus) primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+function validarImpacto() {
+    let faltantes = [], primeroInvalido = null;
+    function marcar(el, vacio) {
+        el.classList.toggle('error', vacio);
+        if (vacio && !primeroInvalido) primeroInvalido = el;
+    }
+
+    [
+        { id: 'calidadVida',      label: 'Calidad de vida de beneficiarios' },
+        { id: 'habilidades',      label: 'Habilidades desarrolladas' },
+        { id: 'impactoEducacion', label: 'Impacto en educación' },
+        { id: 'cohesionSocial',   label: 'Cohesión social' },
+    ].forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const vacio = !el.value.trim();
+        marcar(el, vacio);
+        if (vacio) faltantes.push(label);
+    });
+
+    if (faltantes.length > 0 && primeroInvalido) {
+        primeroInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (primeroInvalido.focus) primeroInvalido.focus();
+    }
+    return faltantes;
+}
+
+function _activarPagina(page) {
     pages.forEach(p => {
         const el = document.getElementById('page-' + p);
         if (el) el.classList.remove('active');
@@ -1077,10 +1413,39 @@ function goTo(page) {
         if (nav) nav.classList.remove('active');
     });
     const target = document.getElementById('page-' + page);
-    if (target) { target.classList.add('active'); window.scrollTo({top:0, behavior:'smooth'}); }
+    if (target) { target.classList.add('active'); window.scrollTo({top: 0, behavior: 'smooth'}); }
     const navBtn = document.getElementById('nav-' + page);
     if (navBtn) navBtn.classList.add('active');
     document.getElementById('topbar-current').textContent = pageTitles[page] || page;
+}
+
+// Cadena secuencial del sondeo — cada sección requiere todas las anteriores
+const CADENA_SONDEO = [
+    { seccion: 'datosObra',             validar: () => validarDatosObra(),             titulo: 'Datos de Obra' },
+    { seccion: 'presupuesto',           validar: () => validarPresupuesto(),           titulo: 'Presupuesto' },
+    { seccion: 'proyectosVigentes',     validar: () => validarProyectosVigentes(),     titulo: 'Proyectos Vigentes' },
+    { seccion: 'proyectosFinanciar',    validar: () => validarProyectosFinanciar(),    titulo: 'Proyectos a Financiar' },
+    { seccion: 'necesidadesMateriales', validar: () => validarNecesidadesMateriales(), titulo: 'Necesidades Materiales' },
+    { seccion: 'contextoDemografico',   validar: () => validarContextoDemografico(),   titulo: 'Contexto Demográfico' },
+    { seccion: 'impacto',              validar: () => validarImpacto(),              titulo: 'Impacto' },
+];
+
+function goTo(page) {
+    const idxDestino = CADENA_SONDEO.findIndex(p => p.seccion === page);
+
+    // Si el destino está en la cadena, validar todos los pasos anteriores en orden
+    if (idxDestino > 0) {
+        for (let i = 0; i < idxDestino; i++) {
+            const faltantes = CADENA_SONDEO[i].validar();
+            if (faltantes.length > 0) {
+                _activarPagina(CADENA_SONDEO[i].seccion);
+                showToast(`Completa "${CADENA_SONDEO[i].titulo}" antes de continuar:<br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 7000);
+                return;
+            }
+        }
+    }
+
+    _activarPagina(page);
 }
 
 async function cerrarSesion() {
@@ -1095,7 +1460,7 @@ async function cerrarSesion() {
 function showToast(msg, color, ms) {
     let t = document.getElementById('toast');
     if (!t) return;
-    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-msg').innerHTML = msg;
     t.style.background = color || 'var(--green-dark)';
     t.classList.add('show');
     clearTimeout(showToast._timer);
@@ -1234,10 +1599,104 @@ async function restaurarDatos() {
 function initAutosave() {
     document.addEventListener('input', triggerAutosave);
     document.addEventListener('change', triggerAutosave);
+    // Limpiar error visual al editar campos de datosObra
+    const camposDatosObra = [
+        'nombreObra', 'rfc', 'estado', 'direccionSede', 'telefonoLocal',
+        'fechaPlaneacion', 'periodoPlaneacion',
+        'mision', 'vision', 'objetivoGeneral', 'objetivosEstrategicos',
+        'directorNombre', 'directorTel', 'directorCorreo',
+        'adminNombre', 'adminTel', 'adminCorreo',
+        'proyNombre', 'proyTel', 'proyCorreo',
+        'llenadoNombre', 'llenadoTel', 'llenadoCorreo',
+        'respContenidos', 'respContenidosTel', 'respContenidosCorreo',
+        'personalidadJuridica', 'frecuenciaPublicaciones'
+    ];
+    camposDatosObra.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => el.classList.remove('error'));
+        if (el) el.addEventListener('change', () => el.classList.remove('error'));
+    });
+    // Limpiar error en toggles al hacer clic
+    ['donataria', 'formatoRedes', 'formatoFotos', 'permisoImagenes', 'compartirMaterial'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const toggleGrupo = el.closest('.form-group')?.querySelector('.toggle-group');
+        if (toggleGrupo) {
+            toggleGrupo.addEventListener('click', () => toggleGrupo.classList.remove('error'));
+        }
+    });
+    // Limpiar errores en campos de presupuesto (campo fijo + tablas dinámicas)
+    const presupAnual = document.getElementById('presupuestoAnual');
+    if (presupAnual) presupAnual.addEventListener('input', () => presupAnual.classList.remove('error'));
+    ['tbodyCapHumano', 'tbodyMatServ', 'tbodyFinanciamiento'].forEach(tbId => {
+        const tb = document.getElementById(tbId);
+        if (tb) tb.addEventListener('input', e => { if (e.target.tagName === 'INPUT') e.target.classList.remove('error'); });
+    });
+
+    // Limpiar errores en necesidades materiales
+    ['retosUrgentes', 'necesidadesPrevistas'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => el.classList.remove('error'));
+    });
+    const tbInsumos = document.getElementById('tbodyInsumos');
+    if (tbInsumos) tbInsumos.addEventListener('input', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') e.target.classList.remove('error');
+    });
+    if (tbInsumos) tbInsumos.addEventListener('change', e => {
+        if (e.target.tagName === 'SELECT') e.target.classList.remove('error');
+    });
+
+    // Limpiar errores en contexto demográfico
+    ['tamanoPoblacion','grupoPrincipal','tamanoFamilias','situacionSocioeconomica',
+     'condicionesEducativas','oportunidadesRecreacion','empleoDesempleo',
+     'condicionesSalud','enfermedadesComunes','accesoServicios','identidadCultural'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => el.classList.remove('error'));
+    });
+    const tipoPob = document.getElementById('tipoPoblacion');
+    if (tipoPob) {
+        const tg = tipoPob.closest('.form-group')?.querySelector('.toggle-group');
+        if (tg) tg.addEventListener('click', () => tg.classList.remove('error'));
+    }
+
+    // Limpiar errores en impacto
+    ['calidadVida','habilidades','impactoEducacion','cohesionSocial'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => el.classList.remove('error'));
+    });
+
+    // Limpiar errores en bloques de proyectos dinámicos (event delegation)
+    ['lista-proyectos-vigentes', 'lista-proyectos-financiar'].forEach(cId => {
+        const c = document.getElementById(cId);
+        if (c) {
+            c.addEventListener('input', e => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') e.target.classList.remove('error');
+            });
+            c.addEventListener('change', e => {
+                if (e.target.tagName === 'SELECT') e.target.classList.remove('error');
+            });
+        }
+    });
 }
 
 // =================== SAVE SECTION ===================
 function guardarSeccion(key) {
+    const validadores = {
+        datosObra:             validarDatosObra,
+        presupuesto:           validarPresupuesto,
+        proyectosVigentes:     validarProyectosVigentes,
+        proyectosFinanciar:    validarProyectosFinanciar,
+        necesidadesMateriales: validarNecesidadesMateriales,
+        contextoDemografico:   validarContextoDemografico,
+        impacto:               validarImpacto,
+    };
+    if (validadores[key]) {
+        const faltantes = validadores[key]();
+        if (faltantes.length > 0) {
+            showToast(`Campos faltantes:<br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 7000);
+            return;
+        }
+    }
     guardarTodo(false);
     marcarSeccionCompleta(key);
     showToast('✅ Sección guardada correctamente');
