@@ -1503,6 +1503,7 @@ function _activarPagina(page) {
     const navBtn = document.getElementById('nav-' + page);
     if (navBtn) navBtn.classList.add('active');
     document.getElementById('topbar-current').textContent = pageTitles[page] || page;
+    if (page === 'documentos') cargarDocumentos();
 }
 
 // Cadena secuencial del sondeo — cada sección requiere todas las anteriores
@@ -2588,8 +2589,8 @@ async function cargarDocumentos() {
                 <span style="flex:1;font-weight:600">${doc.nombre_original}</span>
                 <span style="color:var(--text-light)">${kb}</span>
                 <span style="color:var(--text-light);font-size:11px">${fecha}</span>
-                <a href="${API.documentos.descargarUrl(obraId, doc.id)}" download="${doc.nombre_original}"
-                   style="color:var(--green-dark);text-decoration:none;font-weight:700" title="Descargar">⬇</a>
+                <button onclick="descargarDocumento(${obraId}, ${doc.id}, '${doc.nombre_original.replace(/'/g, "\\'")}')"
+                        style="background:none;border:none;cursor:pointer;color:var(--green-dark);font-size:15px;font-weight:700;padding:0" title="Descargar">⬇</button>
                 <button onclick="eliminarDocumento(${doc.id})" style="background:none;border:none;cursor:pointer;color:#c00;font-size:15px;padding:0" title="Eliminar">🗑</button>`;
             list.appendChild(li);
         });
@@ -2606,6 +2607,26 @@ async function eliminarDocumento(id) {
         await cargarDocumentos();
     } catch (err) {
         alert('Error al eliminar: ' + err.message);
+    }
+}
+
+async function descargarDocumento(obraId, id, filename) {
+    try {
+        const token = API.getToken();
+        const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
+        const res = await fetch(`${base}/documentos/${obraId}/descargar/${id}`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (!res.ok) throw new Error('No se pudo descargar el documento');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        alert('Error al descargar: ' + err.message);
     }
 }
 
