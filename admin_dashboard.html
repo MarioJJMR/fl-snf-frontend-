@@ -331,7 +331,41 @@
             </div>
             <div class="form-group">
                 <label>Estado</label>
-                <input type="text" id="input-obra-estado" placeholder="Ej. Jalisco">
+                <select id="input-obra-estado">
+                    <option value="">Seleccione un estado</option>
+                    <option>Aguascalientes</option>
+                    <option>Baja California</option>
+                    <option>Baja California Sur</option>
+                    <option>Campeche</option>
+                    <option>Chiapas</option>
+                    <option>Chihuahua</option>
+                    <option>Ciudad de México</option>
+                    <option>Coahuila de Zaragoza</option>
+                    <option>Colima</option>
+                    <option>Durango</option>
+                    <option>Estado de México</option>
+                    <option>Guanajuato</option>
+                    <option>Guerrero</option>
+                    <option>Hidalgo</option>
+                    <option>Jalisco</option>
+                    <option>Michoacán de Ocampo</option>
+                    <option>Morelos</option>
+                    <option>Nayarit</option>
+                    <option>Nuevo León</option>
+                    <option>Oaxaca</option>
+                    <option>Puebla</option>
+                    <option>Querétaro</option>
+                    <option>Quintana Roo</option>
+                    <option>San Luis Potosí</option>
+                    <option>Sinaloa</option>
+                    <option>Sonora</option>
+                    <option>Tabasco</option>
+                    <option>Tamaulipas</option>
+                    <option>Tlaxcala</option>
+                    <option>Veracruz de Ignacio de la Llave</option>
+                    <option>Yucatán</option>
+                    <option>Zacatecas</option>
+                </select>
             </div>
         </div>
         <div class="form-group" style="margin-bottom:14px">
@@ -546,6 +580,23 @@ async function guardarObra() {
         showToast('⚠️ Nombre, dirección y teléfono son obligatorios', '#c47a00');
         return;
     }
+
+    const REGEX_TEL   = /^[\d\s\-()+]{7,15}$/;
+    const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    if (!REGEX_TEL.test(telefono)) {
+        showToast('⚠️ Teléfono inválido — usa solo dígitos, espacios, guiones o paréntesis (ej. 33 1234-5678)', '#c47a00');
+        document.getElementById('input-obra-telefono').classList.add('error');
+        return;
+    }
+    document.getElementById('input-obra-telefono').classList.remove('error');
+
+    if (correo && !REGEX_EMAIL.test(correo)) {
+        showToast('⚠️ Correo inválido — verifica el formato (ej. nombre@dominio.com)', '#c47a00');
+        document.getElementById('input-obra-correo').classList.add('error');
+        return;
+    }
+    document.getElementById('input-obra-correo').classList.remove('error');
 
     try {
         if (editId) {

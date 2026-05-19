@@ -232,7 +232,41 @@
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label>Ubicación — Estado</label>
-                        <input type="text" id="estado" placeholder="Ej. Jalisco">
+                        <select id="estado">
+                            <option value="">Seleccione un estado</option>
+                            <option>Aguascalientes</option>
+                            <option>Baja California</option>
+                            <option>Baja California Sur</option>
+                            <option>Campeche</option>
+                            <option>Chiapas</option>
+                            <option>Chihuahua</option>
+                            <option>Ciudad de México</option>
+                            <option>Coahuila de Zaragoza</option>
+                            <option>Colima</option>
+                            <option>Durango</option>
+                            <option>Estado de México</option>
+                            <option>Guanajuato</option>
+                            <option>Guerrero</option>
+                            <option>Hidalgo</option>
+                            <option>Jalisco</option>
+                            <option>Michoacán de Ocampo</option>
+                            <option>Morelos</option>
+                            <option>Nayarit</option>
+                            <option>Nuevo León</option>
+                            <option>Oaxaca</option>
+                            <option>Puebla</option>
+                            <option>Querétaro</option>
+                            <option>Quintana Roo</option>
+                            <option>San Luis Potosí</option>
+                            <option>Sinaloa</option>
+                            <option>Sonora</option>
+                            <option>Tabasco</option>
+                            <option>Tamaulipas</option>
+                            <option>Tlaxcala</option>
+                            <option>Veracruz de Ignacio de la Llave</option>
+                            <option>Yucatán</option>
+                            <option>Zacatecas</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Dirección de la sede</label>
@@ -1053,6 +1087,16 @@
 <script src="assets/js/api.js"></script>
 <script>
 
+// =================== SESSION GUARD ===================
+(function() {
+    try {
+        const s = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+        if (!s.token) window.location.replace('Inicio.html');
+    } catch {
+        window.location.replace('Inicio.html');
+    }
+})();
+
 // =================== STORAGE KEY ===================
 const LS_KEY = 'fl_snf_2025';
 
@@ -1073,12 +1117,14 @@ function validarDatosObra() {
     let faltantes = [];
     let primeroInvalido = null;
 
+    const REGEX_TEL   = /^[\d\s\-()+]{7,15}$/;
+    const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
     const camposTexto = [
         { id: 'nombreObra',           label: 'Nombre de la Obra' },
         { id: 'rfc',                  label: 'RFC' },
         { id: 'estado',               label: 'Estado' },
         { id: 'direccionSede',        label: 'Dirección de la sede' },
-        { id: 'telefonoLocal',        label: 'Teléfono local' },
         { id: 'fechaPlaneacion',      label: 'Fecha de última planeación' },
         { id: 'periodoPlaneacion',    label: 'Periodo que abarca' },
         { id: 'mision',               label: 'Misión' },
@@ -1086,19 +1132,26 @@ function validarDatosObra() {
         { id: 'objetivoGeneral',      label: 'Objetivo General' },
         { id: 'objetivosEstrategicos',label: 'Objetivos Estratégicos' },
         { id: 'directorNombre',       label: 'Nombre del Director' },
-        { id: 'directorTel',          label: 'Teléfono del Director' },
-        { id: 'directorCorreo',       label: 'Correo del Director' },
         { id: 'adminNombre',          label: 'Nombre del Administrador' },
-        { id: 'adminTel',             label: 'Teléfono del Administrador' },
-        { id: 'adminCorreo',          label: 'Correo del Administrador' },
         { id: 'proyNombre',           label: 'Nombre Resp. de Proyectos' },
-        { id: 'proyTel',              label: 'Teléfono Resp. de Proyectos' },
-        { id: 'proyCorreo',           label: 'Correo Resp. de Proyectos' },
         { id: 'llenadoNombre',        label: 'Nombre Resp. del llenado' },
-        { id: 'llenadoTel',           label: 'Teléfono Resp. del llenado' },
+        { id: 'respContenidos',       label: 'Responsable de contenidos' }
+    ];
+
+    const camposTel = [
+        { id: 'telefonoLocal',     label: 'Teléfono local' },
+        { id: 'directorTel',       label: 'Teléfono del Director' },
+        { id: 'adminTel',          label: 'Teléfono del Administrador' },
+        { id: 'proyTel',           label: 'Teléfono Resp. de Proyectos' },
+        { id: 'llenadoTel',        label: 'Teléfono Resp. del llenado' },
+        { id: 'respContenidosTel', label: 'Teléfono Resp. contenidos' }
+    ];
+
+    const camposEmail = [
+        { id: 'directorCorreo',       label: 'Correo del Director' },
+        { id: 'adminCorreo',          label: 'Correo del Administrador' },
+        { id: 'proyCorreo',           label: 'Correo Resp. de Proyectos' },
         { id: 'llenadoCorreo',        label: 'Correo Resp. del llenado' },
-        { id: 'respContenidos',       label: 'Responsable de contenidos' },
-        { id: 'respContenidosTel',    label: 'Teléfono Resp. contenidos' },
         { id: 'respContenidosCorreo', label: 'Correo Resp. contenidos' }
     ];
 
@@ -1121,6 +1174,30 @@ function validarDatosObra() {
         const vacio = !el.value.trim();
         el.classList.toggle('error', vacio);
         if (vacio) { faltantes.push(label); if (!primeroInvalido) primeroInvalido = el; }
+    });
+
+    camposTel.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const val = el.value.trim();
+        const invalido = !val || !REGEX_TEL.test(val);
+        el.classList.toggle('error', invalido);
+        if (invalido) {
+            faltantes.push(!val ? label : `${label} — formato inválido (ej. 33 1234-5678)`);
+            if (!primeroInvalido) primeroInvalido = el;
+        }
+    });
+
+    camposEmail.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const val = el.value.trim();
+        const invalido = !val || !REGEX_EMAIL.test(val);
+        el.classList.toggle('error', invalido);
+        if (invalido) {
+            faltantes.push(!val ? label : `${label} — formato inválido (ej. nombre@dominio.com)`);
+            if (!primeroInvalido) primeroInvalido = el;
+        }
     });
 
     camposSelect.forEach(({ id, label }) => {
@@ -1234,13 +1311,13 @@ function _validarProyectosBloques(containerId, etiqueta) {
         const lbl = n => `${etiqueta} ${num}: ${n}`;
 
         // Campos texto/textarea/email/tel
+        const REGEX_EMAIL_PROY = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         [
             [`${pref}-nombre`,          'Nombre del Proyecto'],
             [`${pref}-temporalidad`,    'Temporalidad'],
             [`${pref}-tematicas`,       'Temáticas'],
             [`${pref}-responsable`,     'Responsable'],
             [`${pref}-tel`,             'Teléfono'],
-            [`${pref}-correo`,          'Correo'],
             [`${pref}-objetivo`,        'Objetivo'],
             [`${pref}-realidad`,        'Realidad a responder'],
             [`${pref}-descripcion`,     'Descripción'],
@@ -1255,6 +1332,15 @@ function _validarProyectosBloques(containerId, etiqueta) {
             marcar(el, vacio);
             if (vacio) faltantes.push(lbl(nombre));
         });
+
+        // Validación de formato de correo del responsable
+        const correoEl = document.getElementById(`${pref}-correo`);
+        if (correoEl) {
+            const val = correoEl.value.trim();
+            const invalido = !val || !REGEX_EMAIL_PROY.test(val);
+            marcar(correoEl, invalido);
+            if (invalido) faltantes.push(lbl(!val ? 'Correo' : 'Correo — formato inválido (ej. nombre@dominio.com)'));
+        }
 
         // Select causa
         const causaEl = document.getElementById(`${pref}-causa`);
@@ -1509,7 +1595,7 @@ function actualizarProgreso() {
 }
 
 function formatearNumero(input) {
-    // Allow numeric input
+    if (input.value !== '' && parseFloat(input.value) < 0) input.value = 0;
 }
 
 
@@ -1697,8 +1783,8 @@ function guardarSeccion(key) {
             return;
         }
     }
-    guardarTodo(false);
     marcarSeccionCompleta(key);
+    guardarTodo(false);
     showToast('✅ Sección guardada correctamente');
 }
 
@@ -2000,6 +2086,14 @@ async function enviarCorreo() {
         showToast('⚠️ Por favor completa los campos obligatorios', '#c47a00');
         return;
     }
+
+    const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!REGEX_EMAIL.test(from)) {
+        showToast('⚠️ El correo electrónico no tiene un formato válido (ej. nombre@dominio.com)', '#c47a00');
+        document.getElementById('email-from')?.classList.add('error');
+        return;
+    }
+    document.getElementById('email-from')?.classList.remove('error');
 
     const btn = document.getElementById('btn-enviar-correo');
     btn.innerHTML = '<span class="spinner"></span> Enviando...';
@@ -2514,6 +2608,15 @@ async function eliminarDocumento(id) {
         alert('Error al eliminar: ' + err.message);
     }
 }
+
+// =================== VALIDACIÓN CAMPOS NUMÉRICOS ===========
+// Bloquea escritura de caracteres no numéricos en todos los inputs de tipo number
+// (el navegador permite e, E, +, - por notación científica — los prevenimos aquí)
+document.addEventListener('keydown', function(e) {
+    if (e.target.matches('input[type="number"]') && ['-', '+', 'e', 'E'].includes(e.key)) {
+        e.preventDefault();
+    }
+});
 
 // =================== INIT ===========
 document.addEventListener('DOMContentLoaded', () => {

@@ -331,10 +331,20 @@ const Sections = {
    Locations
    ===================================================== */
 const Locations = {
+  estados: [
+    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche',
+    'Chiapas', 'Chihuahua', 'Ciudad de México', 'Coahuila de Zaragoza',
+    'Colima', 'Durango', 'Estado de México', 'Guanajuato', 'Guerrero',
+    'Hidalgo', 'Jalisco', 'Michoacán de Ocampo', 'Morelos', 'Nayarit',
+    'Nuevo León', 'Oaxaca', 'Puebla', 'Querétaro', 'Quintana Roo',
+    'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 'Tamaulipas',
+    'Tlaxcala', 'Veracruz de Ignacio de la Llave', 'Yucatán', 'Zacatecas'
+  ],
+
   municipios: {
     'Jalisco':      ['Guadalajara', 'Zapopan', 'Tlaquepaque', 'Tonalá', 'Tlajomulco'],
     'Nuevo León':   ['Monterrey', 'San Pedro Garza García', 'Guadalupe', 'San Nicolás'],
-    'CDMX':         ['Cuauhtémoc', 'Iztapalapa', 'Gustavo A. Madero', 'Álvaro Obregón'],
+    'Ciudad de México': ['Cuauhtémoc', 'Iztapalapa', 'Gustavo A. Madero', 'Álvaro Obregón'],
     'Chiapas':      ['Tuxtla Gutiérrez', 'San Cristóbal de las Casas', 'Tapachula'],
     'Oaxaca':       ['Oaxaca de Juárez', 'San Juan Bautista Tuxtepec', 'Juchitán']
   },
