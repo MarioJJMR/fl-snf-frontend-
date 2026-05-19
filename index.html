@@ -1311,13 +1311,13 @@ function _validarProyectosBloques(containerId, etiqueta) {
         const lbl = n => `${etiqueta} ${num}: ${n}`;
 
         // Campos texto/textarea/email/tel
+        const REGEX_EMAIL_PROY = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         [
             [`${pref}-nombre`,          'Nombre del Proyecto'],
             [`${pref}-temporalidad`,    'Temporalidad'],
             [`${pref}-tematicas`,       'Temáticas'],
             [`${pref}-responsable`,     'Responsable'],
             [`${pref}-tel`,             'Teléfono'],
-            [`${pref}-correo`,          'Correo'],
             [`${pref}-objetivo`,        'Objetivo'],
             [`${pref}-realidad`,        'Realidad a responder'],
             [`${pref}-descripcion`,     'Descripción'],
@@ -1332,6 +1332,15 @@ function _validarProyectosBloques(containerId, etiqueta) {
             marcar(el, vacio);
             if (vacio) faltantes.push(lbl(nombre));
         });
+
+        // Validación de formato de correo del responsable
+        const correoEl = document.getElementById(`${pref}-correo`);
+        if (correoEl) {
+            const val = correoEl.value.trim();
+            const invalido = !val || !REGEX_EMAIL_PROY.test(val);
+            marcar(correoEl, invalido);
+            if (invalido) faltantes.push(lbl(!val ? 'Correo' : 'Correo — formato inválido (ej. nombre@dominio.com)'));
+        }
 
         // Select causa
         const causaEl = document.getElementById(`${pref}-causa`);
@@ -2077,6 +2086,14 @@ async function enviarCorreo() {
         showToast('⚠️ Por favor completa los campos obligatorios', '#c47a00');
         return;
     }
+
+    const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!REGEX_EMAIL.test(from)) {
+        showToast('⚠️ El correo electrónico no tiene un formato válido (ej. nombre@dominio.com)', '#c47a00');
+        document.getElementById('email-from')?.classList.add('error');
+        return;
+    }
+    document.getElementById('email-from')?.classList.remove('error');
 
     const btn = document.getElementById('btn-enviar-correo');
     btn.innerHTML = '<span class="spinner"></span> Enviando...';

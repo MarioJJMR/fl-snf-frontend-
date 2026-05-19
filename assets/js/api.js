@@ -131,20 +131,34 @@ const API = {
     },
     async upload(obraId, archivos) {
       // archivos: FileList o Array de File
-      const token = API.getToken();
-      const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
-      const formData = new FormData();
-      Array.from(archivos).forEach(f => formData.append('archivos', f));
+      // Uses presigned S3 upload: request signed URL → PUT to S3 → confirm
+      const results = [];
+      for (const file of Array.from(archivos)) {
+        // 1. Request presigned URL
+        const { uploadUrl, key } = await API.post(`/documentos/${obraId}/presigned-upload`, {
+          filename: file.name,
+          mimetype: file.type,
+          tamano: file.size
+        });
 
-      const res = await fetch(`${base}/documentos/${obraId}`, {
-        method: 'POST',
-        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-        body: formData
-      });
-      const data = await res.json();
-      if (res.status === 401) { sessionStorage.removeItem('usuarioActual'); window.location.href = 'Inicio.html'; return null; }
-      if (!data.success) throw new Error(data.error || 'Error al subir archivos');
-      return data.data;
+        // 2. PUT file directly to S3 (no auth header — presigned URL handles auth)
+        const s3Res = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file
+        });
+        if (!s3Res.ok) throw new Error(`Error al subir "${file.name}" a S3`);
+
+        // 3. Confirm upload and save metadata in DB
+        const doc = await API.post(`/documentos/${obraId}/confirm-upload`, {
+          key,
+          filename: file.name,
+          mimetype: file.type,
+          tamano: file.size
+        });
+        results.push(doc);
+      }
+      return results;
     },
     descargarUrl(obraId, id) {
       const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
