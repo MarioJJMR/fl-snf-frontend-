@@ -241,6 +241,19 @@
     #msg-forgot { min-height: 18px; font-size: 13px; font-weight: 700; margin-top: 10px; text-align: center; }
     #msg-forgot.error   { color: #d94040; }
     #msg-forgot.success { color: #27ae60; }
+
+    /* Modal de error de login */
+    .modal-error-box { border-top-color: #d94040; }
+    .modal-error-box h3 { color: #d94040; }
+    .modal-error-box p  { font-size: 14.5px; color: #333; margin: 0 0 22px; }
+    .btn-error-ok {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #d94040, #b03030);
+      color: #fff; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700; font-family: 'Lato', sans-serif;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-error-ok:hover { opacity: 0.9; transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -297,6 +310,16 @@
     <a href="#" class="forgot-link" onclick="abrirForgot();return false;">¿Olvidé mi contraseña?</a>
   </div>
 
+  <!-- Modal: Error de login -->
+  <div class="modal-overlay" id="modal-error">
+    <div class="modal-box modal-error-box">
+      <button class="btn-cerrar" onclick="cerrarError()" title="Cerrar">&times;</button>
+      <h3>Error al iniciar sesión</h3>
+      <p id="error-msg"></p>
+      <button class="btn-error-ok" onclick="cerrarError()">Aceptar</button>
+    </div>
+  </div>
+
   <!-- Modal: Recuperar contraseña -->
   <div class="modal-overlay" id="modal-forgot">
     <div class="modal-box">
@@ -317,6 +340,14 @@
       el.className = tipo === 'success' ? 'success' : '';
     }
 
+    function showErrorPopup(msg) {
+      document.getElementById('error-msg').textContent = msg;
+      document.getElementById('modal-error').classList.add('open');
+    }
+    function cerrarError() {
+      document.getElementById('modal-error').classList.remove('open');
+    }
+
     async function handleLogin(event) {
       event.preventDefault();
       const btn = document.getElementById('btn-login');
@@ -324,7 +355,7 @@
       const contrasena = document.getElementById('contrasena').value;
 
       if (!usuario || !contrasena) {
-        setMensaje('Por favor complete todos los campos', '');
+        showErrorPopup('Por favor complete todos los campos');
         return;
       }
 
@@ -353,7 +384,7 @@
         }, 900);
 
       } catch (err) {
-        setMensaje(err.message || 'Error al iniciar sesión', '');
+        showErrorPopup(err.message || 'Error al iniciar sesión');
         document.getElementById('contrasena').value = '';
         document.getElementById('contrasena').focus();
         btn.disabled = false;
@@ -387,7 +418,7 @@
           window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
         }, 900);
       } catch (err) {
-        setMensaje(err.message || 'No autorizado con Google', '');
+        showErrorPopup(err.message || 'No autorizado con Google');
         btn.disabled = false;
         btn.innerHTML = btn.innerHTML.replace('⏳ Verificando...', 'Continuar con Google');
       }
@@ -396,7 +427,7 @@
     function iniciarGoogleLogin() {
       const clientId = (window.CONFIG && CONFIG.GOOGLE_CLIENT_ID) || '';
       if (!clientId || clientId.startsWith('TU_')) {
-        setMensaje('Google Client ID no configurado en config.js', '');
+        showErrorPopup('Google Client ID no configurado en config.js');
         return;
       }
       if (window.google && google.accounts) {
@@ -424,7 +455,7 @@
       document.getElementById('modal-forgot').classList.remove('open');
     }
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') cerrarForgot();
+      if (e.key === 'Escape') { cerrarForgot(); cerrarError(); }
     });
     async function enviarForgot() {
       const email = document.getElementById('forgot-email').value.trim();

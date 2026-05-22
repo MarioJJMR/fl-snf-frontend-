@@ -146,9 +146,8 @@ const API = {
       if (!data.success) throw new Error(data.error || 'Error al subir archivos');
       return data.data;
     },
-    descargarUrl(obraId, id) {
-      const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
-      return `${base}/documentos/${obraId}/descargar/${id}`;
+    getDownloadUrl(obraId, id) {
+      return API.get(`/documentos/${obraId}/descargar/${id}`);
     },
     delete(id) { return API.delete(`/documentos/${id}`); }
   }
