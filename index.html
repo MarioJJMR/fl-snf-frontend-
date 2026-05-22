@@ -2612,19 +2612,8 @@ async function eliminarDocumento(id) {
 
 async function descargarDocumento(obraId, id, filename) {
     try {
-        const token = API.getToken();
-        const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
-        const res = await fetch(`${base}/documentos/${obraId}/descargar/${id}`, {
-            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-        if (!res.ok) throw new Error('No se pudo descargar el documento');
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
+        const { url } = await API.documentos.getDownloadUrl(obraId, id);
+        window.open(url, '_blank');
     } catch (err) {
         alert('Error al descargar: ' + err.message);
     }
