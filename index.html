@@ -2534,9 +2534,9 @@ function agregarProyectoFinanciar() {
 async function listFiles(input) {
     const list = document.getElementById('fileList');
     const session = API.getSession();
-    const obraId = session.obra_id;
+    const obraId = session.obraId;
 
-    // Si no hay sesión con obra_id solo mostramos los archivos localmente
+    // Si no hay sesión con obraId solo mostramos los archivos localmente
     if (!obraId) {
         list.innerHTML = '';
         Array.from(input.files).forEach(file => {
@@ -2569,7 +2569,7 @@ async function listFiles(input) {
 async function cargarDocumentos() {
     const list = document.getElementById('fileList');
     const session = API.getSession();
-    const obraId = session.obra_id;
+    const obraId = session.obraId;
     if (!obraId || !list) return;
 
     try {
