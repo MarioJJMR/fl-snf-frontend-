@@ -6,7 +6,7 @@
     <title>Panel de Usuario - Fundación Loyola</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <!-- jsPDF para generación de PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -42,31 +42,6 @@
             <span>Documentos</span>
         </button>
 
-        <div class="nav-section-label">Sondeo SNF</div>
-        <button onclick="goTo('presupuesto')" id="nav-presupuesto">
-            <span class="nav-icon">💰</span>
-            <span>Presupuesto</span>
-        </button>
-        <button onclick="goTo('proyectosVigentes')" id="nav-proyectosVigentes">
-            <span class="nav-icon">📁</span>
-            <span>Proyectos Vigentes</span>
-        </button>
-        <button onclick="goTo('proyectosFinanciar')" id="nav-proyectosFinanciar">
-            <span class="nav-icon">🔍</span>
-            <span>Proyectos a Financiar</span>
-        </button>
-        <button onclick="goTo('necesidadesMateriales')" id="nav-necesidadesMateriales">
-            <span class="nav-icon">🔧</span>
-            <span>Necesidades Materiales</span>
-        </button>
-        <button onclick="goTo('contextoDemografico')" id="nav-contextoDemografico">
-            <span class="nav-icon">🌍</span>
-            <span>Contexto Demográfico</span>
-        </button>
-        <button onclick="goTo('impacto')" id="nav-impacto">
-            <span class="nav-icon">📈</span>
-            <span>Impacto</span>
-        </button>
     </nav>
     <div class="sidebar-footer">
         <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
@@ -160,13 +135,13 @@
             <div class="sondeo-menu">
                 <div class="sondeo-card" onclick="goTo('datosObra')">
                     <div class="s-icon">📋</div>
-                    <h4>2. Datos de la Obra</h4>
+                    <h4>Datos de la Obra</h4>
                     <p>Información general, contactos, planeación</p>
                     <div class="s-status">Pendiente</div>
                 </div>
                 <div class="sondeo-card" onclick="goTo('presupuesto')">
                     <div class="s-icon">💰</div>
-                    <h4>3. Presupuesto</h4>
+                    <h4>Presupuesto</h4>
                     <p>Gastos y financiamientos</p>
                     <div class="s-status">Pendiente</div>
                 </div>
@@ -178,25 +153,25 @@
                 </div>
                 <div class="sondeo-card" onclick="goTo('proyectosFinanciar')">
                     <div class="s-icon">🔍</div>
-                    <h4>5. Proyectos a Financiar</h4>
+                    <h4>Proyectos a Financiar</h4>
                     <p>Necesidades de fondos</p>
                     <div class="s-status">Pendiente</div>
                 </div>
                 <div class="sondeo-card" onclick="goTo('necesidadesMateriales')">
                     <div class="s-icon">🔧</div>
-                    <h4>6. Necesidades Materiales</h4>
+                    <h4>Necesidades Materiales</h4>
                     <p>Insumos y materiales</p>
                     <div class="s-status">Pendiente</div>
                 </div>
                 <div class="sondeo-card" onclick="goTo('contextoDemografico')">
                     <div class="s-icon">🌍</div>
-                    <h4>7. Contexto Demográfico</h4>
+                    <h4>Contexto Demográfico</h4>
                     <p>Datos de comunidades</p>
                     <div class="s-status">Pendiente</div>
                 </div>
                 <div class="sondeo-card" onclick="goTo('impacto')">
                     <div class="s-icon">📈</div>
-                    <h4>8. Impacto</h4>
+                    <h4>Impacto</h4>
                     <p>Resultados sociales</p>
                     <div class="s-status">Pendiente</div>
                 </div>
@@ -208,7 +183,7 @@
         ===================================================== -->
         <div id="page-datosObra" class="section-page">
             <div class="page-header">
-                <h2>📋 Sección 2 — Datos de la Obra</h2>
+                <h2>📋 Datos de la Obra</h2>
                 <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario.</p>
             </div>
 
@@ -517,7 +492,7 @@
         ===================================================== -->
         <div id="page-presupuesto" class="section-page">
             <div class="page-header">
-                <h2>💰 Sección 3 — Presupuesto General de la Obra</h2>
+                <h2>💰 Presupuesto General de la Obra</h2>
                 <p>Desglosar el presupuesto según los rubros indicados. Si tienes un formato interno, puedes mandarlo como anexo.</p>
             </div>
 
@@ -621,7 +596,7 @@
         ===================================================== -->
         <div id="page-proyectosVigentes" class="section-page">
             <div class="page-header">
-                <h2>📁 Sección 4 — Proyectos Vigentes</h2>
+                <h2>📁 Proyectos Vigentes</h2>
                 <p>Desglosar TODOS los proyectos que actualmente se están desarrollando en la obra.</p>
             </div>
             <div class="info-box">
@@ -645,7 +620,7 @@
         ===================================================== -->
         <div id="page-proyectosFinanciar" class="section-page">
             <div class="page-header">
-                <h2>🔍 Sección 5 — Proyectos con Necesidad Financiera</h2>
+                <h2>🔍 Proyectos con Necesidad Financiera</h2>
                 <p>Proyectos cuyo presupuesto está por agotarse, son nuevos sin financiamiento, o enfrentan emergencias.</p>
             </div>
             <div class="info-box">
@@ -669,7 +644,7 @@
         ===================================================== -->
         <div id="page-necesidadesMateriales" class="section-page">
             <div class="page-header">
-                <h2>🔧 Sección 6 — Necesidades Materiales</h2>
+                <h2>🔧 Necesidades Materiales</h2>
                 <p>Principales necesidades que enfrenta la Obra para su operación diaria y actividades.</p>
             </div>
             <div class="warn-box">
@@ -750,7 +725,7 @@
         ===================================================== -->
         <div id="page-contextoDemografico" class="section-page">
             <div class="page-header">
-                <h2>🌍 Sección 7 — Contexto Demográfico</h2>
+                <h2>🌍 Contexto Demográfico</h2>
                 <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario. Máximo 200 palabras por respuesta.</p>
             </div>
 
@@ -914,7 +889,7 @@
         ===================================================== -->
         <div id="page-impacto" class="section-page">
             <div class="page-header">
-                <h2>📈 Sección 8 — Impacto</h2>
+                <h2>📈 Impacto</h2>
                 <p>Esta sección puede venir pre-llenada. Revisa y actualiza donde sea necesario. Máx. 200 palabras por respuesta.</p>
             </div>
             <div class="info-box">
