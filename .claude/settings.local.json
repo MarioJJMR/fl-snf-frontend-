@@ -5,7 +5,14 @@
       "Bash(npx:*)",
       "Bash(npm test:*)",
       "Bash(node:*)",
-      "Bash(Test-NetConnection:*)"
+      "Bash(Test-NetConnection:*)",
+      "Bash(npm run:*)",
+      "Bash(net start:*)",
+      "Bash(sc query:*)",
+      "Bash(netstat:*)",
+      "Bash(MYSQL_PUBLIC_URL= node:*)",
+      "Bash(MYSQL_PUBLIC_URL=\"mysql://root:Diego85m.@localhost:3306/fl_snf_db\" node:*)",
+      "Bash(curl:*)"
     ]
   }
 }

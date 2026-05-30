@@ -44,6 +44,9 @@
 
     </nav>
     <div class="sidebar-footer">
+        <a href="proyectos.html" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+            📊 <span>Estado de Proyectos</span>
+        </a>
         <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
     </div>
 </aside>
@@ -956,16 +959,190 @@
 
         <!-- ===== DOCUMENTOS ===== -->
         <div id="page-documentos" class="section-page">
-            <div class="page-header"><h2>📂 Documentos Institucionales</h2><p>Suba documentos en formato PDF, Word o Excel.</p></div>
-            <div class="form-card">
-                <label style="display:block;border:2px dashed var(--green-border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;color:var(--text-mid);transition:all 0.2s" id="drop-zone">
-                    <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple id="fileUpload" style="display:none" onchange="listFiles(this)">
-                    <div style="font-size:36px;margin-bottom:10px">📁</div>
-                    <div style="font-weight:700;color:var(--green-dark)">Arrastra y suelta archivos aquí</div>
-                    <div style="font-size:13px;margin-top:4px">o haz clic para seleccionar — PDF, Word, Excel</div>
-                </label>
-                <ul id="fileList" style="margin-top:16px;list-style:none;display:flex;flex-direction:column;gap:8px"></ul>
+            <div class="page-header">
+                <h2>📂 Documentos Institucionales</h2>
+                <p>Organiza tus documentos por categoría. Formatos aceptados: PDF, Word, Excel. Máx. 10 MB por archivo.</p>
             </div>
+
+            <style>
+                .doc-folder { background:#fff; border:1px solid #dde8e3; border-radius:12px; margin-bottom:16px; overflow:hidden; }
+                .doc-folder-header { display:flex; align-items:center; gap:12px; padding:14px 20px; cursor:pointer; user-select:none; background:#f8faf9; border-bottom:1px solid transparent; transition:background .2s; }
+                .doc-folder-header:hover { background:#edf5ef; }
+                .doc-folder-header.open { border-bottom-color:#dde8e3; }
+                .folder-icon { font-size:22px; }
+                .folder-name { font-size:14px; font-weight:700; color:var(--green-dark); flex:1; }
+                .folder-count { font-size:12px; color:var(--text-light); background:#e8f5e9; border-radius:12px; padding:2px 10px; font-weight:600; }
+                .folder-chevron { font-size:12px; color:var(--text-light); transition:transform .2s; }
+                .folder-chevron.open { transform:rotate(90deg); }
+                .doc-folder-body { display:none; padding:16px 20px; }
+                .doc-folder-body.open { display:block; }
+
+                .subfolder { border:1px solid #e8f0e8; border-radius:8px; margin-bottom:12px; overflow:hidden; }
+                .subfolder-header { display:flex; align-items:center; gap:10px; padding:10px 16px; cursor:pointer; background:#f4f8f4; border-bottom:1px solid transparent; transition:background .2s; }
+                .subfolder-header:hover { background:#e8f5e9; }
+                .subfolder-header.open { border-bottom-color:#e8f0e8; }
+                .subfolder-name { font-size:13px; font-weight:700; color:#2e7d32; flex:1; }
+                .subfolder-count { font-size:11px; color:var(--text-light); background:#e8f5e9; border-radius:10px; padding:1px 8px; font-weight:600; }
+                .subfolder-body { display:none; padding:12px 16px; }
+                .subfolder-body.open { display:block; }
+
+                .drop-zone-folder {
+                    border:2px dashed #b2d8b2;
+                    border-radius:8px;
+                    padding:18px;
+                    text-align:center;
+                    cursor:pointer;
+                    color:var(--text-mid);
+                    font-size:13px;
+                    transition:all .2s;
+                    margin-bottom:12px;
+                }
+                .drop-zone-folder:hover { border-color:var(--green-dark); background:#f0f9f0; }
+                .drop-zone-folder.dragover { border-color:var(--green-dark); background:#e8f5e9; }
+
+                .doc-file-list { list-style:none; display:flex; flex-direction:column; gap:6px; }
+                .doc-file-item { display:flex; align-items:center; gap:10px; padding:8px 12px; background:#f8faf9; border:1px solid #e8f0e8; border-radius:8px; font-size:13px; }
+                .doc-file-name { flex:1; font-weight:600; color:#1a2e1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+                .doc-file-meta { color:var(--text-light); font-size:11px; white-space:nowrap; }
+                .doc-file-btn { background:none; border:none; cursor:pointer; font-size:15px; padding:0 2px; line-height:1; }
+            </style>
+
+            <!-- Estructura de carpetas -->
+            <div id="doc-carpetas">
+
+                <!-- Acta Constitutiva -->
+                <div class="doc-folder">
+                    <div class="doc-folder-header" onclick="toggleFolder(this)">
+                        <span class="folder-icon">📜</span>
+                        <span class="folder-name">Acta Constitutiva</span>
+                        <span class="folder-count" id="count-acta_constitutiva">0</span>
+                        <span class="folder-chevron">▶</span>
+                    </div>
+                    <div class="doc-folder-body">
+                        <div class="drop-zone-folder" onclick="triggerUpload('acta_constitutiva')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'acta_constitutiva')">
+                            <input type="file" id="fu-acta_constitutiva" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple onchange="subirArchivos(this,'acta_constitutiva')">
+                            📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                        </div>
+                        <ul class="doc-file-list" id="list-acta_constitutiva"></ul>
+                    </div>
+                </div>
+
+                <!-- Logotipos -->
+                <div class="doc-folder">
+                    <div class="doc-folder-header" onclick="toggleFolder(this)">
+                        <span class="folder-icon">🖼️</span>
+                        <span class="folder-name">Logotipos</span>
+                        <span class="folder-count" id="count-logotipos">0</span>
+                        <span class="folder-chevron">▶</span>
+                    </div>
+                    <div class="doc-folder-body">
+                        <div class="drop-zone-folder" onclick="triggerUpload('logotipos')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'logotipos')">
+                            <input type="file" id="fu-logotipos" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.svg" multiple onchange="subirArchivos(this,'logotipos')">
+                            📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                        </div>
+                        <ul class="doc-file-list" id="list-logotipos"></ul>
+                    </div>
+                </div>
+
+                <!-- CFDI -->
+                <div class="doc-folder">
+                    <div class="doc-folder-header" onclick="toggleFolder(this)">
+                        <span class="folder-icon">🧾</span>
+                        <span class="folder-name">CFDI</span>
+                        <span class="folder-count" id="count-cfdi">0</span>
+                        <span class="folder-chevron">▶</span>
+                    </div>
+                    <div class="doc-folder-body">
+                        <div class="drop-zone-folder" onclick="triggerUpload('cfdi')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'cfdi')">
+                            <input type="file" id="fu-cfdi" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.xml" multiple onchange="subirArchivos(this,'cfdi')">
+                            📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                        </div>
+                        <ul class="doc-file-list" id="list-cfdi"></ul>
+                    </div>
+                </div>
+
+                <!-- Comprobante de Domicilio -->
+                <div class="doc-folder">
+                    <div class="doc-folder-header" onclick="toggleFolder(this)">
+                        <span class="folder-icon">🏠</span>
+                        <span class="folder-name">Comprobante de Domicilio</span>
+                        <span class="folder-count" id="count-comprobante_domicilio">0</span>
+                        <span class="folder-chevron">▶</span>
+                    </div>
+                    <div class="doc-folder-body">
+                        <div class="drop-zone-folder" onclick="triggerUpload('comprobante_domicilio')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'comprobante_domicilio')">
+                            <input type="file" id="fu-comprobante_domicilio" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple onchange="subirArchivos(this,'comprobante_domicilio')">
+                            📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                        </div>
+                        <ul class="doc-file-list" id="list-comprobante_domicilio"></ul>
+                    </div>
+                </div>
+
+                <!-- Convenios (con subcarpetas) -->
+                <div class="doc-folder">
+                    <div class="doc-folder-header" onclick="toggleFolder(this)">
+                        <span class="folder-icon">🤝</span>
+                        <span class="folder-name">Convenios</span>
+                        <span class="folder-count" id="count-convenios-total">0</span>
+                        <span class="folder-chevron">▶</span>
+                    </div>
+                    <div class="doc-folder-body">
+
+                        <!-- Subcarpeta: Evidencias -->
+                        <div class="subfolder">
+                            <div class="subfolder-header" onclick="toggleSubfolder(this)">
+                                <span>📋</span>
+                                <span class="subfolder-name">Evidencias</span>
+                                <span class="subfolder-count" id="count-convenios_evidencias">0</span>
+                                <span class="folder-chevron">▶</span>
+                            </div>
+                            <div class="subfolder-body">
+                                <div class="drop-zone-folder" onclick="triggerUpload('convenios_evidencias')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'convenios_evidencias')">
+                                    <input type="file" id="fu-convenios_evidencias" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple onchange="subirArchivos(this,'convenios_evidencias')">
+                                    📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                                </div>
+                                <ul class="doc-file-list" id="list-convenios_evidencias"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Subcarpeta: Fotos -->
+                        <div class="subfolder">
+                            <div class="subfolder-header" onclick="toggleSubfolder(this)">
+                                <span>📸</span>
+                                <span class="subfolder-name">Fotos</span>
+                                <span class="subfolder-count" id="count-convenios_fotos">0</span>
+                                <span class="folder-chevron">▶</span>
+                            </div>
+                            <div class="subfolder-body">
+                                <div class="drop-zone-folder" onclick="triggerUpload('convenios_fotos')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'convenios_fotos')">
+                                    <input type="file" id="fu-convenios_fotos" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp" multiple onchange="subirArchivos(this,'convenios_fotos')">
+                                    📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                                </div>
+                                <ul class="doc-file-list" id="list-convenios_fotos"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Subcarpeta: Informes anuales -->
+                        <div class="subfolder">
+                            <div class="subfolder-header" onclick="toggleSubfolder(this)">
+                                <span>📊</span>
+                                <span class="subfolder-name">Informes anuales</span>
+                                <span class="subfolder-count" id="count-convenios_informes">0</span>
+                                <span class="folder-chevron">▶</span>
+                            </div>
+                            <div class="subfolder-body">
+                                <div class="drop-zone-folder" onclick="triggerUpload('convenios_informes')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'convenios_informes')">
+                                    <input type="file" id="fu-convenios_informes" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple onchange="subirArchivos(this,'convenios_informes')">
+                                    📎 Arrastra archivos aquí o <strong>haz clic para seleccionar</strong>
+                                </div>
+                                <ul class="doc-file-list" id="list-convenios_informes"></ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- end doc-carpetas -->
         </div>
 
     </div><!-- end page-content -->
@@ -2439,18 +2616,30 @@ function buildDescripcionProyecto(prefix) {
     ${buildFinanciamientoProyecto(prefix)}`;
 }
 
+function toggleProyecto(blockId) {
+    const block = document.getElementById(blockId);
+    const body = block.querySelector('.proyecto-body');
+    const icon = block.querySelector('.proyecto-toggle');
+    const collapsed = body.classList.toggle('collapsed');
+    icon.textContent = collapsed ? '▶' : '▼';
+}
+
 function agregarProyectoVigente() {
     proyVigenteCount++;
     const n = proyVigenteCount;
     const prefix = `pv${n}`;
+    const blockId = `bloque-pv${n}`;
     const container = document.getElementById('lista-proyectos-vigentes');
     const div = document.createElement('div');
     div.className = 'proyecto-block';
-    div.id = `bloque-pv${n}`;
+    div.id = blockId;
     div.innerHTML = `
-        <div class="proyecto-header">
-            <h4>Proyecto Vigente #${n}</h4>
-            <button class="btn-remove-project" onclick="document.getElementById('bloque-pv${n}').remove()">✕ Eliminar</button>
+        <div class="proyecto-header" onclick="toggleProyecto('${blockId}')">
+            <div class="proyecto-header-left">
+                <button class="proyecto-toggle" onclick="event.stopPropagation();toggleProyecto('${blockId}')">▼</button>
+                <h4 id="titulo-pv${n}">Proyecto Vigente #${n}</h4>
+            </div>
+            <button class="btn-remove-project" onclick="event.stopPropagation();document.getElementById('${blockId}').remove()">✕ Eliminar</button>
         </div>
         <div class="proyecto-body">
             <div class="form-card" style="margin-bottom:16px">
@@ -2467,6 +2656,13 @@ function agregarProyectoVigente() {
             </div>
         </div>`;
     container.appendChild(div);
+    const nameInput = document.getElementById(`${prefix}-nombre`);
+    if (nameInput) {
+        nameInput.addEventListener('input', () => {
+            const titulo = document.getElementById(`titulo-pv${n}`);
+            if (titulo) titulo.textContent = nameInput.value.trim() || `Proyecto Vigente #${n}`;
+        });
+    }
     div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2474,14 +2670,18 @@ function agregarProyectoFinanciar() {
     proyFinanciarCount++;
     const n = proyFinanciarCount;
     const prefix = `pf${n}`;
+    const blockId = `bloque-pf${n}`;
     const container = document.getElementById('lista-proyectos-financiar');
     const div = document.createElement('div');
     div.className = 'proyecto-block';
-    div.id = `bloque-pf${n}`;
+    div.id = blockId;
     div.innerHTML = `
-        <div class="proyecto-header" style="background:linear-gradient(90deg,#0a5229,#0D6835)">
-            <h4>Proyecto por Financiar #${n}</h4>
-            <button class="btn-remove-project" onclick="document.getElementById('bloque-pf${n}').remove()">✕ Eliminar</button>
+        <div class="proyecto-header" style="background:linear-gradient(90deg,#0a5229,#0D6835)" onclick="toggleProyecto('${blockId}')">
+            <div class="proyecto-header-left">
+                <button class="proyecto-toggle" onclick="event.stopPropagation();toggleProyecto('${blockId}')">▼</button>
+                <h4 id="titulo-pf${n}">Proyecto por Financiar #${n}</h4>
+            </div>
+            <button class="btn-remove-project" onclick="event.stopPropagation();document.getElementById('${blockId}').remove()">✕ Eliminar</button>
         </div>
         <div class="proyecto-body">
             <div class="form-card" style="margin-bottom:16px">
@@ -2498,75 +2698,127 @@ function agregarProyectoFinanciar() {
             </div>
         </div>`;
     container.appendChild(div);
+    const nameInput = document.getElementById(`${prefix}-nombre`);
+    if (nameInput) {
+        nameInput.addEventListener('input', () => {
+            const titulo = document.getElementById(`titulo-pf${n}`);
+            if (titulo) titulo.textContent = nameInput.value.trim() || `Proyecto por Financiar #${n}`;
+        });
+    }
     div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // =================== FILE LIST / UPLOAD ===================
-async function listFiles(input) {
-    const list = document.getElementById('fileList');
+// =================== DOCUMENTOS — CARPETAS ===================
+
+const CARPETAS = ['acta_constitutiva','logotipos','cfdi','comprobante_domicilio','convenios_evidencias','convenios_fotos','convenios_informes'];
+const CONVENIOS_SUBS = ['convenios_evidencias','convenios_fotos','convenios_informes'];
+
+function triggerUpload(categoria) {
+    document.getElementById('fu-' + categoria)?.click();
+}
+
+function toggleFolder(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.folder-chevron');
+    const isOpen = body.classList.toggle('open');
+    header.classList.toggle('open', isOpen);
+    chevron.classList.toggle('open', isOpen);
+}
+
+function toggleSubfolder(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.folder-chevron');
+    const isOpen = body.classList.toggle('open');
+    header.classList.toggle('open', isOpen);
+    chevron.classList.toggle('open', isOpen);
+}
+
+function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function onDragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+function onDrop(e, categoria) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+    if (e.dataTransfer.files.length) subirArchivos({ files: e.dataTransfer.files }, categoria);
+}
+
+async function subirArchivos(input, categoria) {
     const session = API.getSession();
     const obraId = session.obraId;
+    const list = document.getElementById('list-' + categoria);
+    if (!list) return;
 
-    // Si no hay sesión con obraId solo mostramos los archivos localmente
-    if (!obraId) {
-        list.innerHTML = '';
-        Array.from(input.files).forEach(file => {
-            const li = document.createElement('li');
-            li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
-            li.innerHTML = `<span>📎</span><span style="flex:1;font-weight:600">${file.name}</span><span style="color:var(--text-light)">${(file.size/1024).toFixed(1)} KB</span>`;
-            list.appendChild(li);
-        });
-        return;
-    }
+    const files = Array.from(input.files || []);
+    if (!files.length) return;
 
-    // Mostrar archivos seleccionados en estado "subiendo..."
-    list.innerHTML = '';
-    const filesToUpload = Array.from(input.files);
-    filesToUpload.forEach(file => {
+    // Mostrar estado "subiendo"
+    files.forEach(f => {
         const li = document.createElement('li');
-        li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
-        li.innerHTML = `<span>⏳</span><span style="flex:1;font-weight:600">${file.name}</span><span style="color:var(--text-light)">Subiendo...</span>`;
+        li.className = 'doc-file-item';
+        li.innerHTML = `<span>⏳</span><span class="doc-file-name">${f.name}</span><span class="doc-file-meta">Subiendo...</span>`;
         list.appendChild(li);
     });
 
     try {
-        await API.documentos.upload(obraId, filesToUpload);
-        await cargarDocumentos(); // refresca la lista desde el servidor
+        await API.documentos.upload(obraId, files, categoria);
+        await cargarDocumentos();
     } catch (err) {
-        list.innerHTML = `<li style="color:red;font-size:13px;padding:8px">❌ Error al subir: ${err.message}</li>`;
+        list.innerHTML = `<li class="doc-file-item" style="color:red">❌ Error: ${err.message}</li>`;
     }
 }
 
 async function cargarDocumentos() {
-    const list = document.getElementById('fileList');
     const session = API.getSession();
     const obraId = session.obraId;
-    if (!obraId || !list) return;
+    if (!obraId) return;
+
+    // Limpiar todas las listas
+    CARPETAS.forEach(c => {
+        const el = document.getElementById('list-' + c);
+        if (el) el.innerHTML = '';
+        const cnt = document.getElementById('count-' + c);
+        if (cnt) cnt.textContent = '0';
+    });
 
     try {
         const docs = await API.documentos.getAll(obraId);
-        list.innerHTML = '';
-        if (!docs || docs.length === 0) {
-            list.innerHTML = '<li style="font-size:13px;color:var(--text-light);padding:8px">No hay documentos subidos aún.</li>';
-            return;
-        }
-        docs.forEach(doc => {
+        const conteos = {};
+
+        (docs || []).forEach(doc => {
+            const cat = doc.categoria || 'general';
+            const list = document.getElementById('list-' + cat);
+            if (!list) return;
+
+            conteos[cat] = (conteos[cat] || 0) + 1;
+
             const kb = doc.tamano ? (doc.tamano / 1024).toFixed(1) + ' KB' : '';
             const fecha = doc.fecha_subida ? new Date(doc.fecha_subida).toLocaleDateString('es-MX') : '';
+            const nombreSafe = (doc.nombre_original || '').replace(/'/g, "\\'");
             const li = document.createElement('li');
-            li.style = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;font-size:13px';
+            li.className = 'doc-file-item';
             li.innerHTML = `
-                <span>📎</span>
-                <span style="flex:1;font-weight:600">${doc.nombre_original}</span>
-                <span style="color:var(--text-light)">${kb}</span>
-                <span style="color:var(--text-light);font-size:11px">${fecha}</span>
-                <button onclick="descargarDocumento(${obraId}, ${doc.id}, '${doc.nombre_original.replace(/'/g, "\\'")}')"
-                        style="background:none;border:none;cursor:pointer;color:var(--green-dark);font-size:15px;font-weight:700;padding:0" title="Descargar">⬇</button>
-                <button onclick="eliminarDocumento(${doc.id})" style="background:none;border:none;cursor:pointer;color:#c00;font-size:15px;padding:0" title="Eliminar">🗑</button>`;
+                <span>📄</span>
+                <span class="doc-file-name" title="${doc.nombre_original}">${doc.nombre_original}</span>
+                <span class="doc-file-meta">${kb}</span>
+                <span class="doc-file-meta">${fecha}</span>
+                <button class="doc-file-btn" onclick="descargarDocumento('${obraId}',${doc.id},'${nombreSafe}')" title="Descargar">⬇️</button>
+                <button class="doc-file-btn" onclick="eliminarDocumento(${doc.id})" title="Eliminar" style="color:#c00">🗑️</button>`;
             list.appendChild(li);
         });
+
+        // Actualizar contadores
+        CARPETAS.forEach(c => {
+            const cnt = document.getElementById('count-' + c);
+            if (cnt) cnt.textContent = conteos[c] || 0;
+        });
+
+        // Contador total de Convenios
+        const totalConvenios = CONVENIOS_SUBS.reduce((s, c) => s + (conteos[c] || 0), 0);
+        const cntConvenios = document.getElementById('count-convenios-total');
+        if (cntConvenios) cntConvenios.textContent = totalConvenios;
+
     } catch (err) {
-        list.innerHTML = `<li style="font-size:13px;color:var(--text-light);padding:8px">No se pudieron cargar los documentos.</li>`;
+        console.error('Error al cargar documentos:', err);
     }
 }
 
@@ -2574,7 +2826,6 @@ async function eliminarDocumento(id) {
     if (!confirm('¿Eliminar este documento?')) return;
     try {
         await API.documentos.delete(id);
-        const session = API.getSession();
         await cargarDocumentos();
     } catch (err) {
         alert('Error al eliminar: ' + err.message);
@@ -2606,18 +2857,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initAutosave();
     cargarDocumentos();
 
-    // Drop zone for documents
-    const dropZone = document.getElementById('drop-zone');
-    if (dropZone) {
-        dropZone.addEventListener('click', () => document.getElementById('fileUpload').click());
-        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--green-dark)'; });
-        dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
-        dropZone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropZone.style.borderColor = '';
-            listFiles({ files: e.dataTransfer.files });
-        });
-    }
 });
 </script>
 </body>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyectos — Fundación Loyola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    /* ── Layout ── */
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .page-title { font-size: 22px; font-weight: 800; color: #0D6835; margin-bottom: 4px; }
+    .page-subtitle { font-size: 13px; color: #5a7a5a; margin-bottom: 24px; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px 20px;
+      border-left: 4px solid #ccc;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+    .stat-card.total   { border-color: #0D6835; }
+    .stat-card.nuevo   { border-color: #3498db; }
+    .stat-card.aprobado{ border-color: #27ae60; }
+    .stat-card.rechazado{ border-color: #e74c3c; }
+    .stat-card.cerrado { border-color: #95a5a6; }
+    .stat-num { font-size: 28px; font-weight: 800; color: #0D6835; }
+    .stat-card.nuevo    .stat-num { color: #3498db; }
+    .stat-card.aprobado .stat-num { color: #27ae60; }
+    .stat-card.rechazado .stat-num { color: #e74c3c; }
+    .stat-card.cerrado  .stat-num { color: #95a5a6; }
+    .stat-label { font-size: 12px; color: #5a7a5a; font-weight: 600; margin-top: 2px; }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 2px solid #dde8e3;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #5a7a5a;
+      transition: all .2s;
+    }
+    .filter-btn:hover { border-color: #0D6835; color: #0D6835; }
+    .filter-btn.active { background: #0D6835; border-color: #0D6835; color: #fff; }
+    .filter-btn.active.nuevo    { background: #3498db; border-color: #3498db; }
+    .filter-btn.active.aprobado { background: #27ae60; border-color: #27ae60; }
+    .filter-btn.active.rechazado{ background: #e74c3c; border-color: #e74c3c; }
+    .filter-btn.active.cerrado  { background: #95a5a6; border-color: #95a5a6; }
+    .search-input {
+      margin-left: auto;
+      padding: 7px 14px;
+      border: 2px solid #dde8e3;
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+      width: 220px;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: #0D6835; }
+
+    /* ── Project cards ── */
+    .projects-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .project-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.08);
+      border: 1px solid #e8f0e8;
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      transition: box-shadow .2s;
+    }
+    .project-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+
+    .project-card .card-left { min-width: 0; }
+    .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+
+    .badge-tipo {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .badge-tipo.vigente   { background: #e8f5e9; color: #1b5e20; }
+    .badge-tipo.financiar { background: #fff3e0; color: #e65100; }
+
+    .badge-status {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .badge-status.nuevo    { background: #e3f2fd; color: #1565c0; }
+    .badge-status.aprobado { background: #e8f5e9; color: #1b5e20; }
+    .badge-status.rechazado{ background: #ffebee; color: #b71c1c; }
+    .badge-status.cerrado  { background: #f5f5f5; color: #616161; }
+
+    .project-name { font-size: 15px; font-weight: 700; color: #1a2e1a; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .project-detail { font-size: 12.5px; color: #5a7a5a; display: flex; flex-wrap: wrap; gap: 14px; }
+    .project-detail span { display: flex; align-items: center; gap: 4px; }
+
+    /* ── Status selector ── */
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .status-select {
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 2px solid #dde8e3;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      background: #f8faf9;
+      color: #1a2e1a;
+      transition: border-color .2s;
+      min-width: 140px;
+    }
+    .status-select:focus { border-color: #0D6835; }
+    .status-select.nuevo    { border-color: #3498db; background: #e3f2fd; color: #1565c0; }
+    .status-select.aprobado { border-color: #27ae60; background: #e8f5e9; color: #1b5e20; }
+    .status-select.rechazado{ border-color: #e74c3c; background: #ffebee; color: #b71c1c; }
+    .status-select.cerrado  { border-color: #95a5a6; background: #f5f5f5; color: #616161; }
+
+    .save-indicator {
+      font-size: 11px;
+      color: #27ae60;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity .3s;
+      height: 16px;
+    }
+    .save-indicator.visible { opacity: 1; }
+
+    /* ── Empty / loading ── */
+    .empty-state { text-align: center; padding: 60px 20px; color: #5a7a5a; }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    .loading { text-align: center; padding: 40px; color: #5a7a5a; font-size: 14px; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #0D6835;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      transition: transform .3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { background: #e74c3c; }
+
+    @media (max-width: 600px) {
+      .project-card { grid-template-columns: 1fr; }
+      .card-right { flex-direction: row; align-items: center; }
+      .search-input { width: 100%; margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="assets/images/logo_oficial_2021_page-0001.jpg" alt="Fundación Loyola">
+    <div class="obra-label" id="obra-label-sidebar">Sistema de Obras</div>
+  </div>
+  <nav>
+    <div class="nav-section-label">Sondeo SNF</div>
+    <a href="index.html" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='transparent'">
+      <span class="nav-icon">🏠</span><span>Inicio</span>
+    </a>
+    <a href="index.html#datosObra" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='transparent'">
+      <span class="nav-icon">📋</span><span>Datos de la Obra</span>
+    </a>
+    <a href="index.html#calendario" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='transparent'">
+      <span class="nav-icon">📅</span><span>Fechas</span>
+    </a>
+    <a href="index.html#documentos" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;font-weight:600;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='transparent'">
+      <span class="nav-icon">📂</span><span>Documentos</span>
+    </a>
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.12);margin:8px 0">
+    <div class="nav-section-label">Proyectos</div>
+    <a href="proyectos.html" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.18);color:#fff;text-decoration:none;font-size:13px;font-weight:700;transition:background .2s">
+      <span class="nav-icon">📊</span><span>Estado de Proyectos</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="page-wrap">
+    <h1 class="page-title">Resumen de Proyectos</h1>
+    <p class="page-subtitle" id="obra-subtitle">Cargando obra...</p>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card total">
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card nuevo">
+        <div class="stat-num" id="stat-nuevo">—</div>
+        <div class="stat-label">Nuevo</div>
+      </div>
+      <div class="stat-card aprobado">
+        <div class="stat-num" id="stat-aprobado">—</div>
+        <div class="stat-label">Aprobado</div>
+      </div>
+      <div class="stat-card rechazado">
+        <div class="stat-num" id="stat-rechazado">—</div>
+        <div class="stat-label">Rechazado</div>
+      </div>
+      <div class="stat-card cerrado">
+        <div class="stat-num" id="stat-cerrado">—</div>
+        <div class="stat-label">Cerrado</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" data-filter="todos" onclick="setFilter('todos', this)">Todos</button>
+      <button class="filter-btn nuevo"    data-filter="nuevo"    onclick="setFilter('nuevo', this)">🔵 Nuevo</button>
+      <button class="filter-btn aprobado" data-filter="aprobado" onclick="setFilter('aprobado', this)">🟢 Aprobado</button>
+      <button class="filter-btn rechazado"data-filter="rechazado"onclick="setFilter('rechazado', this)">🔴 Rechazado</button>
+      <button class="filter-btn cerrado"  data-filter="cerrado"  onclick="setFilter('cerrado', this)">⚪ Cerrado</button>
+      <button class="filter-btn"          data-filter="vigente"  onclick="setFilter('vigente', this)">📂 Vigentes</button>
+      <button class="filter-btn"          data-filter="financiar"onclick="setFilter('financiar', this)">🔍 Por Financiar</button>
+      <input type="text" class="search-input" id="search-input" placeholder="🔍 Buscar proyecto..." oninput="renderCards()">
+    </div>
+
+    <!-- Cards -->
+    <div class="projects-grid" id="projects-grid">
+      <div class="loading">Cargando proyectos...</div>
+    </div>
+  </div><!-- end page-wrap -->
+</div><!-- end .main -->
+
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script>
+    let allProjects = [];
+    let currentFilter = 'todos';
+
+    // ── Init ──────────────────────────────────────────
+    async function init() {
+      const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+      if (!session.token) { window.location.href = 'Inicio.html'; return; }
+
+      const obraLabel = session.obraNombre || session.nombre || session.usuario || '';
+      const sidebarLabel = document.getElementById('obra-label-sidebar');
+      if (sidebarLabel) sidebarLabel.textContent = obraLabel;
+
+      const obraId = session.obraId;
+      if (!obraId) {
+        document.getElementById('projects-grid').innerHTML =
+          '<div class="empty-state"><div class="icon">⚠️</div><p>No hay obra asignada a este usuario.</p></div>';
+        return;
+      }
+
+      document.getElementById('obra-subtitle').textContent = session.obraNombre || 'Obra asignada';
+
+      try {
+        allProjects = await API.proyectos.getAll(obraId);
+        renderStats();
+        renderCards();
+      } catch (e) {
+        document.getElementById('projects-grid').innerHTML =
+          `<div class="empty-state"><div class="icon">❌</div><p>Error al cargar proyectos: ${e.message}</p></div>`;
+      }
+    }
+
+    // ── Stats ─────────────────────────────────────────
+    function renderStats() {
+      const counts = { nuevo: 0, aprobado: 0, rechazado: 0, cerrado: 0 };
+      allProjects.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+      document.getElementById('stat-total').textContent    = allProjects.length;
+      document.getElementById('stat-nuevo').textContent    = counts.nuevo;
+      document.getElementById('stat-aprobado').textContent = counts.aprobado;
+      document.getElementById('stat-rechazado').textContent= counts.rechazado;
+      document.getElementById('stat-cerrado').textContent  = counts.cerrado;
+    }
+
+    // ── Filter ────────────────────────────────────────
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards();
+    }
+
+    // ── Render ────────────────────────────────────────
+    function renderCards() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const grid  = document.getElementById('projects-grid');
+
+      let list = allProjects.filter(p => {
+        const datos = p.datos || {};
+        const nombre = (datos.nombre || '').toLowerCase();
+        const causa  = (datos.causa  || '').toLowerCase();
+
+        const matchSearch = !query || nombre.includes(query) || causa.includes(query);
+        const matchFilter =
+          currentFilter === 'todos'    ? true :
+          currentFilter === 'vigente'  ? p.tipo === 'vigente' :
+          currentFilter === 'financiar'? p.tipo === 'financiar' :
+          p.status === currentFilter;
+
+        return matchSearch && matchFilter;
+      });
+
+      if (list.length === 0) {
+        grid.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No se encontraron proyectos con ese filtro.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = list.map(p => cardHTML(p)).join('');
+    }
+
+    function cardHTML(p) {
+      const d = p.datos || {};
+      const status = p.status || 'nuevo';
+      const fecha  = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX') : '—';
+      const options = ['nuevo','aprobado','rechazado','cerrado']
+        .map(s => `<option value="${s}" ${s===status?'selected':''}>${labelStatus(s)}</option>`)
+        .join('');
+
+      return `
+        <div class="project-card" id="card-${p.id}">
+          <div class="card-left">
+            <div class="card-meta">
+              <span class="badge-tipo ${p.tipo}">${p.tipo === 'vigente' ? '📂 Vigente' : '🔍 Por Financiar'}</span>
+              <span class="badge-status ${status}">${labelStatus(status)}</span>
+            </div>
+            <div class="project-name" title="${d.nombre || '—'}">${d.nombre || 'Sin nombre'}</div>
+            <div class="project-detail">
+              ${d.causa        ? `<span>🏷️ ${d.causa}</span>` : ''}
+              ${d.temporalidad ? `<span>📅 ${d.temporalidad}</span>` : ''}
+              ${d.responsable  ? `<span>👤 ${d.responsable}</span>` : ''}
+              ${d.beneficiadosDirectos ? `<span>👥 ${d.beneficiadosDirectos.toLocaleString()} beneficiados</span>` : ''}
+              ${d.presupuesto  ? `<span>💰 $${Number(d.presupuesto).toLocaleString('es-MX')} MXN</span>` : ''}
+              ${d.montoRequerido ? `<span>💳 $${Number(d.montoRequerido).toLocaleString('es-MX')} requeridos</span>` : ''}
+              <span>📆 ${fecha}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <select class="status-select ${status}" onchange="changeStatus(${p.id}, this)">
+              ${options}
+            </select>
+            <div class="save-indicator" id="ind-${p.id}">✅ Guardado</div>
+          </div>
+        </div>`;
+    }
+
+    function labelStatus(s) {
+      return { nuevo: '🔵 Nuevo', aprobado: '🟢 Aprobado', rechazado: '🔴 Rechazado', cerrado: '⚪ Cerrado' }[s] || s;
+    }
+
+    // ── Change status ─────────────────────────────────
+    async function changeStatus(id, select) {
+      const newStatus = select.value;
+      select.className = `status-select ${newStatus}`;
+
+      try {
+        await API.proyectos.updateStatus(id, newStatus);
+
+        // Update local data
+        const proj = allProjects.find(p => p.id === id);
+        if (proj) proj.status = newStatus;
+
+        // Update badge in card
+        const card = document.getElementById(`card-${id}`);
+        if (card) {
+          const badge = card.querySelector('.badge-status');
+          badge.className = `badge-status ${newStatus}`;
+          badge.textContent = labelStatus(newStatus);
+        }
+
+        // Show indicator
+        const ind = document.getElementById(`ind-${id}`);
+        if (ind) {
+          ind.classList.add('visible');
+          setTimeout(() => ind.classList.remove('visible'), 2000);
+        }
+
+        renderStats();
+        showToast(`Status actualizado a "${newStatus}"`);
+      } catch (e) {
+        showToast('Error al actualizar: ' + e.message, true);
+      }
+    }
+
+    // ── Toast ─────────────────────────────────────────
+    function showToast(msg, error = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (error ? ' error' : '');
+      setTimeout(() => t.className = 'toast', 2500);
+    }
+
+    async function cerrarSesion() {
+      if (!confirm('¿Deseas cerrar sesión?')) return;
+      try { await API.auth.logout(); } catch { /* silent */ }
+      sessionStorage.removeItem('usuarioActual');
+      window.location.href = 'Inicio.html';
+    }
+
+    init();
+  </script>
+</body>
+</html>

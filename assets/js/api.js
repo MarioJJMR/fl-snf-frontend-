@@ -116,6 +116,7 @@ const API = {
     getByTipo(obraId, tipo)   { return API.get(`/proyectos/${obraId}/${tipo}`); },
     create(obraId, tipo, d)   { return API.post(`/proyectos/${obraId}/${tipo}`, d); },
     update(id, d)             { return API.put(`/proyectos/${id}`, d); },
+    updateStatus(id, status)  { return API.request(`/proyectos/${id}/status`, { method: 'PATCH', body: { status } }); },
     delete(id)                { return API.delete(`/proyectos/${id}`); }
   },
 
@@ -129,12 +130,13 @@ const API = {
     getAll(obraId) {
       return API.get(`/documentos/${obraId}`);
     },
-    async upload(obraId, archivos) {
+    async upload(obraId, archivos, categoria = 'general') {
       // archivos: FileList o Array de File
       const token = API.getToken();
       const base = (window.CONFIG && CONFIG.API_BASE) || 'http://localhost:3001/api';
       const formData = new FormData();
       Array.from(archivos).forEach(f => formData.append('archivos', f));
+      formData.append('categoria', categoria);
 
       const res = await fetch(`${base}/documentos/${obraId}`, {
         method: 'POST',
