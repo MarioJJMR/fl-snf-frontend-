@@ -42,8 +42,8 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.07);
 
   /* Tipografía */
-  --font-body:    'Lato', 'Segoe UI', sans-serif;
-  --font-display: 'Lato', 'Segoe UI', sans-serif;
+  --font-body:    'Montserrat', 'Segoe UI', sans-serif;
+  --font-display: 'Montserrat', 'Segoe UI', sans-serif;
 
   /* Transiciones */
   --t: 0.2s ease;
