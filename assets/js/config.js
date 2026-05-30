@@ -7,7 +7,9 @@ const CONFIG = {
 
   // ── API ──────────────────────────────────────────────────────────────
   // Cambia esta URL al desplegar en producción.
-  API_BASE: 'https://fl-snf-backend-production.up.railway.app/api',
+  API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3001/api'
+    : 'https://fl-snf-backend-production.up.railway.app/api',
 
   // ── EmailJS ───────────────────────────────────────────────────────────
   // Regístrate en https://emailjs.com y reemplaza los valores.
