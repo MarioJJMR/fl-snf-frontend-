@@ -42,6 +42,9 @@
         <button onclick="goTo('usuarios')" id="nav-usuarios">
             <span class="nav-icon">👥</span><span>Usuarios</span>
         </button>
+        <button onclick="goTo('proyectos')" id="nav-proyectos">
+            <span class="nav-icon">📋</span><span>Proyectos</span>
+        </button>
         <button onclick="goTo('contacto')" id="nav-contacto">
             <span class="nav-icon">📞</span><span>Contacto con Obras</span>
         </button>
@@ -183,6 +186,29 @@
                     No hay usuarios registrados aún.
                 </div>
             </div>
+        </div>
+
+        <!-- ══════════════ PROYECTOS ══════════════ -->
+        <div id="page-proyectos" class="section-page">
+            <div class="page-header">
+                <h2>📋 Proyectos</h2>
+                <p>Estado de todos los proyectos registrados por las obras. Solo los administradores pueden cambiar el status.</p>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="buscar-proyecto" placeholder="🔍 Buscar por obra o proyecto..."
+                    oninput="filtrarProyectos()"
+                    style="flex:1;min-width:200px;max-width:360px;padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px;outline:none">
+                <select id="filtro-status-proyecto" onchange="filtrarProyectos()"
+                    style="padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:'Nunito',sans-serif;font-size:13px">
+                    <option value="">Todos los status</option>
+                    <option value="nuevo">Nuevo</option>
+                    <option value="aprobado">Aprobado</option>
+                    <option value="rechazado">Rechazado</option>
+                    <option value="cerrado">Cerrado</option>
+                </select>
+                <button class="btn-secondary" onclick="renderProyectos()">🔄 Actualizar</button>
+            </div>
+            <div id="proyectos-content"></div>
         </div>
 
         <!-- ══════════════ CONTACTO ══════════════ -->
@@ -500,10 +526,10 @@ let _usuarios = [];
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['bienvenida','obras','usuarios','contacto','estadisticas','proceso','calendario'];
+const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','estadisticas','proceso','calendario'];
 const PAGE_TITLES = {
     bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
-    contacto:'Contacto con Obras', estadisticas:'Estadísticas',
+    proyectos:'Proyectos', contacto:'Contacto con Obras', estadisticas:'Estadísticas',
     proceso:'Proceso / Tiempos', calendario:'Fechas'
 };
 
@@ -520,6 +546,7 @@ function goTo(page) {
     // Load data for section
     if (page === 'obras')         renderObras();
     if (page === 'usuarios')      renderUsuarios();
+    if (page === 'proyectos')     renderProyectos();
     if (page === 'contacto')      renderContactos();
     if (page === 'estadisticas')  actualizarEstadisticas();
 }
@@ -684,6 +711,117 @@ async function eliminarObra(obraId) {
         actualizarEstadisticas();
     } catch(err) {
         showToast('❌ Error: ' + err.message, '#c0392b');
+    }
+}
+
+// ══════════════════════════════════════════════
+// PROYECTOS
+// ══════════════════════════════════════════════
+let _todosProyectos = [];
+
+async function renderProyectos() {
+    const container = document.getElementById('proyectos-content');
+    if (!container) return;
+    container.innerHTML = '<p style="padding:20px;color:var(--text-light)">Cargando proyectos...</p>';
+    try {
+        if (!_obras.length) _obras = await API.obras.getAll();
+
+        const results = await Promise.all(
+            _obras.map(o =>
+                API.proyectos.getAll(o.id)
+                    .then(data => data.map(p => ({ ...p, _obraNombre: o.nombre_obra, _obraId: o.id })))
+                    .catch(() => [])
+            )
+        );
+        _todosProyectos = results.flat();
+        renderTablaProyectos(_todosProyectos);
+    } catch(err) {
+        container.innerHTML = `<p style="color:red;padding:20px">Error al cargar proyectos: ${esc(err.message)}</p>`;
+    }
+}
+
+function renderTablaProyectos(lista) {
+    const container = document.getElementById('proyectos-content');
+    if (!container) return;
+
+    if (!lista.length) {
+        container.innerHTML = '<div class="form-card"><p style="text-align:center;color:var(--text-light);padding:30px">No hay proyectos que coincidan con los filtros seleccionados.</p></div>';
+        return;
+    }
+
+    const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
+
+    container.innerHTML = `
+    <div class="form-card" style="overflow:auto">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Obra</th>
+                    <th>Tipo</th>
+                    <th>Proyecto</th>
+                    <th>Status actual</th>
+                    <th>Cambiar status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${lista.map(p => {
+                    const color = statusColors[p.status] || '#95a5a6';
+                    const nombre = p.datos?.nombre || p.datos?.titulo || p.datos?.proyecto || '—';
+                    return `<tr>
+                        <td style="font-size:13px;font-weight:600">${esc(p._obraNombre)}</td>
+                        <td><span style="background:${p.tipo==='vigente'?'#e8f5e9':'#fff3e0'};color:${p.tipo==='vigente'?'#2e7d32':'#e65100'};padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700">${esc(p.tipo)}</span></td>
+                        <td style="font-size:13px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nombre)}</td>
+                        <td><span id="badge-${p.id}" style="background:${color};color:#fff;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block">${esc(p.status)}</span></td>
+                        <td style="display:flex;gap:6px;align-items:center;min-width:210px">
+                            <select id="sel-status-${p.id}" style="font-size:12px;padding:5px 8px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);flex:1">
+                                ${['nuevo','aprobado','rechazado','cerrado'].map(s => `<option value="${s}"${p.status===s?' selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+                            </select>
+                            <button id="btn-status-${p.id}" class="btn-primary" style="font-size:12px;padding:5px 12px;white-space:nowrap" onclick="actualizarStatusProyecto(${p.id})">Guardar</button>
+                        </td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>
+    </div>`;
+}
+
+function filtrarProyectos() {
+    const q = (document.getElementById('buscar-proyecto')?.value || '').toLowerCase();
+    const st = document.getElementById('filtro-status-proyecto')?.value || '';
+    const filtrados = _todosProyectos.filter(p => {
+        const nombre = (p.datos?.nombre || p.datos?.titulo || p.datos?.proyecto || '').toLowerCase();
+        const matchQ = !q || p._obraNombre.toLowerCase().includes(q) || nombre.includes(q);
+        const matchS = !st || p.status === st;
+        return matchQ && matchS;
+    });
+    renderTablaProyectos(filtrados);
+}
+
+async function actualizarStatusProyecto(id) {
+    const select = document.getElementById('sel-status-' + id);
+    const btn    = document.getElementById('btn-status-' + id);
+    if (!select || !btn) return;
+    const status = select.value;
+    btn.disabled = true;
+    btn.textContent = '...';
+    try {
+        await API.proyectos.updateStatus(id, status);
+        // Update badge color and text
+        const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
+        const badge = document.getElementById('badge-' + id);
+        if (badge) {
+            badge.textContent = status;
+            badge.style.background = statusColors[status] || '#95a5a6';
+        }
+        // Sync local cache
+        const p = _todosProyectos.find(x => x.id === id);
+        if (p) p.status = status;
+        showToast(`✅ Status actualizado a "${status}"`);
+    } catch(err) {
+        showToast('❌ Error: ' + err.message, '#c0392b');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar';
     }
 }
 
