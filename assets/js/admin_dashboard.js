@@ -4,6 +4,16 @@
  * Versión: 2.0
  */
 
+// Escapa caracteres HTML para evitar XSS al insertar datos de la API en innerHTML
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ============================================
 // MÓDULO DE ADMINISTRACIÓN
 // ============================================
@@ -15,16 +25,16 @@ const AdminModule = {
      */
     init: () => {
         Utils.log('🔧 Iniciando panel de administrador');
-        
+
         // Mostrar sección predeterminada
         AdminModule.showSection('obras');
-        
+
         // Cargar obras registradas
         AdminModule.cargarObras();
-        
+
         // Configurar event listeners
         AdminModule.setupEventListeners();
-        
+
         Utils.log('✅ Panel de administrador listo');
     },
 
@@ -73,7 +83,7 @@ const AdminModule = {
     toggleForm: (showFormId, hideFormId) => {
         const showForm = Utils.getElement(showFormId);
         const hideForm = Utils.getElement(hideFormId);
-        
+
         if (showForm) {
             showForm.classList.toggle('hidden');
         }
@@ -87,7 +97,7 @@ const AdminModule = {
      */
     showSection: (sectionId) => {
         Utils.log(`📍 Admin - Navegando a: ${sectionId}`);
-        
+
         // Ocultar todas las secciones
         const sections = document.querySelectorAll('.section');
         sections.forEach(section => {
@@ -132,7 +142,7 @@ const AdminModule = {
                 container.appendChild(btn);
             });
         } catch (err) {
-            container.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
+            container.innerHTML = `<p style="color:red">Error: ${esc(err.message)}</p>`;
         }
     },
 
@@ -146,13 +156,14 @@ const AdminModule = {
             detalles.id = 'detallesObra';
             document.querySelector('.main-content, main, .content')?.appendChild(detalles);
         }
+        // Todos los campos escapados para prevenir XSS con datos de la API
         detalles.innerHTML = `
             <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:1.5rem;margin-top:1rem;">
-                <h3>${obra.nombre_obra || obra.nombreObra || 'Sin nombre'}</h3>
-                <p><strong>Dirección:</strong> ${obra.direccion || obra.direccionObra || '-'}</p>
-                <p><strong>Teléfono:</strong> ${obra.telefono || obra.telefonoObra || '-'}</p>
-                <p><strong>Correo:</strong> ${obra.correo || '-'}</p>
-                <p><strong>Estado:</strong> ${obra.estado || '-'}</p>
+                <h3>${esc(obra.nombre_obra || obra.nombreObra || 'Sin nombre')}</h3>
+                <p><strong>Dirección:</strong> ${esc(obra.direccion || obra.direccionObra || '-')}</p>
+                <p><strong>Teléfono:</strong> ${esc(obra.telefono || obra.telefonoObra || '-')}</p>
+                <p><strong>Correo:</strong> ${esc(obra.correo || '-')}</p>
+                <p><strong>Estado:</strong> ${esc(obra.estado || '-')}</p>
                 <p><strong>Fecha de registro:</strong> ${obra.fecha_registro ? new Date(obra.fecha_registro).toLocaleDateString('es-MX') : '-'}</p>
                 <div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap;">
                     <button onclick="AdminModule.eliminarObra(${JSON.stringify(obra).replace(/"/g, '&quot;')})" style="background:#e74c3c;color:#fff;border:none;padding:.5rem 1rem;border-radius:4px;cursor:pointer;">🗑️ Eliminar</button>

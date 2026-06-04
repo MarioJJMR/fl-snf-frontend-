@@ -478,6 +478,14 @@
           body: JSON.stringify({ email })
         });
         const data = await res.json();
+        // Manejar rate limit (429) y cualquier otro error del servidor
+        if (!data.success) {
+          msg.textContent = data.error || 'Error al procesar la solicitud. Intenta de nuevo.';
+          msg.className = 'error';
+          btn.disabled = false;
+          btn.textContent = 'Enviar enlace';
+          return;
+        }
         msg.textContent = data.message || 'Si el correo está registrado, recibirás un enlace en breve.';
         msg.className = 'success';
         btn.textContent = '✓ Enviado';
