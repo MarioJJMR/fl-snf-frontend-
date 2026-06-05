@@ -33,6 +33,16 @@
             <span class="nav-icon">📋</span>
             <span>Datos de la Obra</span>
         </button>
+        <div style="margin-left:14px;border-left:2px solid rgba(255,255,255,.15);padding-left:10px">
+            <button onclick="goTo('usuariosObra')" id="nav-usuariosObra" style="font-size:12px;padding:7px 10px">
+                <span class="nav-icon" style="font-size:13px">👥</span>
+                <span>Usuarios</span>
+            </button>
+            <a href="proyectos.html" id="nav-proyectos-link" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;color:rgba(255,255,255,.85);text-decoration:none;font-size:12px;font-weight:600;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='transparent'">
+                <span class="nav-icon" style="font-size:13px">📊</span>
+                <span>Proyectos</span>
+            </a>
+        </div>
         <button onclick="goTo('calendario')" id="nav-calendario">
             <span class="nav-icon">📅</span>
             <span>Fechas</span>
@@ -44,9 +54,6 @@
 
     </nav>
     <div class="sidebar-footer">
-        <a href="proyectos.html" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
-            📊 <span>Estado de Proyectos</span>
-        </a>
         <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
     </div>
 </aside>
@@ -192,7 +199,7 @@
 
             <!-- 2.1 Datos Generales -->
             <div class="form-card">
-                <h3>2.1 Datos Generales</h3>
+                <h3>Datos Generales</h3>
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label>Nombre de la Obra *</label>
@@ -277,7 +284,7 @@
 
             <!-- 2.2 Planeación General -->
             <div class="form-card">
-                <h3>2.2 Planeación General</h3>
+                <h3>Planeación General</h3>
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label>Fecha de la última planeación</label>
@@ -318,7 +325,7 @@
 
             <!-- Datos de Contacto -->
             <div class="form-card">
-                <h3>2.3 – 2.6 Datos de Contacto</h3>
+                <h3>Datos de Contacto</h3>
                 <div id="contactos-list">
                     <div class="form-row cols-1" style="margin-bottom:8px"><strong style="color:var(--text-mid);font-size:13px">2.3 Director</strong></div>
                     <div class="form-row cols-3">
@@ -349,7 +356,7 @@
 
             <!-- 2.7 Colaboradores -->
             <div class="form-card">
-                <h3>2.7 Número de Colaboradores</h3>
+                <h3>Número de Colaboradores</h3>
                 <div class="form-row cols-3">
                     <div class="form-group"><label>Jesuitas</label><input type="number" id="numJesuitas" min="0" value="0" oninput="calcColaboradores()"></div>
                     <div class="form-group"><label>Sacerdotes diocesanos</label><input type="number" id="numSacerdotes" min="0" value="0" oninput="calcColaboradores()"></div>
@@ -363,7 +370,7 @@
 
             <!-- 2.8 Comunicación -->
             <div class="form-card">
-                <h3>2.8 Comunicación y Redes Sociales</h3>
+                <h3>Comunicación y Redes Sociales</h3>
                 <div class="form-row cols-3">
                     <div class="form-group"><label>Responsable de contenidos</label><input type="text" id="respContenidos" placeholder="Nombre completo"></div>
                     <div class="form-group"><label>Teléfono / Celular</label><input type="tel" id="respContenidosTel" placeholder="+52..."></div>
@@ -430,7 +437,7 @@
 
             <!-- 2.9 Frecuencia de publicaciones -->
             <div class="form-card">
-                <h3>2.9 Frecuencia de Publicaciones</h3>
+                <h3>Frecuencia de Publicaciones</h3>
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label>¿Cuál es la frecuencia de publicaciones en redes?</label>
@@ -511,7 +518,7 @@
 
             <!-- 3.2 Gastos -->
             <div class="form-card">
-                <h3>3.2 Gastos de la Obra</h3>
+                <h3>Gastos de la Obra</h3>
 
                 <div style="margin-bottom:16px;font-weight:700;color:var(--text-mid);font-size:13px">Capital Humano y Operativo <span style="font-weight:400">(Salarios, honorarios, capacitación, renta, electricidad, agua, internet)</span></div>
                 <div class="dyn-table-wrapper">
@@ -553,7 +560,7 @@
 
             <!-- 3.3 Financiamiento -->
             <div class="form-card">
-                <h3>3.3 Principales Fuentes de Financiamiento</h3>
+                <h3>Principales Fuentes de Financiamiento</h3>
                 <div class="dyn-table-wrapper">
                     <table class="dyn-table" id="tablaFinanciamiento">
                         <thead>
@@ -606,6 +613,20 @@
                 Es importante que en los apartados narrativos puedan ofrecernos información <strong>clara y abundante</strong>. Con esta información se construirán fichas técnicas por proyecto.
             </div>
 
+            <!-- ── Proyectos guardados en BD (colapsable) ── -->
+            <div id="panel-proy-guardados" style="margin-bottom:20px">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:#f0f7f2;border:1.5px solid #b8d9c5;border-radius:8px;padding:12px 16px">
+                    <div onclick="togglePanelProyectos()" style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex:1">
+                        <span id="chevron-proy-guardados" style="font-size:13px;color:#0D6835;transition:transform .2s">▼</span>
+                        <span style="font-size:13px;font-weight:700;color:#0D6835">📋 Proyectos guardados en el sistema <span id="count-proy-guardados" style="font-weight:400;color:#5a7a5a"></span></span>
+                    </div>
+                    <button onclick="abrirModalNuevoProyecto()" style="background:#0D6835;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0">➕ Nuevo Proyecto</button>
+                </div>
+                <div id="body-proy-guardados" style="display:none;border:1.5px solid #b8d9c5;border-top:none;border-radius:0 0 8px 8px;overflow:hidden">
+                    <div id="lista-proy-guardados"><p style="padding:16px;font-size:13px;color:#5a7a5a;margin:0">Cargando...</p></div>
+                </div>
+            </div>
+
             <div id="lista-proyectos-vigentes"></div>
 
             <button class="btn-outline-add" onclick="agregarProyectoVigente()">
@@ -655,7 +676,7 @@
             </div>
 
             <div class="form-card">
-                <h3>6.2 Retos Materiales Urgentes</h3>
+                <h3>Retos Materiales Urgentes</h3>
                 <div class="form-group">
                     <label>¿Cuáles son los principales retos materiales urgentes que enfrenta la Obra actualmente?</label>
                     <span class="label-hint">Ej. Descompostura de camionetas, mantenimiento del edificio, computadoras con fallas recurrentes...</span>
@@ -664,7 +685,7 @@
             </div>
 
             <div class="form-card">
-                <h3>6.3 Necesidades Previstas</h3>
+                <h3>Necesidades Previstas</h3>
                 <div class="form-group">
                     <label>¿Deseas compartir alguna situación sobre necesidades materiales previstas en los próximos meses?</label>
                     <span class="label-hint">Ej. Aumento en número de personas atendidas y falta de mobiliario...</span>
@@ -673,7 +694,7 @@
             </div>
 
             <div class="form-card">
-                <h3>6.4 Tipos de Insumos, Materiales o Mobiliario</h3>
+                <h3>Tipos de Insumos, Materiales o Mobiliario</h3>
                 <div class="dyn-table-wrapper">
                     <table class="dyn-table" id="tablaInsumos">
                         <thead>
@@ -733,7 +754,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.1 Tipo de Población</h3>
+                <h3>Tipo de Población</h3>
                 <div class="form-group">
                     <label>¿Su población es urbana o rural?</label>
                     <span class="label-hint">Urbana: densa, con acceso a instituciones públicas y privadas. Rural: menor densidad, actividades primarias (agricultura, pesca, ganadería).</span>
@@ -747,7 +768,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.2 Tamaño y Crecimiento Poblacional</h3>
+                <h3>Tamaño y Crecimiento Poblacional</h3>
                 <div class="form-group" style="margin-bottom:16px">
                     <label>¿Cuál es el tamaño total de la población en las comunidades donde trabaja la Obra?</label>
                     <span class="label-hint">Describir el tamaño y si el número de habitantes ha aumentado o disminuido.</span>
@@ -761,7 +782,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.3 Estructura Familiar</h3>
+                <h3>Estructura Familiar</h3>
                 <div class="form-row cols-2">
                     <div class="form-group">
                         <label>¿Cuál es el tamaño promedio de las familias?</label>
@@ -771,7 +792,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.4 Nivel Socioeconómico</h3>
+                <h3>Nivel Socioeconómico</h3>
                 <div class="form-group">
                     <label>Describe la situación socioeconómica de las comunidades.</label>
                     <span class="label-hint">Línea de pobreza, actividades económicas. Máx. 200 palabras.</span>
@@ -780,7 +801,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.5 Educación y Recreación</h3>
+                <h3>Educación y Recreación</h3>
                 <div class="form-group" style="margin-bottom:16px">
                     <label>Describe las condiciones del área educativa.</label>
                     <span class="label-hint">Tasa de acceso, brechas por género, etc. Máx. 200 palabras.</span>
@@ -794,7 +815,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.6 Ocupación y Empleo</h3>
+                <h3>Ocupación y Empleo</h3>
                 <div class="form-group">
                     <label>¿Cuál es la tasa de empleo/desempleo y las principales actividades económicas?</label>
                     <span class="label-hint">Sector industrial, construcción, comercial, agropecuario. Máx. 200 palabras.</span>
@@ -803,7 +824,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.7 Salud y Bienestar</h3>
+                <h3>Salud y Bienestar</h3>
                 <div class="form-group" style="margin-bottom:16px">
                     <label>¿Cuáles son las condiciones de salud de la población?</label>
                     <span class="label-hint">Esperanza de vida, mortalidad infantil, acceso a servicios de salud. Máx. 200 palabras.</span>
@@ -817,7 +838,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.8 Acceso a Servicios Básicos</h3>
+                <h3>Acceso a Servicios Básicos</h3>
                 <div class="form-group">
                     <label>Describe el acceso a servicios básicos en la comunidad.</label>
                     <span class="label-hint">Agua, electricidad, vivienda digna, vías de comunicación, internet. Máx. 200 palabras.</span>
@@ -826,7 +847,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.9 Diversidad Cultural</h3>
+                <h3>Diversidad Cultural</h3>
                 <div class="form-group" style="margin-bottom:16px">
                     <label>¿Cómo se integran las diversas identidades culturales en las comunidades?</label>
                     <span class="label-hint">Festividades patronales, tradición oral, expresión cultural. Máx. 200 palabras.</span>
@@ -850,7 +871,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.10 Movilidad y Migración</h3>
+                <h3>Movilidad y Migración</h3>
                 <div class="form-group" style="margin-bottom:16px">
                     <label>¿Cuál es la tasa de migración interna y externa?</label>
                     <span class="label-hint">Si no atienden migración, dejar en blanco. Máx. 200 palabras.</span>
@@ -874,7 +895,7 @@
             </div>
 
             <div class="form-card">
-                <h3>7.11 Comentarios o Notas Adicionales</h3>
+                <h3>Comentarios o Notas Adicionales</h3>
                 <div class="form-group">
                     <label>Características propias de la comunidad no consideradas anteriormente.</label>
                     <textarea id="notasContexto" rows="4"></textarea>
@@ -1145,6 +1166,31 @@
             </div><!-- end doc-carpetas -->
         </div>
 
+        <!-- ══════════════ USUARIOS DE LA OBRA ══════════════ -->
+        <div id="page-usuariosObra" class="section-page">
+            <div class="page-header">
+                <h2>👥 Usuarios de la Obra</h2>
+                <p>Personas con acceso al sistema asociadas a esta obra.</p>
+            </div>
+            <div class="form-card" style="overflow:auto">
+                <table class="user-table" id="tabla-usuarios-obra">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Fecha de registro</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-usuarios-obra"></tbody>
+                </table>
+                <div id="no-usuarios-obra" style="display:none;text-align:center;padding:40px;color:var(--text-light);font-size:14px">
+                    No hay usuarios registrados para esta obra.
+                </div>
+            </div>
+        </div>
+
     </div><!-- end page-content -->
 
     <!-- Floating Action Bar -->
@@ -1167,6 +1213,55 @@
 </div>
 
 <!-- ===== MODAL PDF ===== -->
+<!-- ══════════════════════════════════════════
+     MODAL: NUEVO PROYECTO VIGENTE
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-nuevo-proyecto">
+    <div class="modal" style="max-width:560px">
+        <button class="modal-close" onclick="cerrarModal('modal-nuevo-proyecto')">✕</button>
+        <h3>📁 Nuevo Proyecto Vigente</h3>
+        <p style="font-size:13px;color:var(--text-mid);margin-bottom:16px">El proyecto quedará registrado en el sistema y será visible para el administrador.</p>
+
+        <div class="form-group" style="margin-bottom:12px">
+            <label>Nombre del Proyecto *</label>
+            <input type="text" id="np-nombre" placeholder="Nombre del proyecto">
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+            <label>Descripción *</label>
+            <textarea id="np-descripcion" rows="3" placeholder="¿En qué consiste el proyecto?"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="form-group">
+                <label>Causa que atiende</label>
+                <input type="text" id="np-causa" placeholder="Ej. Educación, salud...">
+            </div>
+            <div class="form-group">
+                <label>Temporalidad</label>
+                <input type="text" id="np-temporalidad" placeholder="Ej. Ene–Dic 2025">
+            </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+            <div class="form-group">
+                <label>Responsable</label>
+                <input type="text" id="np-responsable" placeholder="Nombre del responsable">
+            </div>
+            <div class="form-group">
+                <label>Beneficiarios directos</label>
+                <input type="number" id="np-beneficiarios" min="0" placeholder="0">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+            <label>Monto solicitado (MXN)</label>
+            <input type="number" id="np-monto" min="0" placeholder="0">
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-nuevo-proyecto')">Cancelar</button>
+            <button class="btn-primary" id="btn-guardar-proyecto" onclick="guardarNuevoProyecto()">💾 Guardar Proyecto</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="modal-pdf">
     <div class="modal">
         <button class="modal-close" onclick="cerrarModal('modal-pdf')">✕</button>
@@ -1245,13 +1340,20 @@
     }
 })();
 
+// =================== XSS ESCAPE ===================
+function esc(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 // =================== STORAGE KEY ===================
 const LS_KEY = 'fl_snf_2025';
 
 // =================== NAVIGATION ===================
-const pages = ['welcome','datosObra','sondeo','presupuesto','proyectosVigentes','proyectosFinanciar','necesidadesMateriales','contextoDemografico','impacto','calendario','documentos'];
+const pages = ['welcome','datosObra','sondeo','presupuesto','proyectosVigentes','proyectosFinanciar','necesidadesMateriales','contextoDemografico','impacto','calendario','documentos','usuariosObra'];
 const pageTitles = {
-    welcome:'Inicio', datosObra:'Datos de la Obra', sondeo:'Sondeo SNF',
+    welcome:'Inicio', datosObra:'Datos de la Obra', sondeo:'Sondeo SNF', usuariosObra:'Usuarios',
     presupuesto:'Presupuesto', proyectosVigentes:'Proyectos Vigentes',
     proyectosFinanciar:'Proyectos a Financiar', necesidadesMateriales:'Necesidades Materiales',
     contextoDemografico:'Contexto Demográfico', impacto:'Impacto',
@@ -1652,6 +1754,8 @@ function _activarPagina(page) {
     if (navBtn) navBtn.classList.add('active');
     document.getElementById('topbar-current').textContent = pageTitles[page] || page;
     if (page === 'documentos') cargarDocumentos();
+    if (page === 'proyectosVigentes') cargarProyectosGuardados();
+    if (page === 'usuariosObra') cargarUsuariosObra();
 }
 
 // Cadena secuencial del sondeo — cada sección requiere todas las anteriores
@@ -2081,7 +2185,7 @@ function generarPDF() {
 
     // ---- SECCIÓN 2: DATOS DE LA OBRA ----
     sectionTitle('2. Datos de la Obra');
-    subTitle('2.1 Datos Generales');
+    subTitle('Datos Generales');
     field('Nombre de la Obra', getVal('nombreObra'));
     field('RFC', getVal('rfc'));
     field('Estado', getVal('estado'));
@@ -2090,7 +2194,7 @@ function generarPDF() {
     field('Personalidad Jurídica', getVal('personalidadJuridica'));
     field('Donataria Autorizada', getVal('donataria'));
 
-    subTitle('2.2 Planeación General');
+    subTitle('Planeación General');
     field('Fecha última planeación', getVal('fechaPlaneacion'));
     field('Periodo', getVal('periodoPlaneacion'));
     field('Misión', getVal('mision'));
@@ -2098,17 +2202,17 @@ function generarPDF() {
     field('Objetivo General', getVal('objetivoGeneral'));
     field('Objetivos Estratégicos', getVal('objetivosEstrategicos'));
 
-    subTitle('2.3 Director');
+    subTitle('Director');
     field('Nombre', getVal('directorNombre'));
     field('Teléfono', getVal('directorTel'));
     field('Correo', getVal('directorCorreo'));
 
-    subTitle('2.4 Administración');
+    subTitle('Administración');
     field('Nombre', getVal('adminNombre'));
     field('Teléfono', getVal('adminTel'));
     field('Correo', getVal('adminCorreo'));
 
-    subTitle('2.7 Colaboradores');
+    subTitle('Colaboradores');
     simpleTable(
         ['Categoría', 'Número'],
         [
@@ -2125,7 +2229,7 @@ function generarPDF() {
     sectionTitle('3. Presupuesto General de la Obra');
     field('Presupuesto anual 2026', '$' + (getVal('presupuestoAnual') || '0'));
 
-    subTitle('3.2 Capital Humano y Operativo');
+    subTitle('Capital Humano y Operativo');
     const rowsCH = [];
     document.querySelectorAll('#tbodyCapHumano tr').forEach(tr => {
         const inputs = tr.querySelectorAll('input');
@@ -2133,7 +2237,7 @@ function generarPDF() {
     });
     simpleTable(['Descripción', 'Costo (MXN)'], rowsCH);
 
-    subTitle('3.2 Materiales y Servicios');
+    subTitle('Materiales y Servicios');
     const rowsMS = [];
     document.querySelectorAll('#tbodyMatServ tr').forEach(tr => {
         const inputs = tr.querySelectorAll('input');
@@ -2142,7 +2246,7 @@ function generarPDF() {
     simpleTable(['Descripción', 'Costo (MXN)'], rowsMS);
     field('TOTAL GASTOS', document.getElementById('totalGastos')?.textContent || '$0.00');
 
-    subTitle('3.3 Fuentes de Financiamiento');
+    subTitle('Fuentes de Financiamiento');
     const rowsFin = [];
     document.querySelectorAll('#tbodyFinanciamiento tr').forEach(tr => {
         const inputs = tr.querySelectorAll('input');
@@ -2156,7 +2260,7 @@ function generarPDF() {
     field('Retos urgentes', getVal('retosUrgentes'));
     field('Necesidades previstas', getVal('necesidadesPrevistas'));
 
-    subTitle('6.4 Insumos y Materiales');
+    subTitle('Insumos y Materiales');
     const rowsIns = [];
     document.querySelectorAll('#tbodyInsumos tr').forEach(tr => {
         const sel = tr.querySelector('select')?.value || '';
@@ -2624,6 +2728,177 @@ function toggleProyecto(blockId) {
     icon.textContent = collapsed ? '▶' : '▼';
 }
 
+// =================== USUARIOS DE LA OBRA ===================
+async function cargarUsuariosObra() {
+    const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+    const obraId  = session.obraId;
+    const tbody   = document.getElementById('tbody-usuarios-obra');
+    const noMsg   = document.getElementById('no-usuarios-obra');
+    const tabla   = document.getElementById('tabla-usuarios-obra');
+    if (!tbody || !obraId) return;
+
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:20px">Cargando...</td></tr>`;
+    try {
+        const usuarios = await API.usuarios.getByObra(obraId);
+        if (!usuarios.length) {
+            tabla.style.display = 'none';
+            noMsg.style.display = 'block';
+            return;
+        }
+        tabla.style.display = '';
+        noMsg.style.display = 'none';
+        tbody.innerHTML = usuarios.map(u => `
+            <tr>
+                <td style="font-weight:600">${esc(u.nombre || u.usuario)}</td>
+                <td style="color:var(--text-mid)">${esc(u.usuario)}</td>
+                <td>${esc(u.email || '—')}</td>
+                <td><span style="background:${u.rol==='admin'?'#e8f5e9':'#e3f2fd'};color:${u.rol==='admin'?'#1b5e20':'#1565c0'};padding:2px 10px;border-radius:12px;font-size:12px;font-weight:700">${esc(u.rol)}</span></td>
+                <td style="color:var(--text-light);font-size:12px">${u.fecha_registro ? new Date(u.fecha_registro).toLocaleDateString('es-MX') : '—'}</td>
+            </tr>`).join('');
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#e74c3c;padding:20px">${esc(e.message)}</td></tr>`;
+    }
+}
+
+// =================== PROYECTOS GUARDADOS (COLAPSABLE) ===================
+
+async function cargarProyectosGuardados() {
+    const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+    const obraId = session.obraId;
+    const lista  = document.getElementById('lista-proy-guardados');
+    const count  = document.getElementById('count-proy-guardados');
+    if (!lista || !obraId) return;
+
+    lista.innerHTML = '<p style="padding:16px;font-size:13px;color:#5a7a5a;margin:0">Cargando...</p>';
+    try {
+        const todos    = await API.proyectos.getAll(obraId);
+        const vigentes = todos.filter(p => p.tipo === 'vigente');
+
+        if (count) count.textContent = vigentes.length ? `(${vigentes.length})` : '(0)';
+
+        if (!vigentes.length) {
+            lista.innerHTML = '<p style="padding:16px;font-size:13px;color:#5a7a5a;text-align:center;margin:0">No hay proyectos vigentes guardados aún.</p>';
+            return;
+        }
+        lista.innerHTML = vigentes.map(p => _htmlProyectoGuardado(p)).join('');
+    } catch(e) {
+        lista.innerHTML = `<p style="padding:16px;font-size:13px;color:#e74c3c;margin:0">Error al cargar: ${esc(e.message)}</p>`;
+    }
+}
+
+function _htmlProyectoGuardado(p) {
+    const d = p.datos || {};
+    const statusColor = { nuevo:'#3498db', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#95a5a6' }[p.status] || '#3498db';
+    const statusLabel = { nuevo:'Nuevo', aprobado:'Aprobado', rechazado:'Rechazado', cerrado:'Cerrado' }[p.status] || p.status;
+    const fecha = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX') : '—';
+
+    const campos = [
+        ['Descripción',   d.descripcion],
+        ['Causa',         d.causa],
+        ['Temporalidad',  d.temporalidad],
+        ['Responsable',   d.responsable],
+        ['Objetivo',      d.objetivo],
+        ['Lugar',         d.lugar],
+        ['Beneficiarios', d.beneficiarios ?? d['benef-directos']],
+        ['Monto',         (d.monto_solicitado || d.presupuesto) ? '$' + Number(d.monto_solicitado || d.presupuesto).toLocaleString('es-MX') + ' MXN' : null],
+    ].filter(([, v]) => v != null && v !== '');
+
+    return `
+    <div style="border-bottom:1px solid #e8f0e8">
+        <div onclick="toggleProyectoGuardado(${p.id})" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;gap:10px">
+            <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                <span id="chevron-pg-${p.id}" style="font-size:11px;color:#5a7a5a;flex-shrink:0">▶</span>
+                <span style="font-size:13px;font-weight:700;color:#1a2e1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.nombre || '(Sin nombre)')}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span style="background:${statusColor};color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:12px">${esc(statusLabel)}</span>
+            </div>
+        </div>
+        <div id="detalle-pg-${p.id}" style="display:none;padding:0 16px 14px 36px;background:#f9fdfb;border-top:1px solid #e8f0e8">
+            <div style="display:grid;gap:5px;margin-top:10px;font-size:13px">
+                ${campos.map(([lbl, val]) => `<div><span style="font-weight:700;color:#0D6835">${esc(lbl)}:</span> ${esc(String(val))}</div>`).join('')}
+                <div style="color:#8a9a8a;font-size:12px;margin-top:4px">Registrado: ${fecha}</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function toggleProyectoGuardado(id) {
+    const detalle = document.getElementById('detalle-pg-' + id);
+    const chevron = document.getElementById('chevron-pg-' + id);
+    if (!detalle) return;
+    const open = detalle.style.display === 'none';
+    detalle.style.display = open ? 'block' : 'none';
+    if (chevron) chevron.textContent = open ? '▼' : '▶';
+}
+
+function abrirModalNuevoProyecto() {
+    ['np-nombre','np-descripcion','np-causa','np-temporalidad','np-responsable','np-beneficiarios','np-monto']
+        .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    abrirModal('modal-nuevo-proyecto');
+}
+
+async function guardarNuevoProyecto() {
+    const nombre      = document.getElementById('np-nombre')?.value.trim();
+    const descripcion = document.getElementById('np-descripcion')?.value.trim();
+    if (!nombre || !descripcion) {
+        showToast('⚠️ Nombre y descripción son obligatorios', '#c47a00');
+        return;
+    }
+
+    const datos = {
+        nombre,
+        descripcion,
+        causa:        document.getElementById('np-causa')?.value.trim() || undefined,
+        temporalidad: document.getElementById('np-temporalidad')?.value.trim() || undefined,
+        responsable:  document.getElementById('np-responsable')?.value.trim() || undefined,
+        beneficiarios:Number(document.getElementById('np-beneficiarios')?.value) || undefined,
+        monto_solicitado: Number(document.getElementById('np-monto')?.value) || undefined,
+    };
+    // Remove undefined keys
+    Object.keys(datos).forEach(k => datos[k] === undefined && delete datos[k]);
+
+    const btn = document.getElementById('btn-guardar-proyecto');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+        const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+        await API.proyectos.create(session.obraId, 'vigente', datos);
+        cerrarModal('modal-nuevo-proyecto');
+        showToast('✅ Proyecto guardado correctamente');
+        await cargarProyectosGuardados();
+        // Auto-expand panel so user sees the new project
+        const body = document.getElementById('body-proy-guardados');
+        if (body && body.style.display === 'none') togglePanelProyectos();
+    } catch(e) {
+        showToast('❌ Error: ' + esc(e.message), '#c0392b');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar Proyecto';
+    }
+}
+
+function togglePanelProyectos() {
+    const body    = document.getElementById('body-proy-guardados');
+    const chevron = document.getElementById('chevron-proy-guardados');
+    if (!body) return;
+    const open = body.style.display === 'none';
+    body.style.display = open ? 'block' : 'none';
+    if (chevron) chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+async function eliminarProyectoGuardado(id) {
+    if (!confirm('¿Eliminar este proyecto del sistema? Esta acción no se puede deshacer.')) return;
+    try {
+        await API.proyectos.delete(id);
+        showToast('Proyecto eliminado');
+        cargarProyectosGuardados();
+    } catch(e) {
+        showToast('Error al eliminar: ' + esc(e.message), '#c0392b');
+    }
+}
+
 function agregarProyectoVigente() {
     proyVigenteCount++;
     const n = proyVigenteCount;
@@ -2643,15 +2918,15 @@ function agregarProyectoVigente() {
         </div>
         <div class="proyecto-body">
             <div class="form-card" style="margin-bottom:16px">
-                <h3>4.2 Datos Generales</h3>
+                <h3>Datos Generales</h3>
                 ${buildDatosGeneralesProyecto(prefix)}
             </div>
             <div class="form-card" style="margin-bottom:16px">
-                <h3>4.3 Descripción del Proyecto</h3>
+                <h3>Descripción del Proyecto</h3>
                 ${buildDescripcionProyecto(prefix)}
             </div>
             <div class="form-card">
-                <h3>4.4 Presupuesto del Proyecto</h3>
+                <h3>Presupuesto del Proyecto</h3>
                 ${buildPresupuestoProyecto(prefix, false)}
             </div>
         </div>`;
@@ -2685,15 +2960,15 @@ function agregarProyectoFinanciar() {
         </div>
         <div class="proyecto-body">
             <div class="form-card" style="margin-bottom:16px">
-                <h3>5.2 Datos Generales</h3>
+                <h3>Datos Generales</h3>
                 ${buildDatosGeneralesProyecto(prefix)}
             </div>
             <div class="form-card" style="margin-bottom:16px">
-                <h3>5.3 Descripción del Proyecto</h3>
+                <h3>Descripción del Proyecto</h3>
                 ${buildDescripcionProyecto(prefix)}
             </div>
             <div class="form-card">
-                <h3>5.4 Presupuesto del Proyecto y Necesidad a Financiar</h3>
+                <h3>Presupuesto del Proyecto y Necesidad a Financiar</h3>
                 ${buildPresupuestoProyecto(prefix, true)}
             </div>
         </div>`;
