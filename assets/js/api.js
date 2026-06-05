@@ -98,6 +98,7 @@ const API = {
   // ── Usuarios ──────────────────────────────────────────────────────
   usuarios: {
     getAll()        { return API.get('/usuarios'); },
+    getByObra(obraId) { return API.get(`/usuarios/obra/${obraId}`); },
     create(data)    { return API.post('/usuarios', data); },
     update(id, data){ return API.put(`/usuarios/${id}`, data); },
     delete(id)      { return API.delete(`/usuarios/${id}`); }
@@ -122,7 +123,8 @@ const API = {
 
   // ── Correo ────────────────────────────────────────────────────────
   correo: {
-    enviarSondeo(data) { return API.post('/correo/sondeo', data); }
+    enviarSondeo(data)   { return API.post('/correo/sondeo', data); },
+    enviarSoporte(data)  { return API.post('/correo/soporte', data); }
   },
 
   // ── Documentos ────────────────────────────────────────────────────

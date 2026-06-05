@@ -349,6 +349,9 @@ a:hover { color: var(--green-mid); }
 .btn-email { background: linear-gradient(135deg, #7a1a1a, #c42a2a); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-family: var(--font-body); font-size: 13px; font-weight: 700; cursor: pointer; transition: all var(--t); display: inline-flex; align-items: center; gap: 7px; }
 .btn-email:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(196,42,42,0.25); }
 
+.btn-soporte { background: linear-gradient(135deg, #7a4e1a, #c47a2a); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-family: var(--font-body); font-size: 13px; font-weight: 700; cursor: pointer; transition: all var(--t); display: inline-flex; align-items: center; gap: 7px; }
+.btn-soporte:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(196,122,42,0.3); }
+
 .btn-danger  { background: linear-gradient(135deg, var(--danger), #b03030); color: #fff; border: none; border-radius: var(--radius-sm); padding: 9px 18px; font-family: var(--font-body); font-size: 13px; font-weight: 700; cursor: pointer; transition: all var(--t); display: inline-flex; align-items: center; gap: 6px; }
 .btn-danger:hover  { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(217,64,64,0.3); }
 .btn-success { background: linear-gradient(135deg, var(--success), #1e7e50); color: #fff; border: none; border-radius: var(--radius-sm); padding: 9px 18px; font-family: var(--font-body); font-size: 13px; font-weight: 700; cursor: pointer; transition: all var(--t); display: inline-flex; align-items: center; gap: 6px; }
