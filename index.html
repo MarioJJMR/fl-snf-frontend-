@@ -49,7 +49,7 @@
         </button>
         <button onclick="goTo('documentos')" id="nav-documentos">
             <span class="nav-icon">📂</span>
-            <span>Documentos</span>
+            <span>Documentos Institucionales</span>
         </button>
 
     </nav>
@@ -1201,6 +1201,7 @@
         <div class="fab-right">
             <button class="btn-pdf" onclick="abrirModalPDF()">📄 Generar PDF</button>
             <button class="btn-email" onclick="abrirModalCorreo()">📧 Enviar por correo</button>
+            <button class="btn-soporte" onclick="abrirModalSoporte()">🛟 Soporte</button>
         </div>
     </div>
 
@@ -1323,6 +1324,44 @@
     </div>
 </div>
 
+<!-- ===== MODAL SOPORTE ===== -->
+<div class="modal-overlay" id="modal-soporte">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-soporte')">✕</button>
+        <h3>🛟 Contactar a Soporte</h3>
+        <p>Envía un mensaje al equipo de soporte de Fundación Loyola. Te responderemos a la brevedad posible.</p>
+
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Tu nombre *</label>
+            <input type="text" id="soporte-nombre" placeholder="Nombre completo">
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Tu correo electrónico *</label>
+            <input type="email" id="soporte-email" placeholder="tucorreo@obra.mx">
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Asunto *</label>
+            <select id="soporte-asunto">
+                <option value="">-- Selecciona un asunto --</option>
+                <option value="Problema técnico">Problema técnico</option>
+                <option value="Error al guardar datos">Error al guardar datos</option>
+                <option value="Duda sobre el sistema">Duda sobre el sistema</option>
+                <option value="Solicitud de acceso">Solicitud de acceso</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="font-size:13px;font-weight:700">Mensaje *</label>
+            <textarea id="soporte-mensaje" rows="4" placeholder="Describe con detalle tu problema o consulta..."></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-soporte')">Cancelar</button>
+            <button class="btn-soporte" id="btn-enviar-soporte" onclick="enviarSoporte()">🛟 Enviar mensaje</button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><span id="toast-msg">Guardado correctamente</span></div>
 
@@ -1357,7 +1396,7 @@ const pageTitles = {
     presupuesto:'Presupuesto', proyectosVigentes:'Proyectos Vigentes',
     proyectosFinanciar:'Proyectos a Financiar', necesidadesMateriales:'Necesidades Materiales',
     contextoDemografico:'Contexto Demográfico', impacto:'Impacto',
-    calendario:'Fechas', documentos:'Documentos'
+    calendario:'Fechas', documentos:'Documentos Institucionales'
 };
 
 // Sections that count toward progress
@@ -2364,6 +2403,51 @@ async function enviarCorreo() {
     }
 }
 
+// =================== SOPORTE ===================
+function abrirModalSoporte() {
+    const session = API.getSession();
+    const nombre = session.nombre || session.usuario || '';
+    const email  = session.email || '';
+    document.getElementById('soporte-nombre').value  = nombre;
+    document.getElementById('soporte-email').value   = email;
+    document.getElementById('soporte-asunto').value  = '';
+    document.getElementById('soporte-mensaje').value = '';
+    abrirModal('modal-soporte');
+}
+
+async function enviarSoporte() {
+    const nombre  = document.getElementById('soporte-nombre')?.value?.trim();
+    const email   = document.getElementById('soporte-email')?.value?.trim();
+    const asunto  = document.getElementById('soporte-asunto')?.value;
+    const mensaje = document.getElementById('soporte-mensaje')?.value?.trim();
+
+    if (!nombre || !email || !asunto || !mensaje) {
+        showToast('⚠️ Por favor completa todos los campos', '#c47a00');
+        return;
+    }
+    const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!REGEX_EMAIL.test(email)) {
+        showToast('⚠️ El correo electrónico no tiene un formato válido', '#c47a00');
+        return;
+    }
+
+    const btn = document.getElementById('btn-enviar-soporte');
+    btn.innerHTML = '<span class="spinner"></span> Enviando...';
+    btn.disabled = true;
+
+    try {
+        const session = API.getSession();
+        const obra = session.obraNombre || session.obraId || 'N/D';
+        await API.correo.enviarSoporte({ nombre, email, asunto, mensaje, obra });
+        btn.innerHTML = '🛟 Enviar mensaje'; btn.disabled = false;
+        cerrarModal('modal-soporte');
+        showToast('✅ Mensaje enviado al equipo de soporte');
+    } catch (err) {
+        btn.innerHTML = '🛟 Enviar mensaje'; btn.disabled = false;
+        showToast('❌ ' + (err.message || 'Error al enviar el mensaje'), '#c43a3a');
+    }
+}
+
 function buildResumenTexto() {
     const g = id => document.getElementById(id)?.value?.trim() || 'N/D';
     return `
@@ -2569,7 +2653,12 @@ function buildFinanciamientoProyecto(prefix) {
             </tbody>
         </table>
     </div>
-    <button class="btn-add-row" onclick="addFinProyRow('${prefix}-fin-body')">+ Agregar fuente</button>`;
+    <button class="btn-add-row" onclick="addFinProyRow('${prefix}-fin-body')">+ Agregar fuente</button>
+    <div class="form-group" style="margin-top:14px">
+        <label style="font-size:13px;font-weight:700">Descripción del tipo de financiamiento</label>
+        <span class="label-hint">Describe brevemente el tipo o modalidad de financiamiento para este proyecto.</span>
+        <textarea id="${prefix}-fin-descripcion" rows="3" placeholder="Ej. Financiamiento mixto con aportación institucional y donativo externo..."></textarea>
+    </div>`;
 }
 
 function addFinProyRow(tbodyId) {
