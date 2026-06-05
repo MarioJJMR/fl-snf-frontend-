@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
     /* ── Layout ── */
     .page-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
@@ -277,32 +279,45 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- Modal detalle proyecto -->
+  <div class="modal-overlay" id="modal-detalle-proy" onclick="if(event.target===this)cerrarDetalleProy()">
+    <div class="modal" style="max-width:700px">
+      <button class="modal-close" onclick="cerrarDetalleProy()">✕</button>
+      <div id="modal-detalle-proy-content"></div>
+    </div>
+  </div>
+
   <script src="assets/js/config.js"></script>
   <script src="assets/js/api.js"></script>
   <script>
     let allProjects = [];
     let currentFilter = 'todos';
+    let _session = {};
 
     // ── Init ──────────────────────────────────────────
     async function init() {
-      const session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
-      if (!session.token) { window.location.href = 'Inicio.html'; return; }
+      _session = JSON.parse(sessionStorage.getItem('usuarioActual') || '{}');
+      if (!_session.token) { window.location.href = 'Inicio.html'; return; }
 
-      const obraLabel = session.obraNombre || session.nombre || session.usuario || '';
+      const obraLabel = _session.obraNombre || _session.nombre || _session.usuario || '';
       const sidebarLabel = document.getElementById('obra-label-sidebar');
       if (sidebarLabel) sidebarLabel.textContent = obraLabel;
 
-      const obraId = session.obraId;
+      const obraId = _session.obraId;
       if (!obraId) {
         document.getElementById('projects-grid').innerHTML =
           '<div class="empty-state"><div class="icon">⚠️</div><p>No hay obra asignada a este usuario.</p></div>';
         return;
       }
 
-      document.getElementById('obra-subtitle').textContent = session.obraNombre || 'Obra asignada';
+      document.getElementById('obra-subtitle').textContent = _session.obraNombre || 'Obra asignada';
 
       try {
-        allProjects = await API.proyectos.getAll(obraId);
+        const proyectos = await API.proyectos.getAll(obraId);
+        // Obra users only see projects they created; admin sees all
+        allProjects = _session.rol === 'admin'
+          ? proyectos
+          : proyectos.filter(p => p.creado_por === _session.id);
         renderStats();
         renderCards();
       } catch (e) {
@@ -355,41 +370,55 @@
         return;
       }
 
-      grid.innerHTML = list.map(p => cardHTML(p)).join('');
-    }
-
-    function cardHTML(p) {
-      const d = p.datos || {};
-      const status = p.status || 'nuevo';
-      const fecha  = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX') : '—';
-      const options = ['nuevo','aprobado','rechazado','cerrado']
-        .map(s => `<option value="${s}" ${s===status?'selected':''}>${labelStatus(s)}</option>`)
-        .join('');
-
-      return `
-        <div class="project-card" id="card-${p.id}">
-          <div class="card-left">
-            <div class="card-meta">
-              <span class="badge-tipo ${p.tipo}">${p.tipo === 'vigente' ? '📂 Vigente' : '🔍 Por Financiar'}</span>
-              <span class="badge-status ${status}">${labelStatus(status)}</span>
-            </div>
-            <div class="project-name" title="${d.nombre || '—'}">${d.nombre || 'Sin nombre'}</div>
-            <div class="project-detail">
-              ${d.causa        ? `<span>🏷️ ${d.causa}</span>` : ''}
-              ${d.temporalidad ? `<span>📅 ${d.temporalidad}</span>` : ''}
-              ${d.responsable  ? `<span>👤 ${d.responsable}</span>` : ''}
-              ${d.beneficiadosDirectos ? `<span>👥 ${d.beneficiadosDirectos.toLocaleString()} beneficiados</span>` : ''}
-              ${d.presupuesto  ? `<span>💰 $${Number(d.presupuesto).toLocaleString('es-MX')} MXN</span>` : ''}
-              ${d.montoRequerido ? `<span>💳 $${Number(d.montoRequerido).toLocaleString('es-MX')} requeridos</span>` : ''}
-              <span>📆 ${fecha}</span>
-            </div>
-          </div>
-          <div class="card-right">
-            <select class="status-select ${status}" onchange="changeStatus(${p.id}, this)">
-              ${options}
-            </select>
-            <div class="save-indicator" id="ind-${p.id}">✅ Guardado</div>
-          </div>
+      const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
+      grid.innerHTML = `
+        <div style="overflow:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:#f8faf9;border-bottom:2px solid #dde8e3">
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Tipo</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a">Proyecto</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Responsable</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Fecha</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Status</th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Cambiar status</th>
+                <th style="padding:10px 14px"></th>
+                <th style="padding:10px 14px;text-align:left;font-weight:700;color:#5a7a5a;white-space:nowrap">Imprimir</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map(p => {
+                const d = p.datos || {};
+                const status = p.status || 'nuevo';
+                const fecha = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX') : '—';
+                const color = statusColors[status] || '#95a5a6';
+                const tipoBg = p.tipo === 'vigente' ? '#e8f5e9' : '#fff3e0';
+                const tipoColor = p.tipo === 'vigente' ? '#1b5e20' : '#e65100';
+                const opts = ['nuevo','aprobado','rechazado','cerrado']
+                  .map(s => `<option value="${s}"${p.status===s?' selected':''}>${labelStatus(s)}</option>`).join('');
+                return `<tr style="border-bottom:1px solid #eef3ee;transition:background .15s" onmouseover="this.style.background='#f8faf9'" onmouseout="this.style.background=''">
+                  <td style="padding:10px 14px;white-space:nowrap">
+                    <span style="background:${tipoBg};color:${tipoColor};font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;text-transform:uppercase">${p.tipo === 'vigente' ? '📂 Vigente' : '🔍 Por Financiar'}</span>
+                  </td>
+                  <td style="padding:10px 14px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#1a2e1a">${d.nombre || 'Sin nombre'}</td>
+                  <td style="padding:10px 14px;color:#5a7a5a;white-space:nowrap">${d.responsable || '—'}</td>
+                  <td style="padding:10px 14px;color:#5a7a5a;white-space:nowrap">${fecha}</td>
+                  <td style="padding:10px 14px;white-space:nowrap">
+                    <span id="ind-${p.id}" style="background:${color};color:#fff;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block">${status}</span>
+                  </td>
+                  <td style="padding:10px 14px;white-space:nowrap">
+                    <select style="font-size:12px;padding:5px 8px;border:1.5px solid #dde8e3;border-radius:8px" onchange="changeStatus(${p.id}, this)">
+                      ${opts}
+                    </select>
+                  </td>
+                  <td style="padding:10px 14px;white-space:nowrap;display:flex;gap:6px">
+                    <button onclick="verDetalleProyecto(${p.id})" title="Ver detalle" style="background:none;border:1.5px solid #b8d9c5;border-radius:8px;padding:4px 10px;cursor:pointer;color:#0D6835"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button onclick="imprimirProyectoPDF(${p.id})" title="Imprimir PDF" style="background:none;border:1.5px solid #b8d9c5;border-radius:8px;padding:4px 10px;cursor:pointer;color:#0D6835"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
         </div>`;
     }
 
@@ -400,7 +429,7 @@
     // ── Change status ─────────────────────────────────
     async function changeStatus(id, select) {
       const newStatus = select.value;
-      select.className = `status-select ${newStatus}`;
+      const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
 
       try {
         await API.proyectos.updateStatus(id, newStatus);
@@ -409,19 +438,11 @@
         const proj = allProjects.find(p => p.id === id);
         if (proj) proj.status = newStatus;
 
-        // Update badge in card
-        const card = document.getElementById(`card-${id}`);
-        if (card) {
-          const badge = card.querySelector('.badge-status');
-          badge.className = `badge-status ${newStatus}`;
-          badge.textContent = labelStatus(newStatus);
-        }
-
-        // Show indicator
-        const ind = document.getElementById(`ind-${id}`);
-        if (ind) {
-          ind.classList.add('visible');
-          setTimeout(() => ind.classList.remove('visible'), 2000);
+        // Update badge in table row
+        const badge = document.getElementById(`ind-${id}`);
+        if (badge) {
+          badge.textContent = newStatus;
+          badge.style.background = statusColors[newStatus] || '#95a5a6';
         }
 
         renderStats();
@@ -439,11 +460,197 @@
       setTimeout(() => t.className = 'toast', 2500);
     }
 
+    // ── Ver detalle ───────────────────────────────────
+    function verDetalleProyecto(id) {
+      const p = allProjects.find(x => x.id === id);
+      if (!p) return;
+      const d = p.datos || {};
+      const status = p.status || 'nuevo';
+      const fecha  = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX', { dateStyle: 'long' }) : '—';
+      const statusColors = { nuevo:'#3498db', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#95a5a6' };
+      const color = statusColors[status] || '#95a5a6';
+
+      function row(label, value) {
+        if (!value && value !== 0) return '';
+        return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f5f0">
+          <span style="min-width:160px;font-size:12px;font-weight:700;color:#5a7a5a;text-transform:uppercase;letter-spacing:.4px">${label}</span>
+          <span style="font-size:13px;color:#1a2e1a;flex:1">${value}</span>
+        </div>`;
+      }
+
+      document.getElementById('modal-detalle-proy-content').innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+          <span style="background:${p.tipo==='vigente'?'#e8f5e9':'#fff3e0'};color:${p.tipo==='vigente'?'#1b5e20':'#e65100'};padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;text-transform:uppercase">${p.tipo === 'vigente' ? '📂 Vigente' : '🔍 Por Financiar'}</span>
+          <span style="background:${color};color:#fff;padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;text-transform:uppercase">${status}</span>
+        </div>
+        <h3 style="font-size:18px;font-weight:800;color:#0D6835;margin:0 0 20px">${d.nombre || 'Sin nombre'}</h3>
+        <div>
+          ${row('Causa / Categoría', d.causa)}
+          ${row('Temporalidad', d.temporalidad)}
+          ${row('Responsable', d.responsable)}
+          ${row('Correo', d.correo)}
+          ${row('Lugar de desarrollo', d.lugar)}
+          ${row('Objetivo', d.objetivo)}
+          ${row('Descripción', d.descripcion)}
+          ${row('Realidad a responder', d.realidad)}
+          ${row('Resultados esperados', d.resultados)}
+          ${row('Objetivos estratégicos', d['obj-estrategico'])}
+          ${row('Beneficiados directos', d.beneficiadosDirectos ? Number(d.beneficiadosDirectos).toLocaleString('es-MX') : null)}
+          ${row('Monto del proyecto', d.presupuesto ? '$' + Number(d.presupuesto).toLocaleString('es-MX') + ' MXN' : null)}
+          ${row('Monto requerido', d.montoRequerido ? '$' + Number(d.montoRequerido).toLocaleString('es-MX') + ' MXN' : null)}
+          ${row('Fecha de registro', fecha)}
+        </div>
+        <div style="text-align:right;margin-top:20px">
+          <button onclick="cerrarDetalleProy()" style="padding:9px 24px;background:#0D6835;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Cerrar</button>
+        </div>`;
+      document.getElementById('modal-detalle-proy').classList.add('open');
+    }
+
+    function cerrarDetalleProy() {
+      document.getElementById('modal-detalle-proy').classList.remove('open');
+    }
+
     async function cerrarSesion() {
       if (!confirm('¿Deseas cerrar sesión?')) return;
       try { await API.auth.logout(); } catch { /* silent */ }
       sessionStorage.removeItem('usuarioActual');
       window.location.href = 'Inicio.html';
+    }
+
+    function imprimirProyectoPDF(id) {
+      const p = allProjects.find(x => x.id === id);
+      if (!p) return;
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+
+      const d      = p.datos || {};
+      const nombre = d.nombre || d.titulo || d.proyecto || 'Sin nombre';
+      const obra   = _session.obraNombre || '—';
+      const fecha  = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX', { dateStyle: 'long' }) : '—';
+      const statusColors = { nuevo:[91,141,238], aprobado:[39,174,96], rechazado:[231,76,60], cerrado:[127,140,141] };
+      const [sr,sg,sb] = statusColors[p.status] || [149,165,166];
+
+      const GREEN = [13,104,53], LGRAY = [245,247,245], MGRAY = [120,140,120], BLACK = [30,46,30];
+      const W = 215.9, MARGIN = 14, COL_W = 55;
+
+      // Encabezado
+      doc.setFillColor(...GREEN);
+      doc.rect(0, 0, W, 22, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(255,255,255);
+      doc.text('FUNDACIÓN LOYOLA', MARGIN, 10);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sistema de Sondeo SNF — Reporte de Proyecto', MARGIN, 16);
+
+      // Badges
+      let y = 30;
+      const tipoBg  = p.tipo === 'vigente' ? [232,245,233] : [255,243,224];
+      const tipoTxt = p.tipo === 'vigente' ? [27,94,32]    : [230,81,0];
+      doc.setFillColor(...tipoBg);
+      doc.roundedRect(MARGIN, y - 4, 28, 7, 2, 2, 'F');
+      doc.setTextColor(...tipoTxt);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'bold');
+      doc.text((p.tipo === 'vigente' ? 'VIGENTE' : 'POR FINANCIAR'), MARGIN + 14, y, { align: 'center' });
+
+      doc.setFillColor(sr, sg, sb);
+      doc.roundedRect(MARGIN + 32, y - 4, 22, 7, 2, 2, 'F');
+      doc.setTextColor(255,255,255);
+      doc.text((p.status || '').toUpperCase(), MARGIN + 43, y, { align: 'center' });
+
+      doc.setTextColor(...MGRAY);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Obra: ' + obra, W - MARGIN, y, { align: 'right' });
+
+      // Nombre
+      y += 10;
+      doc.setTextColor(...GREEN);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      const nombreLines = doc.splitTextToSize(nombre, W - MARGIN * 2);
+      doc.text(nombreLines, MARGIN, y);
+      y += nombreLines.length * 6 + 4;
+
+      doc.setDrawColor(...GREEN);
+      doc.setLineWidth(0.5);
+      doc.line(MARGIN, y, W - MARGIN, y);
+      y += 6;
+
+      function addRow(label, value) {
+        if (!value && value !== 0) return;
+        const strVal   = String(value);
+        const valLines = doc.splitTextToSize(strVal, W - MARGIN - COL_W - 4);
+        const rowH     = Math.max(7, valLines.length * 5 + 3);
+        if (y + rowH > 260) { doc.addPage(); y = 16; }
+        if (addRow._alt) {
+          doc.setFillColor(...LGRAY);
+          doc.rect(MARGIN, y - 4, W - MARGIN * 2, rowH, 'F');
+        }
+        addRow._alt = !addRow._alt;
+        doc.setTextColor(...MGRAY);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(label.toUpperCase(), MARGIN + 1, y);
+        doc.setTextColor(...BLACK);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text(valLines, MARGIN + COL_W, y);
+        y += rowH;
+      }
+      addRow._alt = false;
+
+      function sectionTitle(title) {
+        if (y + 10 > 260) { doc.addPage(); y = 16; }
+        doc.setTextColor(...GREEN);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text(title, MARGIN, y);
+        y += 5;
+      }
+
+      sectionTitle('INFORMACIÓN GENERAL');
+      addRow('Fecha de registro',    fecha);
+      addRow('Causa / Categoría',    d.causa);
+      addRow('Temporalidad',         d.temporalidad);
+      addRow('Responsable',          d.responsable);
+      addRow('Correo',               d.correo);
+      addRow('Lugar de desarrollo',  d.lugar);
+
+      y += 3;
+      sectionTitle('DESCRIPCIÓN DEL PROYECTO');
+      addRow('Objetivo',             d.objetivo);
+      addRow('Descripción',          d.descripcion);
+      addRow('Realidad a responder', d.realidad);
+      addRow('Resultados esperados', d.resultados);
+      addRow('Obj. estratégicos',    d['obj-estrategico']);
+
+      y += 3;
+      sectionTitle('IMPACTO Y PRESUPUESTO');
+      addRow('Beneficiados directos',
+        d.beneficiadosDirectos ? Number(d.beneficiadosDirectos).toLocaleString('es-MX') + ' personas' : null);
+      addRow('Monto del proyecto',
+        d.presupuesto    ? '$' + Number(d.presupuesto).toLocaleString('es-MX')    + ' MXN' : null);
+      addRow('Monto requerido',
+        d.montoRequerido ? '$' + Number(d.montoRequerido).toLocaleString('es-MX') + ' MXN' : null);
+
+      // Pie de página
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFillColor(...GREEN);
+        doc.rect(0, 272, W, 8, 'F');
+        doc.setTextColor(255,255,255);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Fundación Loyola — Documento generado el ' + new Date().toLocaleDateString('es-MX', { dateStyle: 'long' }), MARGIN, 277.5);
+        doc.text('Pág. ' + i + ' / ' + pageCount, W - MARGIN, 277.5, { align: 'right' });
+      }
+
+      doc.save('proyecto_' + nombre.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '.pdf');
     }
 
     init();
