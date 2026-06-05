@@ -33,18 +33,17 @@
         <button onclick="goTo('bienvenida')" id="nav-bienvenida">
             <span class="nav-icon">🏠</span><span>Inicio</span>
         </button>
-        <button onclick="cerrarSesion()">
-            <span class="nav-icon">🚪</span><span>Cerrar sesión</span>
-        </button>
-        <button onclick="goTo('obras')" id="nav-obras">
+        <button onclick="goTo('obras');toggleSubMenuObras()" id="nav-obras">
             <span class="nav-icon">🏢</span><span>Gestión de Obras</span>
         </button>
-        <button onclick="goTo('usuarios')" id="nav-usuarios">
-            <span class="nav-icon">👥</span><span>Usuarios</span>
-        </button>
-        <button onclick="goTo('proyectos')" id="nav-proyectos">
-            <span class="nav-icon">📋</span><span>Proyectos</span>
-        </button>
+        <div id="submenu-obras" style="display:none;margin-left:14px;border-left:2px solid rgba(255,255,255,.15);padding-left:10px">
+            <button onclick="goTo('usuarios')" id="nav-usuarios" style="font-size:12px;padding:7px 10px">
+                <span class="nav-icon" style="font-size:13px">👥</span><span>Usuarios</span>
+            </button>
+            <button onclick="goTo('proyectos')" id="nav-proyectos" style="font-size:12px;padding:7px 10px">
+                <span class="nav-icon" style="font-size:13px">📋</span><span>Proyectos</span>
+            </button>
+        </div>
         <button onclick="goTo('contacto')" id="nav-contacto">
             <span class="nav-icon">📞</span><span>Contacto con Obras</span>
         </button>
@@ -55,9 +54,6 @@
         </button>
         <button onclick="goTo('proceso')" id="nav-proceso">
             <span class="nav-icon">⏳</span><span>Proceso / Tiempos</span>
-        </button>
-        <button onclick="goTo('calendario')" id="nav-calendario">
-            <span class="nav-icon">📅</span><span>Fechas</span>
         </button>
     </nav>
     <div class="sidebar-footer">
@@ -503,6 +499,17 @@
     </div>
 </div>
 
+<!-- Modal detalle proyecto -->
+<div class="modal-overlay" id="modal-detalle-proyecto">
+    <div class="modal" style="max-width:700px">
+        <button class="modal-close" onclick="cerrarModal('modal-detalle-proyecto')">✕</button>
+        <div id="modal-detalle-proyecto-content"></div>
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-detalle-proyecto')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">✅ <span id="toast-msg">Operación exitosa</span></div>
 
@@ -526,12 +533,17 @@ let _usuarios = [];
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','estadisticas','proceso','calendario'];
+const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','estadisticas','proceso'];
 const PAGE_TITLES = {
     bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
     proyectos:'Proyectos', contacto:'Contacto con Obras', estadisticas:'Estadísticas',
-    proceso:'Proceso / Tiempos', calendario:'Fechas'
+    proceso:'Proceso / Tiempos'
 };
+
+function toggleSubMenuObras() {
+    const sub = document.getElementById('submenu-obras');
+    if (sub) sub.style.display = sub.style.display === 'none' ? 'block' : 'none';
+}
 
 function goTo(page) {
     PAGES.forEach(p => {
@@ -680,24 +692,62 @@ function filtrarObras() {
     renderObras(document.getElementById('buscar-obra').value);
 }
 
-function verDetalleObra(obraId) {
+async function verDetalleObra(obraId) {
     const o = _obras.find(x => x.id === obraId);
     if (!o) return;
 
+    const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
+
     document.getElementById('detalle-obra-nombre').textContent = '🏢 ' + o.nombre_obra;
     document.getElementById('detalle-obra-body').innerHTML = `
-        <div style="display:grid;gap:8px;margin-bottom:12px">
+        <div style="display:grid;gap:8px;margin-bottom:16px">
             <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Dirección</span><span style="font-size:13px">${esc(o.direccion||'—')}</span></div>
             <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Teléfono</span><span style="font-size:13px">${esc(o.telefono||'—')}</span></div>
             <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Estado</span><span style="font-size:13px">${esc(o.estado||'—')}</span></div>
             <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Correo</span><span style="font-size:13px">${esc(o.correo||'—')}</span></div>
             <div style="display:flex;gap:8px"><span style="font-size:13px;font-weight:700;color:var(--text-mid);min-width:100px">Registrada</span><span style="font-size:13px">${o.fecha_registro ? new Date(o.fecha_registro).toLocaleString('es-MX') : '—'}</span></div>
+        </div>
+        <div id="detalle-obra-proyectos">
+            <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados</div>
+            <p style="font-size:13px;color:var(--text-light)">Cargando proyectos...</p>
         </div>`;
     document.getElementById('detalle-obra-actions').innerHTML = `
         <button class="btn-secondary" onclick="cerrarModal('modal-detalle-obra')">Cerrar</button>
         <button class="btn-secondary" onclick="cerrarModal('modal-detalle-obra');abrirModalNuevaObra('${o.id}')">✏️ Editar</button>
         <button class="btn-danger" onclick="cerrarModal('modal-detalle-obra');eliminarObra('${o.id}')">🗑️ Eliminar</button>`;
     abrirModal('modal-detalle-obra');
+
+    try {
+        const proyectos = await API.proyectos.getAll(obraId);
+        const seccion = document.getElementById('detalle-obra-proyectos');
+        if (!seccion) return;
+        if (!proyectos.length) {
+            seccion.innerHTML = `
+                <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados</div>
+                <p style="font-size:13px;color:var(--text-light)">Sin proyectos registrados para esta obra.</p>`;
+            return;
+        }
+        seccion.innerHTML = `
+            <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados (${proyectos.length})</div>
+            <div style="display:grid;gap:6px">
+                ${proyectos.map(p => {
+                    const nombre = p.datos?.nombre || p.datos?.titulo || p.datos?.proyecto || '—';
+                    const color  = statusColors[p.status] || '#95a5a6';
+                    return `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--green-light);border-radius:6px;padding:8px 12px;gap:8px">
+                        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                            <span style="background:${p.tipo==='vigente'?'#e8f5e9':'#fff3e0'};color:${p.tipo==='vigente'?'#2e7d32':'#e65100'};padding:1px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap">${esc(p.tipo)}</span>
+                            <span style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nombre)}</span>
+                        </div>
+                        <span style="background:${color};color:#fff;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap">${esc(p.status)}</span>
+                    </div>`;
+                }).join('')}
+            </div>`;
+    } catch {
+        const seccion = document.getElementById('detalle-obra-proyectos');
+        if (seccion) seccion.innerHTML = `
+            <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados</div>
+            <p style="font-size:13px;color:#c43a3a">Error al cargar proyectos.</p>`;
+    }
 }
 
 async function eliminarObra(obraId) {
@@ -761,6 +811,8 @@ function renderTablaProyectos(lista) {
                     <th>Proyecto</th>
                     <th>Status actual</th>
                     <th>Cambiar status</th>
+                    <th></th>
+                    <th>Imprimir</th>
                 </tr>
             </thead>
             <tbody>
@@ -778,6 +830,8 @@ function renderTablaProyectos(lista) {
                             </select>
                             <button id="btn-status-${p.id}" class="btn-primary" style="font-size:12px;padding:5px 12px;white-space:nowrap" onclick="actualizarStatusProyecto(${p.id})">Guardar</button>
                         </td>
+                        <td><button title="Ver detalle" style="background:none;border:1.5px solid var(--green-brd);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:16px;color:var(--green-dark)" onclick="verDetalleProyectoAdmin(${p.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></td>
+                        <td><button title="Imprimir PDF" style="background:none;border:1.5px solid var(--green-brd);border-radius:6px;padding:4px 10px;cursor:pointer;color:var(--green-dark)" onclick="imprimirProyectoPDF(${p.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button></td>
                     </tr>`;
                 }).join('')}
             </tbody>
@@ -806,14 +860,12 @@ async function actualizarStatusProyecto(id) {
     btn.textContent = '...';
     try {
         await API.proyectos.updateStatus(id, status);
-        // Update badge color and text
         const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
         const badge = document.getElementById('badge-' + id);
         if (badge) {
             badge.textContent = status;
             badge.style.background = statusColors[status] || '#95a5a6';
         }
-        // Sync local cache
         const p = _todosProyectos.find(x => x.id === id);
         if (p) p.status = status;
         showToast(`✅ Status actualizado a "${status}"`);
@@ -823,6 +875,206 @@ async function actualizarStatusProyecto(id) {
         btn.disabled = false;
         btn.textContent = 'Guardar';
     }
+}
+
+function verDetalleProyectoAdmin(id) {
+    const p = _todosProyectos.find(x => x.id === id);
+    if (!p) return;
+    const d = p.datos || {};
+    const status = p.status || 'nuevo';
+    const fecha  = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX', { dateStyle: 'long' }) : '—';
+    const statusColors = { nuevo:'#5b8dee', aprobado:'#27ae60', rechazado:'#e74c3c', cerrado:'#7f8c8d' };
+    const color = statusColors[status] || '#95a5a6';
+
+    function row(label, value) {
+        if (!value && value !== 0) return '';
+        return `<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f5f0">
+            <span style="min-width:160px;font-size:12px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:.4px">${label}</span>
+            <span style="font-size:13px;color:var(--text-dark);flex:1">${esc(String(value))}</span>
+        </div>`;
+    }
+
+    document.getElementById('modal-detalle-proyecto-content').innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <span style="background:${p.tipo==='vigente'?'#e8f5e9':'#fff3e0'};color:${p.tipo==='vigente'?'#2e7d32':'#e65100'};padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;text-transform:uppercase">${p.tipo === 'vigente' ? '📂 Vigente' : '🔍 Por Financiar'}</span>
+            <span style="background:${color};color:#fff;padding:3px 12px;border-radius:12px;font-size:12px;font-weight:700;text-transform:uppercase">${status}</span>
+            <span style="font-size:12px;color:var(--text-mid);margin-left:auto">🏢 ${esc(p._obraNombre || '—')}</span>
+        </div>
+        <h3 style="font-family:var(--font-display);font-size:18px;color:var(--green-dark);margin:0 0 20px">${esc(d.nombre || d.titulo || d.proyecto || 'Sin nombre')}</h3>
+        <div>
+            ${row('Causa / Categoría',    d.causa)}
+            ${row('Temporalidad',         d.temporalidad)}
+            ${row('Responsable',          d.responsable)}
+            ${row('Correo',               d.correo)}
+            ${row('Lugar de desarrollo',  d.lugar)}
+            ${row('Objetivo',             d.objetivo)}
+            ${row('Descripción',          d.descripcion)}
+            ${row('Realidad a responder', d.realidad)}
+            ${row('Resultados esperados', d.resultados)}
+            ${row('Beneficiados directos',d.beneficiadosDirectos ? Number(d.beneficiadosDirectos).toLocaleString('es-MX') : null)}
+            ${row('Monto del proyecto',   d.presupuesto   ? '$' + Number(d.presupuesto).toLocaleString('es-MX')   + ' MXN' : null)}
+            ${row('Monto requerido',      d.montoRequerido? '$' + Number(d.montoRequerido).toLocaleString('es-MX') + ' MXN' : null)}
+            ${row('Fecha de registro',    fecha)}
+        </div>`;
+    abrirModal('modal-detalle-proyecto');
+}
+
+function imprimirProyectoPDF(id) {
+    const p = _todosProyectos.find(x => x.id === id);
+    if (!p) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+
+    const d        = p.datos || {};
+    const nombre   = d.nombre || d.titulo || d.proyecto || 'Sin nombre';
+    const fecha    = p.fecha_registro ? new Date(p.fecha_registro).toLocaleDateString('es-MX', { dateStyle: 'long' }) : '—';
+    const statusColors = { nuevo:[91,141,238], aprobado:[39,174,96], rechazado:[231,76,60], cerrado:[127,140,141] };
+    const [sr,sg,sb] = statusColors[p.status] || [149,165,166];
+
+    const GREEN  = [13, 104, 53];
+    const LGRAY  = [245, 247, 245];
+    const MGRAY  = [120, 140, 120];
+    const BLACK  = [30, 46, 30];
+    const W      = 215.9;
+    const MARGIN = 14;
+    const COL_W  = 55;
+
+    // ── Encabezado ──────────────────────────────────
+    doc.setFillColor(...GREEN);
+    doc.rect(0, 0, W, 22, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(255, 255, 255);
+    doc.text('FUNDACIÓN LOYOLA', MARGIN, 10);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Sistema de Sondeo SNF — Reporte de Proyecto', MARGIN, 16);
+
+    // ── Tipo badge y status ──────────────────────────
+    let y = 30;
+    const tipoBg  = p.tipo === 'vigente' ? [232,245,233] : [255,243,224];
+    const tipoTxt = p.tipo === 'vigente' ? [27,94,32]    : [230,81,0];
+    doc.setFillColor(...tipoBg);
+    doc.roundedRect(MARGIN, y - 4, 28, 7, 2, 2, 'F');
+    doc.setTextColor(...tipoTxt);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text((p.tipo === 'vigente' ? 'VIGENTE' : 'POR FINANCIAR'), MARGIN + 14, y, { align: 'center' });
+
+    doc.setFillColor(sr, sg, sb);
+    doc.roundedRect(MARGIN + 32, y - 4, 22, 7, 2, 2, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.text((p.status || '').toUpperCase(), MARGIN + 43, y, { align: 'center' });
+
+    doc.setTextColor(...MGRAY);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Obra: ' + (p._obraNombre || '—'), W - MARGIN, y, { align: 'right' });
+
+    // ── Nombre del proyecto ──────────────────────────
+    y += 10;
+    doc.setTextColor(...GREEN);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    const nombreLines = doc.splitTextToSize(nombre, W - MARGIN * 2);
+    doc.text(nombreLines, MARGIN, y);
+    y += nombreLines.length * 6 + 4;
+
+    // ── Línea separadora ────────────────────────────
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(0.5);
+    doc.line(MARGIN, y, W - MARGIN, y);
+    y += 6;
+
+    // ── Función auxiliar para filas ─────────────────
+    function addRow(label, value) {
+        if (!value && value !== 0) return;
+        const strVal  = String(value);
+        const valLines = doc.splitTextToSize(strVal, W - MARGIN - COL_W - 4);
+        const rowH    = Math.max(7, valLines.length * 5 + 3);
+
+        if (y + rowH > 260) {
+            doc.addPage();
+            y = 16;
+        }
+
+        // Fondo alternado
+        if (addRow._alt) {
+            doc.setFillColor(...LGRAY);
+            doc.rect(MARGIN, y - 4, W - MARGIN * 2, rowH, 'F');
+        }
+        addRow._alt = !addRow._alt;
+
+        doc.setTextColor(...MGRAY);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(label.toUpperCase(), MARGIN + 1, y);
+
+        doc.setTextColor(...BLACK);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text(valLines, MARGIN + COL_W, y);
+
+        y += rowH;
+    }
+    addRow._alt = false;
+
+    // ── Sección: Información general ────────────────
+    doc.setTextColor(...GREEN);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('INFORMACIÓN GENERAL', MARGIN, y);
+    y += 5;
+
+    addRow('Fecha de registro',    fecha);
+    addRow('Causa / Categoría',    d.causa);
+    addRow('Temporalidad',         d.temporalidad);
+    addRow('Responsable',          d.responsable);
+    addRow('Correo',               d.correo);
+    addRow('Lugar de desarrollo',  d.lugar);
+
+    y += 3;
+    doc.setTextColor(...GREEN);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('DESCRIPCIÓN DEL PROYECTO', MARGIN, y);
+    y += 5;
+
+    addRow('Objetivo',             d.objetivo);
+    addRow('Descripción',          d.descripcion);
+    addRow('Realidad a responder', d.realidad);
+    addRow('Resultados esperados', d.resultados);
+    addRow('Obj. estratégicos',    d['obj-estrategico']);
+
+    y += 3;
+    doc.setTextColor(...GREEN);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('IMPACTO Y PRESUPUESTO', MARGIN, y);
+    y += 5;
+
+    addRow('Beneficiados directos',
+        d.beneficiadosDirectos ? Number(d.beneficiadosDirectos).toLocaleString('es-MX') + ' personas' : null);
+    addRow('Monto del proyecto',
+        d.presupuesto    ? '$' + Number(d.presupuesto).toLocaleString('es-MX')    + ' MXN' : null);
+    addRow('Monto requerido',
+        d.montoRequerido ? '$' + Number(d.montoRequerido).toLocaleString('es-MX') + ' MXN' : null);
+
+    // ── Pie de página ────────────────────────────────
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFillColor(...GREEN);
+        doc.rect(0, 272, W, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Fundación Loyola — Documento generado el ' + new Date().toLocaleDateString('es-MX', { dateStyle: 'long' }), MARGIN, 277.5);
+        doc.text('Pág. ' + i + ' / ' + pageCount, W - MARGIN, 277.5, { align: 'right' });
+    }
+
+    doc.save('proyecto_' + nombre.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '.pdf');
 }
 
 // ══════════════════════════════════════════════
