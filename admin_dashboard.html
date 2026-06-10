@@ -47,6 +47,9 @@
         <button onclick="goTo('contacto')" id="nav-contacto">
             <span class="nav-icon">📞</span><span>Contacto con Obras</span>
         </button>
+        <button onclick="goTo('seguimiento')" id="nav-seguimiento">
+            <span class="nav-icon">📊</span><span>Seguimiento de Obras</span>
+        </button>
         <hr>
         <div class="nav-label">Sistema</div>
         <button onclick="goTo('estadisticas')" id="nav-estadisticas">
@@ -214,6 +217,62 @@
                 <p>Información de contacto enviada por las obras a través del sistema.</p>
             </div>
             <div id="contacto-content"></div>
+        </div>
+
+        <!-- ══════════════ SEGUIMIENTO DE OBRAS ══════════════ -->
+        <div id="page-seguimiento" class="section-page">
+            <div class="page-header">
+                <h2>📊 Seguimiento de Obras</h2>
+                <p>Estado de avance del sondeo SNF 2025 por obra.</p>
+            </div>
+
+            <style>
+                .seg-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(310px, 1fr)); gap:18px; }
+                .seg-card { background:#fff; border:1px solid #dde8e3; border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.05); transition:box-shadow .2s,transform .2s; }
+                .seg-card:hover { box-shadow:0 6px 20px rgba(0,0,0,.1); transform:translateY(-2px); }
+                .seg-card-header { padding:16px 20px 10px; }
+                .seg-badge { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:10px; letter-spacing:.3px; }
+                .seg-badge-inactive { background:#f5f5f5; color:#999; }
+                .seg-badge-started  { background:#fff8e1; color:#e65100; }
+                .seg-badge-progress { background:#fff3e0; color:#f57c00; }
+                .seg-badge-done     { background:#e8f5e9; color:#2e7d32; }
+                .seg-obra-name { font-size:15px; font-weight:800; color:var(--green-dark); margin-bottom:4px; line-height:1.3; }
+                .seg-obra-meta { font-size:12px; color:var(--text-light); }
+                .seg-progress-area { padding:0 20px 12px; }
+                .seg-progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text-mid); margin-bottom:6px; font-weight:600; }
+                .seg-progress-bar { height:8px; background:#e8f0e8; border-radius:4px; overflow:hidden; }
+                .seg-progress-fill { height:100%; border-radius:4px; transition:width .5s; }
+                .seg-pills { padding:0 20px 14px; display:flex; flex-wrap:wrap; gap:4px; }
+                .seg-pill { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; }
+                .seg-pill-done    { background:#e8f5e9; color:#2e7d32; }
+                .seg-pill-pending { background:#f5f5f5; color:#bbb; border:1px solid #eee; }
+                .seg-stats { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #eef4ee; }
+                .seg-stat { text-align:center; padding:10px 6px; border-right:1px solid #eef4ee; }
+                .seg-stat:last-child { border-right:none; }
+                .seg-stat-num { font-size:17px; font-weight:800; color:var(--green-dark); }
+                .seg-stat-lbl { font-size:10px; color:var(--text-light); margin-top:1px; }
+                .seg-footer { padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #eef4ee; background:#f8faf9; }
+                .seg-footer-date { font-size:11px; color:var(--text-light); }
+            </style>
+
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="buscar-seguimiento" placeholder="🔍 Buscar obra..."
+                    oninput="filtrarSeguimiento()"
+                    style="flex:1;min-width:180px;max-width:300px;padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;outline:none">
+                <select id="filtro-seguimiento" onchange="filtrarSeguimiento()"
+                    style="padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:inherit;font-size:13px">
+                    <option value="">Todos los estados</option>
+                    <option value="sin_actividad">Sin actividad</option>
+                    <option value="iniciado">Iniciado</option>
+                    <option value="en_progreso">En progreso</option>
+                    <option value="completo">Completo</option>
+                </select>
+                <button class="btn-secondary" onclick="renderSeguimiento()">🔄 Actualizar</button>
+            </div>
+
+            <div id="seguimiento-grid" class="seg-grid">
+                <p style="color:var(--text-light);font-size:13px">Cargando seguimiento...</p>
+            </div>
         </div>
 
         <!-- ══════════════ ESTADÍSTICAS ══════════════ -->
@@ -533,11 +592,12 @@ let _usuarios = [];
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','estadisticas','proceso'];
+const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','seguimiento','estadisticas','proceso'];
 const PAGE_TITLES = {
     bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
-    proyectos:'Proyectos', contacto:'Contacto con Obras', estadisticas:'Estadísticas',
-    proceso:'Proceso / Tiempos'
+    proyectos:'Proyectos', contacto:'Contacto con Obras',
+    seguimiento:'Seguimiento de Obras',
+    estadisticas:'Estadísticas', proceso:'Proceso / Tiempos'
 };
 
 function toggleSubMenuObras() {
@@ -556,6 +616,7 @@ function goTo(page) {
     window.scrollTo({top:0, behavior:'smooth'});
 
     // Load data for section
+    if (page === 'seguimiento')   renderSeguimiento();
     if (page === 'obras')         renderObras();
     if (page === 'usuarios')      renderUsuarios();
     if (page === 'proyectos')     renderProyectos();
@@ -1488,6 +1549,145 @@ function esc(str) {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// SEGUIMIENTO DE OBRAS
+// ══════════════════════════════════════════════
+const SEG_SECCIONES = [
+    { key: 'datosObra',             label: 'Datos Obra' },
+    { key: 'sondeo',                label: 'Sondeo' },
+    { key: 'presupuesto',           label: 'Presupuesto' },
+    { key: 'proyectosVigentes',     label: 'Proy. Vigentes' },
+    { key: 'proyectosFinanciar',    label: 'Proy. Financiar' },
+    { key: 'necesidadesMateriales', label: 'Necesidades' },
+    { key: 'contextoDemografico',   label: 'Contexto' },
+    { key: 'impacto',               label: 'Impacto' },
+    { key: 'calendario',            label: 'Calendario' },
+];
+
+let _seguimientoData = [];
+
+async function renderSeguimiento() {
+    const grid = document.getElementById('seguimiento-grid');
+    if (!grid) return;
+    grid.innerHTML = '<p style="color:var(--text-light);font-size:13px">⏳ Cargando...</p>';
+
+    try {
+        const obras = await API.obras.getAll();
+        if (!obras.length) {
+            grid.innerHTML = '<p style="color:var(--text-light);font-size:13px">No hay obras registradas.</p>';
+            return;
+        }
+
+        _seguimientoData = await Promise.all(obras.map(async obra => {
+            const [formsRes, docsRes, proyRes, usrRes] = await Promise.allSettled([
+                API.formularios.getAll(obra.id),
+                API.documentos.getAll(obra.id),
+                API.proyectos.getAll(obra.id),
+                API.usuarios.getByObra(obra.id),
+            ]);
+
+            const forms     = formsRes.status === 'fulfilled' ? (formsRes.value || {}) : {};
+            const docs      = docsRes.status  === 'fulfilled' ? (docsRes.value  || []) : [];
+            const proyectos = proyRes.status  === 'fulfilled' ? (proyRes.value  || []) : [];
+            const usuarios  = usrRes.status   === 'fulfilled' ? (usrRes.value   || []) : [];
+
+            const seccionesHechas = SEG_SECCIONES.filter(s => forms[s.key] !== undefined);
+            const pct = Math.round((seccionesHechas.length / SEG_SECCIONES.length) * 100);
+
+            let ultimaActividad = null;
+            Object.values(forms).forEach(f => {
+                const d = f._meta?.fechaActualizacion ? new Date(f._meta.fechaActualizacion) : null;
+                if (d && (!ultimaActividad || d > ultimaActividad)) ultimaActividad = d;
+            });
+
+            let status, statusLabel, statusClass, barColor;
+            if      (seccionesHechas.length === 0)                      { status = 'sin_actividad'; statusLabel = 'Sin actividad'; statusClass = 'seg-badge-inactive'; barColor = '#ddd'; }
+            else if (seccionesHechas.length <= 3)                       { status = 'iniciado';      statusLabel = 'Iniciado';      statusClass = 'seg-badge-started';  barColor = '#e67e22'; }
+            else if (seccionesHechas.length < SEG_SECCIONES.length)     { status = 'en_progreso';   statusLabel = 'En progreso';   statusClass = 'seg-badge-progress'; barColor = '#f39c12'; }
+            else                                                         { status = 'completo';      statusLabel = 'Completo ✓';    statusClass = 'seg-badge-done';     barColor = '#27ae60'; }
+
+            return { obra, forms, docs, proyectos, usuarios, seccionesHechas, pct, ultimaActividad, status, statusLabel, statusClass, barColor };
+        }));
+
+        _renderSeguimientoCards(_seguimientoData);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#c43a3a;font-size:13px">❌ Error al cargar: ${esc(err.message)}</p>`;
+    }
+}
+
+function _renderSeguimientoCards(data) {
+    const grid = document.getElementById('seguimiento-grid');
+    if (!grid) return;
+    if (!data.length) {
+        grid.innerHTML = '<p style="color:var(--text-light);font-size:13px;padding:20px">Sin resultados.</p>';
+        return;
+    }
+
+    grid.innerHTML = data.map(d => {
+        const { obra, docs, proyectos, usuarios, seccionesHechas, pct, ultimaActividad, statusLabel, statusClass, barColor } = d;
+        const fechaStr = ultimaActividad
+            ? ultimaActividad.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' })
+            : 'Sin actividad registrada';
+
+        const pillsHtml = SEG_SECCIONES.map(s => {
+            const done = seccionesHechas.find(h => h.key === s.key);
+            return `<span class="seg-pill ${done ? 'seg-pill-done' : 'seg-pill-pending'}">${s.label}</span>`;
+        }).join('');
+
+        return `
+        <div class="seg-card" data-status="${d.status}" data-nombre="${esc(obra.nombre_obra).toLowerCase()}">
+            <div class="seg-card-header">
+                <span class="seg-badge ${statusClass}">${statusLabel}</span>
+                <div class="seg-obra-name">${esc(obra.nombre_obra)}</div>
+                <div class="seg-obra-meta">📍 ${esc(obra.estado || '—')} &nbsp;·&nbsp; ${esc(obra.correo || '—')}</div>
+            </div>
+
+            <div class="seg-progress-area">
+                <div class="seg-progress-label">
+                    <span>Progreso del sondeo</span>
+                    <strong>${seccionesHechas.length} / ${SEG_SECCIONES.length} &nbsp;·&nbsp; ${pct}%</strong>
+                </div>
+                <div class="seg-progress-bar">
+                    <div class="seg-progress-fill" style="width:${pct}%;background:${barColor}"></div>
+                </div>
+            </div>
+
+            <div class="seg-pills">${pillsHtml}</div>
+
+            <div class="seg-stats">
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${docs.length}</div>
+                    <div class="seg-stat-lbl">📄 Documentos</div>
+                </div>
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${proyectos.length}</div>
+                    <div class="seg-stat-lbl">📋 Proyectos</div>
+                </div>
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${usuarios.length}</div>
+                    <div class="seg-stat-lbl">👥 Usuarios</div>
+                </div>
+            </div>
+
+            <div class="seg-footer">
+                <span class="seg-footer-date">🕐 ${fechaStr}</span>
+                <button class="btn-secondary" style="padding:5px 14px;font-size:12px" onclick="verDetalleObra('${obra.id}')">Ver detalle →</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filtrarSeguimiento() {
+    const q      = (document.getElementById('buscar-seguimiento')?.value || '').toLowerCase();
+    const filtro = document.getElementById('filtro-seguimiento')?.value || '';
+    const filtered = _seguimientoData.filter(d => {
+        const matchNombre = d.obra.nombre_obra.toLowerCase().includes(q);
+        const matchStatus = !filtro || d.status === filtro;
+        return matchNombre && matchStatus;
+    });
+    _renderSeguimientoCards(filtered);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     actualizarEstadisticas();
     // Auto-refresh stats every 30s
