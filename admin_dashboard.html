@@ -710,6 +710,10 @@ async function verDetalleObra(obraId) {
         <div id="detalle-obra-proyectos">
             <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados</div>
             <p style="font-size:13px;color:var(--text-light)">Cargando proyectos...</p>
+        </div>
+        <div id="detalle-obra-documentos">
+            <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📂 Documentos Institucionales</div>
+            <p style="font-size:13px;color:var(--text-light)">Cargando documentos...</p>
         </div>`;
     document.getElementById('detalle-obra-actions').innerHTML = `
         <button class="btn-secondary" onclick="cerrarModal('modal-detalle-obra')">Cerrar</button>
@@ -747,6 +751,56 @@ async function verDetalleObra(obraId) {
         if (seccion) seccion.innerHTML = `
             <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📋 Proyectos asociados</div>
             <p style="font-size:13px;color:#c43a3a">Error al cargar proyectos.</p>`;
+    }
+
+    // Documentos institucionales (solo lectura para el admin)
+    const secDoc = document.getElementById('detalle-obra-documentos');
+    if (secDoc) {
+        try {
+            const [docs, driveData] = await Promise.all([
+                API.documentos.getAll(obraId),
+                API.formularios.get(obraId, 'enlace_drive_institucional').catch(() => null)
+            ]);
+
+            const CATS = [
+                { key: 'acta_constitutiva',     label: 'Acta Constitutiva',          icon: '📜' },
+                { key: 'cfdi',                  label: 'CFDI',                        icon: '🧾' },
+                { key: 'comprobante_domicilio',  label: 'Comprobante de Domicilio',    icon: '🏠' },
+                { key: 'logotipos',             label: 'Logotipos institucionales',   icon: '🖼️' },
+                { key: 'convenios_evidencias',  label: 'Convenios — Evidencias',      icon: '🤝' },
+                { key: 'convenios_fotos',       label: 'Convenios — Fotos',           icon: '📸' },
+                { key: 'convenios_informes',    label: 'Convenios — Informes',        icon: '📊' },
+            ];
+
+            const conteos = {};
+            (docs || []).forEach(d => { conteos[d.categoria] = (conteos[d.categoria] || 0) + 1; });
+            const totalDocs = Object.values(conteos).reduce((a, b) => a + b, 0);
+
+            const driveUrl = driveData?.url || '';
+            const driveHtml = driveUrl
+                ? `<a href="${esc(driveUrl)}" target="_blank" rel="noopener noreferrer" style="font-size:13px;color:#1a73e8;font-weight:600;display:inline-flex;align-items:center;gap:4px;margin-bottom:10px">🔗 Ver carpeta en Google Drive</a>`
+                : `<p style="font-size:13px;color:var(--text-light);margin-bottom:8px">Sin enlace de Drive registrado.</p>`;
+
+            const catsHtml = CATS.map(c => {
+                const n = conteos[c.key] || 0;
+                return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--green-brd)">
+                    <span>${c.icon}</span>
+                    <span style="flex:1;font-size:13px">${c.label}</span>
+                    <span style="background:${n ? '#e8f5e9' : '#f5f5f5'};color:${n ? '#2e7d32' : '#999'};padding:1px 10px;border-radius:12px;font-size:12px;font-weight:700">${n}</span>
+                </div>`;
+            }).join('');
+
+            secDoc.innerHTML = `
+                <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:10px;padding-top:12px;border-top:1px solid var(--green-brd)">
+                    📂 Documentos Institucionales <span style="font-weight:400;color:var(--text-light)">(${totalDocs} archivos)</span>
+                </div>
+                ${driveHtml}
+                <div>${catsHtml}</div>`;
+        } catch {
+            secDoc.innerHTML = `
+                <div style="font-size:13px;font-weight:700;color:var(--text-mid);margin-bottom:8px;padding-top:12px;border-top:1px solid var(--green-brd)">📂 Documentos Institucionales</div>
+                <p style="font-size:13px;color:#c43a3a">Error al cargar documentos.</p>`;
+        }
     }
 }
 

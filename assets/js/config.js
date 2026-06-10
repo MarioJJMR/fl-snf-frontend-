@@ -24,7 +24,13 @@ const CONFIG = {
   GOOGLE_CLIENT_ID: '541500948890-d2ipv871f902omto134ipr606it0pq58.apps.googleusercontent.com',
 
   // ── Timeouts ──────────────────────────────────────────────────────────
-  REQUEST_TIMEOUT_MS: 10000  // 10 segundos
+  REQUEST_TIMEOUT_MS: 10000,  // 10 segundos
+
+  // ── Feature Flags ─────────────────────────────────────────────────────────
+  // Cambiar a false para deshabilitar la funcionalidad sin borrar el código.
+  FEATURES: {
+    GOOGLE_LOGIN: false   // false = oculta el botón "Continuar con Google"
+  }
 };
 
 window.CONFIG = CONFIG;
