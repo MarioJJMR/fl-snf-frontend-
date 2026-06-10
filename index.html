@@ -1028,6 +1028,22 @@
                 .doc-file-btn { background:none; border:none; cursor:pointer; font-size:15px; padding:0 2px; line-height:1; }
             </style>
 
+            <!-- Enlace Google Drive institucional (solo editable por la obra) -->
+            <div class="form-card" style="margin-bottom:16px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                    <span style="font-size:20px">🔗</span>
+                    <strong style="font-size:14px;color:var(--green-dark)">Enlace Google Drive institucional</strong>
+                </div>
+                <p style="font-size:13px;color:var(--text-light);margin-bottom:10px">Pega el enlace de tu carpeta compartida en Drive. Solo la obra puede editarlo.</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <input type="url" id="enlace-drive-institucional" placeholder="https://drive.google.com/drive/folders/..." style="flex:1;min-width:200px;padding:10px;border:1.5px solid var(--green-border);border-radius:8px;font-size:13px;font-family:inherit">
+                    <button class="btn-primary" onclick="guardarEnlaceDrive()">💾 Guardar enlace</button>
+                </div>
+                <div id="drive-link-preview" style="display:none;margin-top:10px">
+                    <a id="drive-link-anchor" href="#" target="_blank" rel="noopener noreferrer" style="font-size:13px;color:#1a73e8;font-weight:600">📂 Abrir carpeta en Google Drive</a>
+                </div>
+            </div>
+
             <!-- Estructura de carpetas -->
             <div id="doc-carpetas">
 
@@ -1052,7 +1068,7 @@
                 <div class="doc-folder">
                     <div class="doc-folder-header" onclick="toggleFolder(this)">
                         <span class="folder-icon">🖼️</span>
-                        <span class="folder-name">Logotipos</span>
+                        <span class="folder-name">Logotipos institucionales</span>
                         <span class="folder-count" id="count-logotipos">0</span>
                         <span class="folder-chevron">▶</span>
                     </div>
@@ -3073,6 +3089,23 @@ function agregarProyectoFinanciar() {
 }
 
 // =================== FILE LIST / UPLOAD ===================
+// =================== DOCUMENTOS — ENLACE DRIVE ===================
+async function guardarEnlaceDrive() {
+    const url = document.getElementById('enlace-drive-institucional')?.value?.trim();
+    if (!url) { showToast('Por favor ingresa un enlace de Google Drive', '#c0392b'); return; }
+    await Storage.save('enlace_drive_institucional', { url });
+    mostrarPreviewDrive(url);
+    showToast('✅ Enlace guardado', 'var(--success)');
+}
+
+function mostrarPreviewDrive(url) {
+    const preview = document.getElementById('drive-link-preview');
+    const anchor  = document.getElementById('drive-link-anchor');
+    if (!preview || !anchor) return;
+    if (url) { anchor.href = url; preview.style.display = 'block'; }
+    else      { preview.style.display = 'none'; }
+}
+
 // =================== DOCUMENTOS — CARPETAS ===================
 
 const CARPETAS = ['acta_constitutiva','logotipos','cfdi','comprobante_domicilio','convenios_evidencias','convenios_fotos','convenios_informes'];
@@ -3143,6 +3176,16 @@ async function cargarDocumentos() {
         const cnt = document.getElementById('count-' + c);
         if (cnt) cnt.textContent = '0';
     });
+
+    // Cargar enlace de Drive guardado
+    try {
+        const driveData = await Storage.get('enlace_drive_institucional');
+        if (driveData?.url) {
+            const input = document.getElementById('enlace-drive-institucional');
+            if (input) input.value = driveData.url;
+            mostrarPreviewDrive(driveData.url);
+        }
+    } catch { /* silencioso */ }
 
     try {
         const docs = await API.documentos.getAll(obraId);
