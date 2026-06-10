@@ -29,7 +29,7 @@ const CONFIG = {
   // ── Feature Flags ─────────────────────────────────────────────────────────
   // Cambiar a false para deshabilitar la funcionalidad sin borrar el código.
   FEATURES: {
-    GOOGLE_LOGIN: true   // false = oculta el botón "Continuar con Google"
+    GOOGLE_LOGIN: false   // false = oculta el botón "Continuar con Google"
   }
 };
 
