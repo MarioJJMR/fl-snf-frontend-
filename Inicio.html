@@ -294,6 +294,7 @@
       <button type="submit" class="btn-login" id="btn-login">Entrar</button>
     </form>
 
+    <div id="google-login-section">
     <div class="divider">o</div>
 
     <button type="button" class="btn-google" id="btn-google" onclick="iniciarGoogleLogin()">
@@ -305,6 +306,7 @@
       </svg>
       Continuar con Google
     </button>
+    </div>
 
     <p id="mensaje" role="alert"></p>
     <a href="#" class="forgot-link" onclick="abrirForgot();return false;">¿Olvidé mi contraseña?</a>
@@ -439,6 +441,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('loginForm') || document.querySelector('form');
       if (form) form.addEventListener('submit', handleLogin);
+
+      // Feature flag: ocultar login con Google
+      if (window.CONFIG && CONFIG.FEATURES && !CONFIG.FEATURES.GOOGLE_LOGIN) {
+        const googleSection = document.getElementById('google-login-section');
+        if (googleSection) googleSection.style.display = 'none';
+      }
     });
 
     /* ─── Forgot password ───────────────────────── */
@@ -515,6 +523,7 @@
   <script>
     // Inicializar Google Identity Services después de que todos los scripts carguen
     window.addEventListener('load', () => {
+      if (window.CONFIG && CONFIG.FEATURES && !CONFIG.FEATURES.GOOGLE_LOGIN) return;
       const clientId = (window.CONFIG && CONFIG.GOOGLE_CLIENT_ID) || '';
       if (!clientId || clientId.startsWith('TU_') || !window.google) return;
       google.accounts.id.initialize({
