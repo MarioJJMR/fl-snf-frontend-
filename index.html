@@ -65,7 +65,23 @@
     <div class="topbar">
         <div class="topbar-title">Fundación Loyola</div>
         <div class="topbar-breadcrumb">SNF 2025 &nbsp;›&nbsp; <span id="topbar-current">Inicio</span></div>
+        <button class="notif-bell" id="notif-bell" onclick="togglePanelNotif()" aria-label="Avisos" title="Avisos">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-bell-badge" id="notif-bell-badge" style="display:none">0</span>
+        </button>
     </div>
+
+    <!-- Panel de avisos -->
+    <div class="notif-panel" id="notif-panel" style="display:none">
+        <div class="notif-panel-header">
+            <span>Avisos</span>
+            <button class="notif-panel-close" onclick="togglePanelNotif()">✕</button>
+        </div>
+        <div class="notif-panel-body" id="notif-panel-body">
+            <p class="notif-empty">Cargando...</p>
+        </div>
+    </div>
+    <div class="notif-overlay" id="notif-overlay" onclick="togglePanelNotif()" style="display:none"></div>
 
     <!-- Progress Tracker -->
     <div class="progress-tracker">
@@ -1027,6 +1043,119 @@
                 .doc-file-meta { color:var(--text-light); font-size:11px; white-space:nowrap; }
                 .doc-file-btn { background:none; border:none; cursor:pointer; font-size:15px; padding:0 2px; line-height:1; }
             </style>
+<style>
+/* ---- Campana de avisos ---- */
+.notif-bell {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--green-dark);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  margin-left: 8px;
+}
+.notif-bell:hover { background: #edf5ef; }
+.notif-bell-badge {
+  position: absolute;
+  top: 2px; right: 2px;
+  background: #c0392b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  line-height: 1;
+}
+/* ---- Panel de avisos ---- */
+.notif-overlay {
+  position: fixed; inset: 0; z-index: 199;
+}
+.notif-panel {
+  position: fixed;
+  top: 58px; right: 16px;
+  width: 360px;
+  max-height: 480px;
+  background: #fff;
+  border: 1px solid #dde8e3;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.14);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eaf0ea;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--green-dark);
+}
+.notif-panel-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: var(--text-light);
+  padding: 2px 6px; border-radius: 4px;
+}
+.notif-panel-close:hover { background: #f0f4f0; }
+.notif-panel-body { overflow-y: auto; padding: 8px 0; flex: 1; }
+.notif-item {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f4f8f4;
+  cursor: default;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item.unread { background: #f0f9f4; }
+.notif-item-asunto {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1a2e1a;
+  margin-bottom: 4px;
+}
+.notif-item.unread .notif-item-asunto::before {
+  content: '';
+  display: inline-block;
+  width: 7px; height: 7px;
+  background: var(--green-dark);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.notif-item-msg {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+.notif-item-fecha {
+  font-size: 11px;
+  color: #aab5aa;
+  margin-top: 4px;
+}
+.notif-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-light);
+  padding: 24px 16px;
+}
+@media (max-width: 480px) {
+  .notif-panel { width: calc(100vw - 32px); right: 16px; }
+}
+</style>
 
             <!-- Enlace Google Drive institucional (solo editable por la obra) -->
             <div class="form-card" style="margin-bottom:16px">
@@ -3258,11 +3387,93 @@ document.addEventListener('keydown', function(e) {
 });
 
 // =================== INIT ===========
+// ── Notificaciones in-app ──────────────────────────────────────────────────────
+
+let _notifData = [];
+let _panelAbierto = false;
+
+async function initNotificacionesUsuario() {
+    const session = API.getSession();
+    const obraId = session?.obraId;
+    if (!obraId) return;
+    try {
+        _notifData = await API.notificaciones.getByObra(obraId);
+        const noLeidas = _notifData.filter(n => !n.leida).length;
+        const badge = document.getElementById('notif-bell-badge');
+        if (badge) {
+            if (noLeidas > 0) {
+                badge.textContent = noLeidas > 9 ? '9+' : noLeidas;
+                badge.style.display = 'flex';
+                _mostrarToastAvisos(noLeidas);
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch { /* silencioso */ }
+}
+
+function _mostrarToastAvisos(count) {
+    showToast(
+        `Tienes ${count} aviso${count > 1 ? 's' : ''} nuevo${count > 1 ? 's' : ''} de la administración. Haz clic en la campana para verlo${count > 1 ? 's' : ''}.`,
+        'var(--green-dark)', 6000
+    );
+}
+
+function togglePanelNotif() {
+    const panel = document.getElementById('notif-panel');
+    const overlay = document.getElementById('notif-overlay');
+    _panelAbierto = !_panelAbierto;
+    panel.style.display   = _panelAbierto ? 'flex' : 'none';
+    overlay.style.display = _panelAbierto ? 'block' : 'none';
+    if (_panelAbierto) {
+        _renderPanelNotif();
+        _marcarLeidasSilencioso();
+    }
+}
+
+function _renderPanelNotif() {
+    const body = document.getElementById('notif-panel-body');
+    if (!body) return;
+    if (!_notifData.length) {
+        body.innerHTML = '<p class="notif-empty">Sin avisos por el momento.</p>';
+        return;
+    }
+    body.innerHTML = _notifData.map(n => `
+        <div class="notif-item ${n.leida ? '' : 'unread'}">
+            <div class="notif-item-asunto">${escHtml(n.asunto)}</div>
+            <div class="notif-item-msg">${escHtml(n.mensaje)}</div>
+            <div class="notif-item-fecha">${new Date(n.fecha_envio).toLocaleDateString('es-MX', { dateStyle: 'medium' })}</div>
+        </div>`).join('');
+}
+
+async function _marcarLeidasSilencioso() {
+    const session = API.getSession();
+    const obraId = session?.obraId;
+    if (!obraId) return;
+    const hayNoLeidas = _notifData.some(n => !n.leida);
+    if (!hayNoLeidas) return;
+    try {
+        await API.notificaciones.marcarLeidas(obraId);
+        _notifData = _notifData.map(n => ({ ...n, leida: true }));
+        const badge = document.getElementById('notif-bell-badge');
+        if (badge) badge.style.display = 'none';
+    } catch { /* silencioso */ }
+}
+
+function escHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
     goTo('welcome');
     restaurarDatos();
     initAutosave();
     cargarDocumentos();
+    initNotificacionesUsuario();
 
 });
 </script>
