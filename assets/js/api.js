@@ -123,8 +123,10 @@ const API = {
 
   // ── Correo ────────────────────────────────────────────────────────
   correo: {
-    enviarSondeo(data)   { return API.post('/correo/sondeo', data); },
-    enviarSoporte(data)  { return API.post('/correo/soporte', data); }
+    enviarSondeo(data)          { return API.post('/correo/sondeo', data); },
+    enviarSoporte(data)         { return API.post('/correo/soporte', data); },
+    enviarNotificacion(data)    { return API.post('/correo/notificacion', data); },
+    getNotificaciones()         { return API.get('/correo/notificaciones'); }
   },
 
   // ── Documentos ────────────────────────────────────────────────────
