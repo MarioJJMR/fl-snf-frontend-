@@ -29,7 +29,8 @@ const CONFIG = {
   // ── Feature Flags ─────────────────────────────────────────────────────────
   // Cambiar a false para deshabilitar la funcionalidad sin borrar el código.
   FEATURES: {
-    GOOGLE_LOGIN: false   // false = oculta el botón "Continuar con Google"
+    GOOGLE_LOGIN: false,  // false = oculta el botón "Continuar con Google"
+    CORREO: false         // false = oculta envío de correo hasta configurar RESEND_API_KEY
   }
 };
 

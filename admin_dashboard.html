@@ -277,6 +277,9 @@
                             style="width:100%;padding:10px;border:1.5px solid var(--green-border);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
                     </div>
 
+                    <div id="notif-correo-aviso" style="display:none;margin-bottom:12px;padding:10px 14px;background:#fffbea;border:1px solid #e6c84a;border-radius:8px;font-size:12px;color:#7a5c00;line-height:1.5">
+                        ⚙️ <strong>Servicio de correo no configurado.</strong> El aviso se publicará en el panel in-app de cada obra pero no se enviará por email. Configura <code>RESEND_API_KEY</code> y activa <code>FEATURES.CORREO</code> para habilitar el envío.
+                    </div>
                     <button class="btn-primary" id="btn-enviar-notif" onclick="enviarNotificacion()" style="width:100%">
                         📤 Enviar notificación
                     </button>
@@ -1638,6 +1641,19 @@ async function initNotificaciones() {
         const options = obras.map(o => `<option value="${o.id}">${esc(o.nombre_obra)}</option>`).join('');
         select.innerHTML = '<option value="todas">Todas las obras</option>' + options;
     }
+
+    // Aplicar feature flag de correo
+    const correoActivo = window.CONFIG?.FEATURES?.CORREO !== false;
+    const btn = document.getElementById('btn-enviar-notif');
+    const aviso = document.getElementById('notif-correo-aviso');
+    if (!correoActivo) {
+        if (btn) { btn.textContent = '📋 Publicar aviso (sin correo)'; }
+        if (aviso) aviso.style.display = 'block';
+    } else {
+        if (btn) { btn.textContent = '📤 Enviar notificación'; }
+        if (aviso) aviso.style.display = 'none';
+    }
+
     await cargarHistorialNotif();
 }
 
@@ -1664,8 +1680,14 @@ async function enviarNotificacion() {
 
     try {
         const data = await API.correo.enviarNotificacion({ asunto, mensaje, obras, rol });
-        resultado.textContent = `✅ Enviado a ${data.totalEnviados} usuario(s) en ${data.nombresObras.length} obra(s).`;
-        resultado.style.color = 'var(--success)';
+        const correoActivo = window.CONFIG?.FEATURES?.CORREO !== false;
+        if (!correoActivo || data.advertencia) {
+            resultado.textContent = `✅ Aviso publicado en ${data.nombresObras.length} obra(s). Sin envío por correo.`;
+            resultado.style.color = '#7a5c00';
+        } else {
+            resultado.textContent = `✅ Enviado a ${data.totalEnviados} usuario(s) en ${data.nombresObras.length} obra(s).`;
+            resultado.style.color = 'var(--success)';
+        }
         document.getElementById('notif-asunto').value  = '';
         document.getElementById('notif-mensaje').value = '';
         await cargarHistorialNotif();
