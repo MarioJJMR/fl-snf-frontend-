@@ -43,9 +43,15 @@
             <button onclick="goTo('proyectos')" id="nav-proyectos" style="font-size:12px;padding:7px 10px">
                 <span class="nav-icon" style="font-size:13px">📋</span><span>Proyectos</span>
             </button>
+            <button onclick="goTo('notificaciones')" id="nav-notificaciones" style="font-size:12px;padding:7px 10px">
+                <span class="nav-icon" style="font-size:13px">📢</span><span>Notificaciones</span>
+            </button>
         </div>
         <button onclick="goTo('contacto')" id="nav-contacto">
             <span class="nav-icon">📞</span><span>Contacto con Obras</span>
+        </button>
+        <button onclick="goTo('seguimiento')" id="nav-seguimiento">
+            <span class="nav-icon">📊</span><span>Seguimiento de Obras</span>
         </button>
         <hr>
         <div class="nav-label">Sistema</div>
@@ -214,6 +220,139 @@
                 <p>Información de contacto enviada por las obras a través del sistema.</p>
             </div>
             <div id="contacto-content"></div>
+        </div>
+
+        <!-- ══════════════ NOTIFICACIONES ══════════════ -->
+        <div id="page-notificaciones" class="section-page">
+            <div class="page-header">
+                <h2>📢 Notificaciones</h2>
+                <p>Envía avisos y comunicados directamente a los usuarios de las obras.</p>
+            </div>
+
+            <style>
+                .notif-layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
+                @media(max-width:800px) { .notif-layout { grid-template-columns:1fr; } }
+                .notif-select { width:100%; padding:10px; border:1.5px solid var(--green-border); border-radius:8px; font-size:13px; font-family:inherit; background:#fff; }
+                .notif-hist-item { padding:14px 16px; border:1px solid #e8f0e8; border-radius:10px; background:#fff; margin-bottom:10px; }
+                .notif-hist-header { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px; }
+                .notif-hist-asunto { font-weight:700; font-size:14px; color:var(--green-dark); }
+                .notif-hist-date   { font-size:11px; color:var(--text-light); white-space:nowrap; }
+                .notif-hist-obras  { font-size:12px; color:var(--text-mid); margin-bottom:4px; }
+                .notif-hist-msg    { font-size:13px; color:#444; line-height:1.5; white-space:pre-wrap; border-top:1px solid #eef4ee; padding-top:8px; margin-top:6px; max-height:80px; overflow:hidden; text-overflow:ellipsis; }
+                .notif-hist-meta   { display:flex; gap:12px; align-items:center; margin-top:6px; }
+                .notif-hist-badge  { font-size:11px; background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:10px; font-weight:700; }
+            </style>
+
+            <div class="notif-layout">
+
+                <!-- Panel izquierdo: Componer -->
+                <div class="form-card">
+                    <h3 style="margin-bottom:16px">✉️ Nueva notificación</h3>
+
+                    <div class="form-group" style="margin-bottom:14px">
+                        <label style="font-size:13px;font-weight:700;color:var(--text-mid);display:block;margin-bottom:6px">Obra destinataria</label>
+                        <select id="notif-obra" class="notif-select">
+                            <option value="todas">Todas las obras</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:14px">
+                        <label style="font-size:13px;font-weight:700;color:var(--text-mid);display:block;margin-bottom:6px">Roles que recibirán la notificación</label>
+                        <select id="notif-rol" class="notif-select">
+                            <option value="todos">Todos los roles</option>
+                            <option value="usuario">Solo usuarios de obra</option>
+                            <option value="admin">Solo administradores</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:14px">
+                        <label style="font-size:13px;font-weight:700;color:var(--text-mid);display:block;margin-bottom:6px">Asunto</label>
+                        <input type="text" id="notif-asunto" placeholder="Ej: Recordatorio fecha límite SNF 2025"
+                            style="width:100%;padding:10px;border:1.5px solid var(--green-border);border-radius:8px;font-size:13px;font-family:inherit">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:16px">
+                        <label style="font-size:13px;font-weight:700;color:var(--text-mid);display:block;margin-bottom:6px">Mensaje</label>
+                        <textarea id="notif-mensaje" rows="6" placeholder="Escribe aquí el contenido del aviso..."
+                            style="width:100%;padding:10px;border:1.5px solid var(--green-border);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+                    </div>
+
+                    <div id="notif-correo-aviso" style="display:none;margin-bottom:12px;padding:10px 14px;background:#fffbea;border:1px solid #e6c84a;border-radius:8px;font-size:12px;color:#7a5c00;line-height:1.5">
+                        ⚙️ <strong>Servicio de correo no configurado.</strong> El aviso se publicará en el panel in-app de cada obra pero no se enviará por email. Configura <code>RESEND_API_KEY</code> y activa <code>FEATURES.CORREO</code> para habilitar el envío.
+                    </div>
+                    <button class="btn-primary" id="btn-enviar-notif" onclick="enviarNotificacion()" style="width:100%">
+                        📤 Enviar notificación
+                    </button>
+                    <div id="notif-resultado" style="margin-top:10px;font-size:13px;font-weight:600;text-align:center;min-height:18px"></div>
+                </div>
+
+                <!-- Panel derecho: Historial -->
+                <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                        <h3 style="margin:0">🕐 Historial de envíos</h3>
+                        <button class="btn-secondary" style="padding:5px 12px;font-size:12px" onclick="cargarHistorialNotif()">🔄</button>
+                    </div>
+                    <div id="notif-historial">
+                        <p style="color:var(--text-light);font-size:13px">Cargando historial...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════ SEGUIMIENTO DE OBRAS ══════════════ -->
+        <div id="page-seguimiento" class="section-page">
+            <div class="page-header">
+                <h2>📊 Seguimiento de Obras</h2>
+                <p>Estado de avance del sondeo SNF 2025 por obra.</p>
+            </div>
+
+            <style>
+                .seg-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(310px, 1fr)); gap:18px; }
+                .seg-card { background:#fff; border:1px solid #dde8e3; border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.05); transition:box-shadow .2s,transform .2s; }
+                .seg-card:hover { box-shadow:0 6px 20px rgba(0,0,0,.1); transform:translateY(-2px); }
+                .seg-card-header { padding:16px 20px 10px; }
+                .seg-badge { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:10px; letter-spacing:.3px; }
+                .seg-badge-inactive { background:#f5f5f5; color:#999; }
+                .seg-badge-started  { background:#fff8e1; color:#e65100; }
+                .seg-badge-progress { background:#fff3e0; color:#f57c00; }
+                .seg-badge-done     { background:#e8f5e9; color:#2e7d32; }
+                .seg-obra-name { font-size:15px; font-weight:800; color:var(--green-dark); margin-bottom:4px; line-height:1.3; }
+                .seg-obra-meta { font-size:12px; color:var(--text-light); }
+                .seg-progress-area { padding:0 20px 12px; }
+                .seg-progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text-mid); margin-bottom:6px; font-weight:600; }
+                .seg-progress-bar { height:8px; background:#e8f0e8; border-radius:4px; overflow:hidden; }
+                .seg-progress-fill { height:100%; border-radius:4px; transition:width .5s; }
+                .seg-pills { padding:0 20px 14px; display:flex; flex-wrap:wrap; gap:4px; }
+                .seg-pill { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:700; }
+                .seg-pill-done    { background:#e8f5e9; color:#2e7d32; }
+                .seg-pill-pending { background:#f5f5f5; color:#bbb; border:1px solid #eee; }
+                .seg-stats { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #eef4ee; }
+                .seg-stat { text-align:center; padding:10px 6px; border-right:1px solid #eef4ee; }
+                .seg-stat:last-child { border-right:none; }
+                .seg-stat-num { font-size:17px; font-weight:800; color:var(--green-dark); }
+                .seg-stat-lbl { font-size:10px; color:var(--text-light); margin-top:1px; }
+                .seg-footer { padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid #eef4ee; background:#f8faf9; }
+                .seg-footer-date { font-size:11px; color:var(--text-light); }
+            </style>
+
+            <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="buscar-seguimiento" placeholder="🔍 Buscar obra..."
+                    oninput="filtrarSeguimiento()"
+                    style="flex:1;min-width:180px;max-width:300px;padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;outline:none">
+                <select id="filtro-seguimiento" onchange="filtrarSeguimiento()"
+                    style="padding:9px 13px;border:1.5px solid var(--green-brd);border-radius:var(--radius-sm);font-family:inherit;font-size:13px">
+                    <option value="">Todos los estados</option>
+                    <option value="sin_actividad">Sin actividad</option>
+                    <option value="iniciado">Iniciado</option>
+                    <option value="en_progreso">En progreso</option>
+                    <option value="completo">Completo</option>
+                </select>
+                <button class="btn-secondary" onclick="renderSeguimiento()">🔄 Actualizar</button>
+            </div>
+
+            <div id="seguimiento-grid" class="seg-grid">
+                <p style="color:var(--text-light);font-size:13px">Cargando seguimiento...</p>
+            </div>
         </div>
 
         <!-- ══════════════ ESTADÍSTICAS ══════════════ -->
@@ -533,11 +672,12 @@ let _usuarios = [];
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','estadisticas','proceso'];
+const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','seguimiento','notificaciones','estadisticas','proceso'];
 const PAGE_TITLES = {
     bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
-    proyectos:'Proyectos', contacto:'Contacto con Obras', estadisticas:'Estadísticas',
-    proceso:'Proceso / Tiempos'
+    proyectos:'Proyectos', contacto:'Contacto con Obras',
+    seguimiento:'Seguimiento de Obras', notificaciones:'Notificaciones',
+    estadisticas:'Estadísticas', proceso:'Proceso / Tiempos'
 };
 
 function toggleSubMenuObras() {
@@ -556,7 +696,9 @@ function goTo(page) {
     window.scrollTo({top:0, behavior:'smooth'});
 
     // Load data for section
-    if (page === 'obras')         renderObras();
+    if (page === 'seguimiento')     renderSeguimiento();
+    if (page === 'notificaciones')  initNotificaciones();
+    if (page === 'obras')           renderObras();
     if (page === 'usuarios')      renderUsuarios();
     if (page === 'proyectos')     renderProyectos();
     if (page === 'contacto')      renderContactos();
@@ -1488,6 +1630,248 @@ function esc(str) {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// NOTIFICACIONES
+// ══════════════════════════════════════════════
+async function initNotificaciones() {
+    const select = document.getElementById('notif-obra');
+    if (select) {
+        if (_obras.length === 0) await renderObras(true);
+        const obras = _obras.length ? _obras : (await API.obras.getAll().catch(() => []));
+        const options = obras.map(o => `<option value="${o.id}">${esc(o.nombre_obra)}</option>`).join('');
+        select.innerHTML = '<option value="todas">Todas las obras</option>' + options;
+    }
+
+    // Aplicar feature flag de correo
+    const correoActivo = window.CONFIG?.FEATURES?.CORREO !== false;
+    const btn = document.getElementById('btn-enviar-notif');
+    const aviso = document.getElementById('notif-correo-aviso');
+    if (!correoActivo) {
+        if (btn) { btn.textContent = '📋 Publicar aviso (sin correo)'; }
+        if (aviso) aviso.style.display = 'block';
+    } else {
+        if (btn) { btn.textContent = '📤 Enviar notificación'; }
+        if (aviso) aviso.style.display = 'none';
+    }
+
+    await cargarHistorialNotif();
+}
+
+async function enviarNotificacion() {
+    const obraVal  = document.getElementById('notif-obra')?.value;
+    const rolVal   = document.getElementById('notif-rol')?.value;
+    const asunto   = document.getElementById('notif-asunto')?.value.trim();
+    const mensaje  = document.getElementById('notif-mensaje')?.value.trim();
+    const resultado = document.getElementById('notif-resultado');
+    const btn      = document.getElementById('btn-enviar-notif');
+
+    if (!asunto || !mensaje) {
+        resultado.textContent = '⚠️ Completa el asunto y el mensaje.';
+        resultado.style.color = '#c47a00';
+        return;
+    }
+
+    const obras = obraVal === 'todas' ? 'todas' : [obraVal];
+    const rol   = rolVal || 'todos';
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Enviando...';
+    resultado.textContent = '';
+
+    try {
+        const data = await API.correo.enviarNotificacion({ asunto, mensaje, obras, rol });
+        const correoActivo = window.CONFIG?.FEATURES?.CORREO !== false;
+        if (!correoActivo || data.advertencia) {
+            resultado.textContent = `✅ Aviso publicado en ${data.nombresObras.length} obra(s). Sin envío por correo.`;
+            resultado.style.color = '#7a5c00';
+        } else {
+            resultado.textContent = `✅ Enviado a ${data.totalEnviados} usuario(s) en ${data.nombresObras.length} obra(s).`;
+            resultado.style.color = 'var(--success)';
+        }
+        document.getElementById('notif-asunto').value  = '';
+        document.getElementById('notif-mensaje').value = '';
+        await cargarHistorialNotif();
+    } catch (err) {
+        resultado.textContent = '❌ ' + (err.message || 'Error al enviar');
+        resultado.style.color = '#c43a3a';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '📤 Enviar notificación';
+    }
+}
+
+async function cargarHistorialNotif() {
+    const container = document.getElementById('notif-historial');
+    if (!container) return;
+    try {
+        const items = await API.correo.getNotificaciones();
+        if (!items.length) {
+            container.innerHTML = '<p style="color:var(--text-light);font-size:13px">Sin notificaciones enviadas aún.</p>';
+            return;
+        }
+        container.innerHTML = items.map(n => {
+            const obras = Array.isArray(n.nombres_obras)
+                ? (n.nombres_obras.includes('todas') ? 'Todas las obras' : n.nombres_obras.join(', '))
+                : 'N/D';
+            const fecha = new Date(n.fecha_envio).toLocaleString('es-MX', { dateStyle:'short', timeStyle:'short' });
+            return `
+            <div class="notif-hist-item">
+                <div class="notif-hist-header">
+                    <span class="notif-hist-asunto">${esc(n.asunto)}</span>
+                    <span class="notif-hist-date">${fecha}</span>
+                </div>
+                <div class="notif-hist-obras">📍 ${esc(obras)}</div>
+                <div class="notif-hist-meta">
+                    <span class="notif-hist-badge">📤 ${n.total_enviados} enviados</span>
+                    <span style="font-size:11px;color:var(--text-light)">Por: ${esc(n.enviado_por || '—')}</span>
+                </div>
+                <div class="notif-hist-msg">${esc(n.mensaje)}</div>
+            </div>`;
+        }).join('');
+    } catch {
+        container.innerHTML = '<p style="color:#c43a3a;font-size:13px">Error al cargar historial.</p>';
+    }
+}
+
+// ══════════════════════════════════════════════
+// SEGUIMIENTO DE OBRAS
+// ══════════════════════════════════════════════
+const SEG_SECCIONES = [
+    { key: 'datosObra',             label: 'Datos Obra' },
+    { key: 'sondeo',                label: 'Sondeo' },
+    { key: 'presupuesto',           label: 'Presupuesto' },
+    { key: 'proyectosVigentes',     label: 'Proy. Vigentes' },
+    { key: 'proyectosFinanciar',    label: 'Proy. Financiar' },
+    { key: 'necesidadesMateriales', label: 'Necesidades' },
+    { key: 'contextoDemografico',   label: 'Contexto' },
+    { key: 'impacto',               label: 'Impacto' },
+    { key: 'calendario',            label: 'Calendario' },
+];
+
+let _seguimientoData = [];
+
+async function renderSeguimiento() {
+    const grid = document.getElementById('seguimiento-grid');
+    if (!grid) return;
+    grid.innerHTML = '<p style="color:var(--text-light);font-size:13px">⏳ Cargando...</p>';
+
+    try {
+        const obras = await API.obras.getAll();
+        if (!obras.length) {
+            grid.innerHTML = '<p style="color:var(--text-light);font-size:13px">No hay obras registradas.</p>';
+            return;
+        }
+
+        _seguimientoData = await Promise.all(obras.map(async obra => {
+            const [formsRes, docsRes, proyRes, usrRes] = await Promise.allSettled([
+                API.formularios.getAll(obra.id),
+                API.documentos.getAll(obra.id),
+                API.proyectos.getAll(obra.id),
+                API.usuarios.getByObra(obra.id),
+            ]);
+
+            const forms     = formsRes.status === 'fulfilled' ? (formsRes.value || {}) : {};
+            const docs      = docsRes.status  === 'fulfilled' ? (docsRes.value  || []) : [];
+            const proyectos = proyRes.status  === 'fulfilled' ? (proyRes.value  || []) : [];
+            const usuarios  = usrRes.status   === 'fulfilled' ? (usrRes.value   || []) : [];
+
+            const seccionesHechas = SEG_SECCIONES.filter(s => forms[s.key] !== undefined);
+            const pct = Math.round((seccionesHechas.length / SEG_SECCIONES.length) * 100);
+
+            let ultimaActividad = null;
+            Object.values(forms).forEach(f => {
+                const d = f._meta?.fechaActualizacion ? new Date(f._meta.fechaActualizacion) : null;
+                if (d && (!ultimaActividad || d > ultimaActividad)) ultimaActividad = d;
+            });
+
+            let status, statusLabel, statusClass, barColor;
+            if      (seccionesHechas.length === 0)                      { status = 'sin_actividad'; statusLabel = 'Sin actividad'; statusClass = 'seg-badge-inactive'; barColor = '#ddd'; }
+            else if (seccionesHechas.length <= 3)                       { status = 'iniciado';      statusLabel = 'Iniciado';      statusClass = 'seg-badge-started';  barColor = '#e67e22'; }
+            else if (seccionesHechas.length < SEG_SECCIONES.length)     { status = 'en_progreso';   statusLabel = 'En progreso';   statusClass = 'seg-badge-progress'; barColor = '#f39c12'; }
+            else                                                         { status = 'completo';      statusLabel = 'Completo ✓';    statusClass = 'seg-badge-done';     barColor = '#27ae60'; }
+
+            return { obra, forms, docs, proyectos, usuarios, seccionesHechas, pct, ultimaActividad, status, statusLabel, statusClass, barColor };
+        }));
+
+        _renderSeguimientoCards(_seguimientoData);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#c43a3a;font-size:13px">❌ Error al cargar: ${esc(err.message)}</p>`;
+    }
+}
+
+function _renderSeguimientoCards(data) {
+    const grid = document.getElementById('seguimiento-grid');
+    if (!grid) return;
+    if (!data.length) {
+        grid.innerHTML = '<p style="color:var(--text-light);font-size:13px;padding:20px">Sin resultados.</p>';
+        return;
+    }
+
+    grid.innerHTML = data.map(d => {
+        const { obra, docs, proyectos, usuarios, seccionesHechas, pct, ultimaActividad, statusLabel, statusClass, barColor } = d;
+        const fechaStr = ultimaActividad
+            ? ultimaActividad.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' })
+            : 'Sin actividad registrada';
+
+        const pillsHtml = SEG_SECCIONES.map(s => {
+            const done = seccionesHechas.find(h => h.key === s.key);
+            return `<span class="seg-pill ${done ? 'seg-pill-done' : 'seg-pill-pending'}">${s.label}</span>`;
+        }).join('');
+
+        return `
+        <div class="seg-card" data-status="${d.status}" data-nombre="${esc(obra.nombre_obra).toLowerCase()}">
+            <div class="seg-card-header">
+                <span class="seg-badge ${statusClass}">${statusLabel}</span>
+                <div class="seg-obra-name">${esc(obra.nombre_obra)}</div>
+                <div class="seg-obra-meta">📍 ${esc(obra.estado || '—')} &nbsp;·&nbsp; ${esc(obra.correo || '—')}</div>
+            </div>
+
+            <div class="seg-progress-area">
+                <div class="seg-progress-label">
+                    <span>Progreso del sondeo</span>
+                    <strong>${seccionesHechas.length} / ${SEG_SECCIONES.length} &nbsp;·&nbsp; ${pct}%</strong>
+                </div>
+                <div class="seg-progress-bar">
+                    <div class="seg-progress-fill" style="width:${pct}%;background:${barColor}"></div>
+                </div>
+            </div>
+
+            <div class="seg-pills">${pillsHtml}</div>
+
+            <div class="seg-stats">
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${docs.length}</div>
+                    <div class="seg-stat-lbl">📄 Documentos</div>
+                </div>
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${proyectos.length}</div>
+                    <div class="seg-stat-lbl">📋 Proyectos</div>
+                </div>
+                <div class="seg-stat">
+                    <div class="seg-stat-num">${usuarios.length}</div>
+                    <div class="seg-stat-lbl">👥 Usuarios</div>
+                </div>
+            </div>
+
+            <div class="seg-footer">
+                <span class="seg-footer-date">🕐 ${fechaStr}</span>
+                <button class="btn-secondary" style="padding:5px 14px;font-size:12px" onclick="verDetalleObra('${obra.id}')">Ver detalle →</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function filtrarSeguimiento() {
+    const q      = (document.getElementById('buscar-seguimiento')?.value || '').toLowerCase();
+    const filtro = document.getElementById('filtro-seguimiento')?.value || '';
+    const filtered = _seguimientoData.filter(d => {
+        const matchNombre = d.obra.nombre_obra.toLowerCase().includes(q);
+        const matchStatus = !filtro || d.status === filtro;
+        return matchNombre && matchStatus;
+    });
+    _renderSeguimientoCards(filtered);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     actualizarEstadisticas();
     // Auto-refresh stats every 30s
