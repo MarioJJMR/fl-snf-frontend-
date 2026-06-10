@@ -3394,7 +3394,7 @@ let _panelAbierto = false;
 
 async function initNotificacionesUsuario() {
     const session = API.getSession();
-    const obraId = session?.obra_id;
+    const obraId = session?.obraId;
     if (!obraId) return;
     try {
         _notifData = await API.notificaciones.getByObra(obraId);
@@ -3448,7 +3448,7 @@ function _renderPanelNotif() {
 
 async function _marcarLeidasSilencioso() {
     const session = API.getSession();
-    const obraId = session?.obra_id;
+    const obraId = session?.obraId;
     if (!obraId) return;
     const hayNoLeidas = _notifData.some(n => !n.leida);
     if (!hayNoLeidas) return;
