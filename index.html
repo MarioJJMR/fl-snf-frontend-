@@ -1833,7 +1833,7 @@ function goTo(page) {
             const faltantes = CADENA_SONDEO[i].validar();
             if (faltantes.length > 0) {
                 _activarPagina(CADENA_SONDEO[i].seccion);
-                showToast(`Completa "${CADENA_SONDEO[i].titulo}" antes de continuar:<br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 7000);
+                showToast(`Se está intentando avanzar a una nueva sección sin haber completado todos los campos. Para avanzar, da clic en guardar y elige posteriormente la sección que deseas trabajar.<br><br>Recuerda que no se activará la función de enviar mientras existan secciones incompletas.<br><br><strong>Campos pendientes en "${CADENA_SONDEO[i].titulo}":</strong><br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 9000);
                 return;
             }
         }
@@ -2087,7 +2087,7 @@ function guardarSeccion(key) {
     if (validadores[key]) {
         const faltantes = validadores[key]();
         if (faltantes.length > 0) {
-            showToast(`Campos faltantes:<br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 7000);
+            showToast(`Se está intentando avanzar a una nueva sección sin haber completado todos los campos. Para avanzar, da clic en guardar y elige posteriormente la sección que deseas trabajar.<br><br>Recuerda que no se activará la función de enviar mientras existan secciones incompletas.<br><br><strong>Campos pendientes:</strong><br>${faltantes.map(f => `• ${f}`).join('<br>')}`, '#c0392b', 9000);
             return;
         }
     }
