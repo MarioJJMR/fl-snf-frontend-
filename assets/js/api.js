@@ -129,6 +129,12 @@ const API = {
     getNotificaciones()         { return API.get('/correo/notificaciones'); }
   },
 
+  // ── Notificaciones (obra) ─────────────────────────────────────────
+  notificaciones: {
+    getByObra(obraId)    { return API.get(`/notificaciones/obra/${obraId}`); },
+    marcarLeidas(obraId) { return API.post(`/notificaciones/obra/${obraId}/leer`); }
+  },
+
   // ── Documentos ────────────────────────────────────────────────────
   documentos: {
     getAll(obraId) {
