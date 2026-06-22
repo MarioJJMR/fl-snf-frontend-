@@ -1,2 +1,5 @@
 *.xlsx
 ~$*
+/node_modules/.bin
+/node_modules/@babel
+/node_modules
