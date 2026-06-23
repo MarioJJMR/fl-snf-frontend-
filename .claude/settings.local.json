@@ -13,7 +13,8 @@
       "Bash(MYSQL_PUBLIC_URL= node:*)",
       "Bash(MYSQL_PUBLIC_URL=\"mysql://root:Diego85m.@localhost:3306/fl_snf_db\" node:*)",
       "Bash(curl:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(gh repo:*)"
     ]
   }
 }
