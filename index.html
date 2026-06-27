@@ -105,12 +105,12 @@
         <div id="page-welcome" class="section-page active">
             <div class="page-header">
                 <h2>Bienvenido al Sistema de Obras</h2>
-                <p>Sondeo de Necesidades Financieras y Materiales 2025 — Fundación Loyola</p>
+                <p>Fundación Loyola</p>
             </div>
             <div class="info-box">
-                <strong>Propósito del Sondeo:</strong> Recopilar información sobre los proyectos y programas que ejecutan las obras jesuitas del sector social y pastoral, identificar necesidades financieras y afinar estrategias de procuración de fondos.<br><br>
-                <strong>Enviar a:</strong> Sergio Anzures — <a href="/cdn-cgi/l/email-protection#a0d6c9cec3d5ccc1c3c9cfcee0c6d5cec4c1c3c9cfcecccfd9cfccc18ecdd8" style="color:var(--green-dark)"><span class="__cf_email__" data-cfemail="2c5a45424f59404d4f4543426c4a5942484d4f45434240435543404d024154">[email&#160;protected]</span></a> con copia a Octavio Ubaldo — <a href="/cdn-cgi/l/email-protection#8bf8e4fbe4f9ffeeeae4e9f9eaf8cbedfee5efeae8e2e4e5e7e4f2e4e7eaa5e6f3" style="color:var(--green-dark)"><span class="__cf_email__" data-cfemail="5a29352a35282e3f3b3538283b291a3c2f343e3b3933353436352335363b743722">[email&#160;protected]</span></a><br>
-                <strong>Dudas:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="691a0619061b1d0c08060b1b081a290f1c070d080a000607050610060508470411">[email&#160;protected]</a> · Horario: 9:00 a 17:30
+                El sistema de Obras tiene como objetivo ser una vía de comunicación entre las Obras y la Fundación San Ignacio de Loyola. Este portal está diseñado para facilitar el envío de documentos institucionales, proyectos, creación de perfiles de Obras y usuarios por obra.<br><br>
+                <strong>Enviar a:</strong> Sergio Anzures — <a href="mailto:diagnostico@fundacionloyola.mx" style="color:var(--green-dark)">diagnostico@fundacionloyola.mx</a> con copia a Octavio Ubaldo — <a href="mailto:diagnostico@fundacionloyola.mx" style="color:var(--green-dark)">diagnostico@fundacionloyola.mx</a><br>
+                <strong>Dudas:</strong> <a href="mailto:diagnostico@fundacionloyola.mx" style="color:var(--green-dark)">diagnostico@fundacionloyola.mx</a> · Horario: 9:00 a 17:30
             </div>
             <div class="welcome-grid">
                 <div class="welcome-card" onclick="goTo('datosObra')">
@@ -301,16 +301,6 @@
             <!-- 2.2 Planeación General -->
             <div class="form-card">
                 <h3>Planeación General</h3>
-                <div class="form-row cols-2">
-                    <div class="form-group">
-                        <label>Fecha de la última planeación</label>
-                        <input type="date" id="fechaPlaneacion">
-                    </div>
-                    <div class="form-group">
-                        <label>Periodo que abarca</label>
-                        <input type="text" id="periodoPlaneacion" placeholder="Ej. 2024 – 2026">
-                    </div>
-                </div>
                 <div class="form-row cols-1">
                     <div class="form-group">
                         <label>Misión</label>
@@ -1459,7 +1449,7 @@
             <textarea id="email-mensaje" rows="3" placeholder="Notas o comentarios adicionales para el equipo de Fundación Loyola..."></textarea>
         </div>
         <div style="background:#f8faf9;border:1px solid #dde8e3;border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text-mid);margin-bottom:4px">
-            📬 Se enviará a: <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9cfd0d7daccd5d8dad0d6d7f9dfccd7ddd8dad0d6d7d5d6c0d6d5d897d4c1">[email&#160;protected]</a></strong> con copia a <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90e3ffe0ffe2e4f5f1fff2e2f1e3d0f6e5fef4f1f3f9fffefcffe9fffcf1befde8">[email&#160;protected]</a></strong>
+            📬 Se enviará a: <strong><a href="mailto:diagnostico@fundacionloyola.mx" style="color:var(--green-dark)">diagnostico@fundacionloyola.mx</a></strong>
         </div>
 
         <div class="modal-actions">
@@ -1559,8 +1549,7 @@ function validarDatosObra() {
         { id: 'rfc',                  label: 'RFC' },
         { id: 'estado',               label: 'Estado' },
         { id: 'direccionSede',        label: 'Dirección de la sede' },
-        { id: 'fechaPlaneacion',      label: 'Fecha de última planeación' },
-        { id: 'periodoPlaneacion',    label: 'Periodo que abarca' },
+
         { id: 'mision',               label: 'Misión' },
         { id: 'vision',               label: 'Visión' },
         { id: 'objetivoGeneral',      label: 'Objetivo General' },
@@ -1808,10 +1797,16 @@ function _validarProyectosBloques(containerId, etiqueta) {
 }
 
 function validarProyectosVigentes() {
+    const container = document.getElementById('lista-proyectos-vigentes');
+    const bloques = container ? container.querySelectorAll('.proyecto-block') : [];
+    if (bloques.length === 0) return [];
     return _validarProyectosBloques('lista-proyectos-vigentes', 'Proyecto Vigente');
 }
 
 function validarProyectosFinanciar() {
+    const container = document.getElementById('lista-proyectos-financiar');
+    const bloques = container ? container.querySelectorAll('.proyecto-block') : [];
+    if (bloques.length === 0) return [];
     return _validarProyectosBloques('lista-proyectos-financiar', 'Proyecto por Financiar');
 }
 
@@ -2045,6 +2040,105 @@ function triggerAutosave() {
 }
 
 // Collect ALL form data from the page
+function _serializarTablas() {
+    function serGasto(tbodyId) {
+        const rows = [];
+        document.querySelectorAll(`#${tbodyId} tr`).forEach(tr => {
+            const inputs = tr.querySelectorAll('input');
+            rows.push({ desc: inputs[0]?.value || '', costo: inputs[1]?.value || '' });
+        });
+        return rows;
+    }
+    function serFinanciamiento() {
+        const rows = [];
+        document.querySelectorAll('#tbodyFinanciamiento tr').forEach(tr => {
+            const inputs = tr.querySelectorAll('input');
+            rows.push({
+                fuente:    inputs[0]?.value || '',
+                monto:     inputs[1]?.value || '',
+                confirmar: inputs[2]?.value || '',
+                montoConf: inputs[3]?.value || ''
+            });
+        });
+        return rows;
+    }
+    function serInsumos() {
+        const rows = [];
+        document.querySelectorAll('#tbodyInsumos tr').forEach(tr => {
+            const sel = tr.querySelector('select');
+            const inputs = tr.querySelectorAll('input:not([readonly])');
+            rows.push({
+                concepto: sel?.value || '',
+                desc:     inputs[0]?.value || '',
+                qty:      inputs[1]?.value || '',
+                costo:    inputs[2]?.value || ''
+            });
+        });
+        return rows;
+    }
+    return {
+        tablaCapHumano:     serGasto('tbodyCapHumano'),
+        tablaMatServ:       serGasto('tbodyMatServ'),
+        tablaFinanciamiento: serFinanciamiento(),
+        tablaInsumos:       serInsumos()
+    };
+}
+
+function _restaurarTablas(tablas) {
+    if (!tablas) return;
+
+    function restGasto(tbodyId, rows) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody || !rows?.length) return;
+        tbody.innerHTML = '';
+        rows.forEach(row => {
+            addGastoRow(tbodyId);
+            const inputs = tbody.lastElementChild.querySelectorAll('input');
+            if (inputs[0]) inputs[0].value = row.desc || '';
+            if (inputs[1]) inputs[1].value = row.costo || '';
+        });
+        calcTotalGastos();
+    }
+
+    function restFinanciamiento(rows) {
+        const tbody = document.getElementById('tbodyFinanciamiento');
+        if (!tbody || !rows?.length) return;
+        tbody.innerHTML = '';
+        rows.forEach(row => {
+            addFinanciamientoRow();
+            const inputs = tbody.lastElementChild.querySelectorAll('input');
+            if (inputs[0]) inputs[0].value = row.fuente    || '';
+            if (inputs[1]) inputs[1].value = row.monto     || '';
+            if (inputs[2]) inputs[2].value = row.confirmar || '';
+            if (inputs[3]) inputs[3].value = row.montoConf || '';
+        });
+        calcTotalFinanciamiento();
+    }
+
+    function restInsumos(rows) {
+        const tbody = document.getElementById('tbodyInsumos');
+        if (!tbody || !rows?.length) return;
+        tbody.innerHTML = '';
+        rows.forEach(row => {
+            addInsumoRow();
+            const tr = tbody.lastElementChild;
+            const sel = tr.querySelector('select');
+            const inputs = tr.querySelectorAll('input:not([readonly])');
+            if (sel)      sel.value      = row.concepto || '';
+            if (inputs[0]) inputs[0].value = row.desc    || '';
+            if (inputs[1]) inputs[1].value = row.qty     || '';
+            if (inputs[2]) inputs[2].value = row.costo   || '';
+            if (inputs[1]) calcInsumo(inputs[1]);
+        });
+        calcTotalInsumos();
+    }
+
+    restGasto('tbodyCapHumano', tablas.tablaCapHumano);
+    restGasto('tbodyMatServ',   tablas.tablaMatServ);
+    restFinanciamiento(tablas.tablaFinanciamiento);
+    restInsumos(tablas.tablaInsumos);
+}
+
 function recolectarTodosLosDatos() {
     const data = {};
     // Static inputs / textareas / selects
@@ -2064,6 +2158,7 @@ async function guardarTodo(silent = false) {
 
         const data = {
             formData: recolectarTodosLosDatos(),
+            tablas: _serializarTablas(),
             completedSections: SONDEO_SECTIONS.filter(s => {
                 const el = document.getElementById('pt-' + s);
                 return el && el.classList.contains('completed');
@@ -2102,6 +2197,9 @@ async function restaurarDatos() {
             data.completedSections.forEach(s => marcarSeccionCompleta(s));
         }
 
+        // Restore dynamic tables (gastos, financiamiento, insumos)
+        _restaurarTablas(data.tablas);
+
         // Recalculate derived values
         calcColaboradores();
         calcTotalGastos();
@@ -2125,7 +2223,7 @@ function initAutosave() {
     // Limpiar error visual al editar campos de datosObra
     const camposDatosObra = [
         'nombreObra', 'rfc', 'estado', 'direccionSede', 'telefonoLocal',
-        'fechaPlaneacion', 'periodoPlaneacion',
+
         'mision', 'vision', 'objetivoGeneral', 'objetivosEstrategicos',
         'directorNombre', 'directorTel', 'directorCorreo',
         'adminNombre', 'adminTel', 'adminCorreo',
@@ -2379,8 +2477,7 @@ function generarPDF() {
     field('Donataria Autorizada', getVal('donataria'));
 
     subTitle('Planeación General');
-    field('Fecha última planeación', getVal('fechaPlaneacion'));
-    field('Periodo', getVal('periodoPlaneacion'));
+
     field('Misión', getVal('mision'));
     field('Visión', getVal('vision'));
     field('Objetivo General', getVal('objetivoGeneral'));
