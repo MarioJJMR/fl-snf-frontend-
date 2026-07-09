@@ -53,14 +53,6 @@
         <button onclick="goTo('seguimiento')" id="nav-seguimiento">
             <span class="nav-icon">📊</span><span>Seguimiento de Obras</span>
         </button>
-        <hr>
-        <div class="nav-label">Sistema</div>
-        <button onclick="goTo('estadisticas')" id="nav-estadisticas">
-            <span class="nav-icon">📊</span><span>Estadísticas</span>
-        </button>
-        <button onclick="goTo('proceso')" id="nav-proceso">
-            <span class="nav-icon">⏳</span><span>Proceso / Tiempos</span>
-        </button>
     </nav>
     <div class="sidebar-footer">
         <button class="btn-export" onclick="exportarDatos()">
@@ -355,105 +347,6 @@
             </div>
         </div>
 
-        <!-- ══════════════ ESTADÍSTICAS ══════════════ -->
-        <div id="page-estadisticas" class="section-page">
-            <div class="page-header">
-                <h2>📊 Estadísticas del Sistema</h2>
-                <p>Resumen general del estado de las obras y el sondeo.</p>
-            </div>
-
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-icon green">🏢</div>
-                    <div class="stat-info"><h4>Obras Totales</h4><div class="stat-num" id="st2-obras">0</div></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon blue">👥</div>
-                    <div class="stat-info"><h4>Usuarios</h4><div class="stat-num" id="st2-usuarios">0</div></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon gold">📋</div>
-                    <div class="stat-info"><h4>Sondeos con datos</h4><div class="stat-num gold" id="st2-sondeos">0</div></div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon gray">💾</div>
-                    <div class="stat-info"><h4>Registros en sistema</h4><div class="stat-num" id="st2-registros">0</div></div>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <h3>Acciones</h3>
-                <div style="display:flex;gap:10px;flex-wrap:wrap">
-                    <button class="btn-gold" onclick="generarReportePDF()">📄 Generar Reporte PDF</button>
-                    <button class="btn-secondary" onclick="exportarDatos()">💾 Exportar JSON</button>
-                    <button class="btn-secondary" onclick="actualizarEstadisticas()">🔄 Actualizar</button>
-                </div>
-            </div>
-
-            <div class="form-card">
-                <h3>Distribución de Roles</h3>
-                <div id="roles-chart" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px"></div>
-            </div>
-        </div>
-
-        <!-- ══════════════ PROCESO ══════════════ -->
-        <div id="page-proceso" class="section-page">
-            <div class="page-header">
-                <h2>⏳ Proceso / Tiempos</h2>
-                <p>Gestión de tiempos y estados del proceso SNF.</p>
-            </div>
-            <div class="info-box">
-                Este módulo muestra el estado general del proceso SNF y los tiempos estimados por etapa.
-            </div>
-            <div class="form-card">
-                <h3>Timeline del Proceso SNF</h3>
-                <div class="proceso-timeline">
-                    <div class="timeline-item">
-                        <h4>📢 Apertura del Sondeo</h4>
-                        <p>Envío del formato SNF a todas las obras jesuitas del sector social y pastoral.</p>
-                        <div class="tl-date">Enero 2026</div>
-                    </div>
-                    <div class="timeline-item">
-                        <h4>📝 Período de Llenado</h4>
-                        <p>Las obras completan el Sondeo a través de la plataforma digital.</p>
-                        <div class="tl-date">Enero – Marzo 2026</div>
-                    </div>
-                    <div class="timeline-item">
-                        <h4>📬 Recepción y Revisión</h4>
-                        <p>El equipo de Fundación Loyola recibe, revisa y valida los sondeos enviados.</p>
-                        <div class="tl-date">Marzo – Abril 2026</div>
-                    </div>
-                    <div class="timeline-item">
-                        <h4>📊 Análisis y Estrategia</h4>
-                        <p>Análisis de necesidades, elaboración de fichas técnicas y definición de estrategias de procuración.</p>
-                        <div class="tl-date">Abril – Mayo 2026</div>
-                    </div>
-                    <div class="timeline-item">
-                        <h4>🤝 Acompañamiento</h4>
-                        <p>Implementación de las estrategias de apoyo y acompañamiento a las obras.</p>
-                        <div class="tl-date">Mayo 2026 en adelante</div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-card">
-                <h3>Contacto para dudas del proceso</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Coordinador de Vinculación Institucional</label>
-                        <input type="text" value="Sergio Anzures" readonly style="background:#f8faf9">
-                    </div>
-                    <div class="form-group">
-                        <label>Correo</label>
-                        <input type="email" value="vinculacion@fundacionloyola.mx" readonly style="background:#f8faf9">
-                    </div>
-                    <div class="form-group">
-                        <label>Soporte</label>
-                        <input type="email" value="soporteaobras@fundacionloyola.mx" readonly style="background:#f8faf9">
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- ══════════════ CALENDARIO ══════════════ -->
         <div id="page-calendario" class="section-page">
             <div class="page-header"><h2>📅 Fechas Importantes</h2></div>
@@ -672,12 +565,11 @@ let _usuarios = [];
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
-const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','seguimiento','notificaciones','estadisticas','proceso'];
+const PAGES = ['bienvenida','obras','usuarios','proyectos','contacto','seguimiento','notificaciones'];
 const PAGE_TITLES = {
     bienvenida:'Inicio', obras:'Gestión de Obras', usuarios:'Usuarios',
     proyectos:'Proyectos', contacto:'Contacto con Obras',
-    seguimiento:'Seguimiento de Obras', notificaciones:'Notificaciones',
-    estadisticas:'Estadísticas', proceso:'Proceso / Tiempos'
+    seguimiento:'Seguimiento de Obras', notificaciones:'Notificaciones'
 };
 
 function toggleSubMenuObras() {
@@ -702,7 +594,6 @@ function goTo(page) {
     if (page === 'usuarios')      renderUsuarios();
     if (page === 'proyectos')     renderProyectos();
     if (page === 'contacto')      renderContactos();
-    if (page === 'estadisticas')  actualizarEstadisticas();
 }
 
 // ══════════════════════════════════════════════
