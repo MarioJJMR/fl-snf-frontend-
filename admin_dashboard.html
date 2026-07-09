@@ -93,7 +93,7 @@
         <div id="page-bienvenida" class="section-page active">
             <div class="page-header">
                 <h2>Panel de Administrador</h2>
-                <p>Gestiona obras, usuarios y monitorea el sistema SNF 2025.</p>
+                <p>Gestiona obras, usuarios y monitorea el sistema SNF.</p>
             </div>
 
             <!-- Stat cards -->
@@ -267,7 +267,7 @@
 
                     <div class="form-group" style="margin-bottom:14px">
                         <label style="font-size:13px;font-weight:700;color:var(--text-mid);display:block;margin-bottom:6px">Asunto</label>
-                        <input type="text" id="notif-asunto" placeholder="Ej: Recordatorio fecha límite SNF 2025"
+                        <input type="text" id="notif-asunto" placeholder="Ej: Recordatorio fecha límite SNF"
                             style="width:100%;padding:10px;border:1.5px solid var(--green-border);border-radius:8px;font-size:13px;font-family:inherit">
                     </div>
 
@@ -303,7 +303,7 @@
         <div id="page-seguimiento" class="section-page">
             <div class="page-header">
                 <h2>📊 Seguimiento de Obras</h2>
-                <p>Estado de avance del sondeo SNF 2025 por obra.</p>
+                <p>Estado de avance del sondeo SNF por obra.</p>
             </div>
 
             <style>
@@ -400,13 +400,13 @@
         <div id="page-proceso" class="section-page">
             <div class="page-header">
                 <h2>⏳ Proceso / Tiempos</h2>
-                <p>Gestión de tiempos y estados del proceso SNF 2025.</p>
+                <p>Gestión de tiempos y estados del proceso SNF.</p>
             </div>
             <div class="info-box">
-                Este módulo muestra el estado general del proceso SNF 2025 y los tiempos estimados por etapa.
+                Este módulo muestra el estado general del proceso SNF y los tiempos estimados por etapa.
             </div>
             <div class="form-card">
-                <h3>Timeline del Proceso SNF 2025</h3>
+                <h3>Timeline del Proceso SNF</h3>
                 <div class="proceso-timeline">
                     <div class="timeline-item">
                         <h4>📢 Apertura del Sondeo</h4>
@@ -1541,7 +1541,7 @@ async function generarReportePDF() {
 
     header();
     doc.setFont('helvetica','bold'); doc.setFontSize(18); doc.setTextColor(13,104,53);
-    doc.text('Reporte General SNF 2025', W/2, y, {align:'center'}); y += 8;
+    doc.text('Reporte General SNF', W/2, y, {align:'center'}); y += 8;
     doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
     doc.text(`Fecha: ${new Date().toLocaleString('es-MX')}`, W/2, y, {align:'center'}); y += 12;
 
