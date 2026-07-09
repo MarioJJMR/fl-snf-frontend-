@@ -73,7 +73,7 @@ a:hover { color: var(--green-mid); }
 .sidebar {
   width: var(--sidebar-w);
   background: linear-gradient(175deg, #0a5229 0%, #0D6835 55%, #11823e 100%);
-  min-height: 100vh;
+  height: 100vh;
   position: fixed;
   top: 0; left: 0;
   display: flex;
@@ -82,6 +82,7 @@ a:hover { color: var(--green-mid); }
   z-index: 100;
   box-shadow: 4px 0 20px rgba(0,0,0,0.15);
   animation: slideInLeft 0.3s ease;
+  overflow-y: auto;
 }
 
 @keyframes slideInLeft {
