@@ -569,6 +569,37 @@ a:hover { color: var(--green-mid); }
   .progress-tracker { padding: 8px 16px; }
   .modal { padding: 24px 16px; }
   .obras-grid { grid-template-columns: 1fr; }
+
+  /* Responsive table: stacks each row into a labeled card on small screens.
+     Opt in with class="responsive-table" and a data-label on every <td>. */
+  .responsive-table thead { display: none; }
+  .responsive-table, .responsive-table tbody, .responsive-table tr, .responsive-table td {
+    display: block; width: 100%;
+  }
+  .responsive-table tr {
+    background: var(--green-light);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    text-align: right;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--green-border);
+  }
+  .responsive-table tr td:last-child { border-bottom: none; }
+  .responsive-table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    text-align: left;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
 }
 
 /* =====================================================
