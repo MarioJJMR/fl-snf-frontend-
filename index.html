@@ -48,6 +48,7 @@
 
     </nav>
     <div class="sidebar-footer">
+        <button onclick="abrirMiCuenta()">🔒 <span>Mi cuenta</span></button>
         <button onclick="cerrarSesion()">🚪 <span>Cerrar sesión</span></button>
     </div>
 </aside>
@@ -525,6 +526,35 @@
     </div>
 </div>
 
+<!-- Modal: Mi cuenta (2FA) -->
+<div class="modal-overlay" id="modal-mi-cuenta">
+    <div class="modal">
+        <button class="modal-close" onclick="cerrarModal('modal-mi-cuenta')">✕</button>
+        <h3>🔒 Mi cuenta</h3>
+        <p>Verificación en dos pasos por correo electrónico al iniciar sesión.</p>
+
+        <div id="mfa-estado-actual" style="margin:14px 0;font-size:13.5px;font-weight:700"></div>
+
+        <div id="mfa-seccion-activar">
+            <button class="btn-primary" id="btn-mfa-activar" onclick="activarMfa()">Activar verificación en dos pasos</button>
+        </div>
+
+        <div id="mfa-seccion-desactivar" style="display:none">
+            <div class="form-group">
+                <label style="font-size:13px;font-weight:700">Confirma tu contraseña para desactivarla *</label>
+                <input type="password" id="mfa-contrasena-confirm" placeholder="Tu contraseña actual" autocomplete="current-password">
+            </div>
+            <button class="btn-secondary" id="btn-mfa-desactivar" onclick="desactivarMfa()">Desactivar verificación en dos pasos</button>
+        </div>
+
+        <p id="msg-mi-cuenta" style="min-height:18px;font-size:13px;font-weight:700;margin-top:12px"></p>
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="cerrarModal('modal-mi-cuenta')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><span id="toast-msg">Guardado correctamente</span></div>
 
@@ -598,6 +628,78 @@ function showToast(msg, color, ms) {
 // =================== MODAL HELPERS ===================
 function abrirModal(id) { document.getElementById(id).classList.add('open'); }
 function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// =================== MI CUENTA (2FA) ===================
+async function abrirMiCuenta() {
+    document.getElementById('msg-mi-cuenta').textContent = '';
+    document.getElementById('msg-mi-cuenta').className = '';
+    document.getElementById('mfa-contrasena-confirm').value = '';
+    document.getElementById('mfa-estado-actual').textContent = 'Cargando...';
+    abrirModal('modal-mi-cuenta');
+
+    try {
+        const user = await API.auth.me();
+        renderEstadoMfa(!!user.mfa_enabled);
+    } catch {
+        document.getElementById('mfa-estado-actual').textContent = 'No se pudo cargar el estado actual.';
+    }
+}
+
+function renderEstadoMfa(activo) {
+    const estado = document.getElementById('mfa-estado-actual');
+    estado.innerHTML = activo
+        ? '✅ Verificación en dos pasos <span style="color:var(--success)">activada</span>'
+        : '⚪ Verificación en dos pasos <span style="color:var(--text-light)">desactivada</span>';
+    document.getElementById('mfa-seccion-activar').style.display   = activo ? 'none' : 'block';
+    document.getElementById('mfa-seccion-desactivar').style.display = activo ? 'block' : 'none';
+}
+
+async function activarMfa() {
+    const btn = document.getElementById('btn-mfa-activar');
+    const msg = document.getElementById('msg-mi-cuenta');
+    btn.disabled = true;
+    msg.textContent = '';
+    msg.className = '';
+    try {
+        await API.usuarios.enableMfa();
+        renderEstadoMfa(true);
+        msg.textContent = 'Verificación en dos pasos activada.';
+        msg.style.color = 'var(--success)';
+    } catch (err) {
+        msg.textContent = err.message || 'No se pudo activar.';
+        msg.style.color = 'var(--danger)';
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function desactivarMfa() {
+    const contrasena = document.getElementById('mfa-contrasena-confirm').value;
+    const btn = document.getElementById('btn-mfa-desactivar');
+    const msg = document.getElementById('msg-mi-cuenta');
+
+    if (!contrasena) {
+        msg.textContent = 'Ingresa tu contraseña para confirmar.';
+        msg.className = 'error';
+        return;
+    }
+
+    btn.disabled = true;
+    msg.textContent = '';
+    msg.className = '';
+    try {
+        await API.usuarios.disableMfa(contrasena);
+        renderEstadoMfa(false);
+        document.getElementById('mfa-contrasena-confirm').value = '';
+        msg.textContent = 'Verificación en dos pasos desactivada.';
+        msg.style.color = 'var(--success)';
+    } catch (err) {
+        msg.textContent = err.message || 'No se pudo desactivar.';
+        msg.style.color = 'var(--danger)';
+    } finally {
+        btn.disabled = false;
+    }
+}
 
 // =================== SOPORTE ===================
 function abrirModalSoporte() {
