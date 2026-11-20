@@ -337,6 +337,21 @@
     </div>
   </div>
 
+  <!-- Modal: Verificación en dos pasos (2FA) -->
+  <div class="modal-overlay" id="modal-2fa">
+    <div class="modal-box">
+      <button class="btn-cerrar" onclick="cerrar2fa()" title="Cerrar">&times;</button>
+      <h3>Verificación en dos pasos</h3>
+      <p>Enviamos un código de 6 dígitos a tu correo. Ingrésalo para continuar.</p>
+      <input type="text" id="codigo-2fa" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="text-align:center;letter-spacing:8px;font-size:20px;font-weight:700">
+      <button class="btn-enviar" id="btn-verificar-2fa" onclick="verificarCodigo2fa()">Verificar</button>
+      <p id="msg-2fa"></p>
+      <p style="text-align:center;margin-top:14px">
+        <a href="#" class="forgot-link" id="btn-reenviar-2fa" onclick="reenviarCodigo2fa();return false;">Reenviar código</a>
+      </p>
+    </div>
+  </div>
+
   <script>
     function setMensaje(texto, tipo) {
       const el = document.getElementById('mensaje');
@@ -351,6 +366,27 @@
     }
     function cerrarError() {
       document.getElementById('modal-error').classList.remove('open');
+    }
+
+    // Guarda la sesión y redirige — compartido entre login normal, Google y verificación 2FA
+    function completarLogin(token, user) {
+      sessionStorage.setItem('usuarioActual', JSON.stringify({
+        token,
+        id: user.id,
+        usuario: user.usuario,
+        email: user.email,
+        rol: user.rol,
+        nombre: user.nombre,
+        nombre_completo: user.nombre_completo || user.nombre,
+        obraId: user.obra_id || null,
+        timestamp: new Date().toISOString()
+      }));
+
+      setMensaje(`Bienvenido, ${user.nombre_completo || user.nombre || user.usuario}`, 'success');
+
+      setTimeout(() => {
+        window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
+      }, 900);
     }
 
     async function handleLogin(event) {
@@ -369,24 +405,17 @@
       setMensaje('', '');
 
       try {
-        const { token, user } = await API.auth.login(usuario, contrasena);
-        sessionStorage.setItem('usuarioActual', JSON.stringify({
-          token,
-          id: user.id,
-          usuario: user.usuario,
-          email: user.email,
-          rol: user.rol,
-          nombre: user.nombre,
-          nombre_completo: user.nombre_completo || user.nombre,
-          obraId: user.obra_id || null,
-          timestamp: new Date().toISOString()
-        }));
+        const result = await API.auth.login(usuario, contrasena);
 
-        setMensaje(`Bienvenido, ${user.nombre_completo || user.nombre || user.usuario}`, 'success');
+        if (result.mfaRequired) {
+          window.__mfaToken = result.mfaToken;
+          btn.disabled = false;
+          btn.textContent = 'Ingresar';
+          abrir2fa();
+          return;
+        }
 
-        setTimeout(() => {
-          window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
-        }, 900);
+        completarLogin(result.token, result.user);
 
       } catch (err) {
         showErrorPopup(err.message || 'Error al iniciar sesión');
@@ -405,23 +434,17 @@
       setMensaje('', '');
 
       try {
-        const { token, user } = await API.auth.loginGoogle(response.credential);
-        sessionStorage.setItem('usuarioActual', JSON.stringify({
-          token,
-          id: user.id,
-          usuario: user.usuario,
-          email: user.email,
-          rol: user.rol,
-          nombre: user.nombre,
-          nombre_completo: user.nombre_completo || user.nombre,
-          obraId: user.obra_id || null,
-          timestamp: new Date().toISOString()
-        }));
+        const result = await API.auth.loginGoogle(response.credential);
 
-        setMensaje(`Bienvenido, ${user.nombre_completo || user.nombre || user.usuario}`, 'success');
-        setTimeout(() => {
-          window.location.href = user.rol === 'admin' ? 'admin_dashboard.html' : 'index.html';
-        }, 900);
+        if (result.mfaRequired) {
+          window.__mfaToken = result.mfaToken;
+          btn.disabled = false;
+          btn.innerHTML = btn.innerHTML.replace('⏳ Verificando...', 'Continuar con Google');
+          abrir2fa();
+          return;
+        }
+
+        completarLogin(result.token, result.user);
       } catch (err) {
         showErrorPopup(err.message || 'No autorizado con Google');
         btn.disabled = false;
@@ -466,8 +489,96 @@
       document.getElementById('modal-forgot').classList.remove('open');
     }
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { cerrarForgot(); cerrarError(); }
+      if (e.key === 'Escape') { cerrarForgot(); cerrarError(); cerrar2fa(); }
     });
+
+    /* ─── Verificación en dos pasos (2FA) ───────── */
+    let __mfaCountdownTimer = null;
+
+    function abrir2fa() {
+      document.getElementById('modal-2fa').classList.add('open');
+      document.getElementById('codigo-2fa').value = '';
+      document.getElementById('msg-2fa').textContent = '';
+      document.getElementById('msg-2fa').className = '';
+      document.getElementById('btn-verificar-2fa').disabled = false;
+      document.getElementById('btn-verificar-2fa').textContent = 'Verificar';
+      setTimeout(() => document.getElementById('codigo-2fa').focus(), 50);
+      iniciarCountdown2fa();
+    }
+    function cerrar2fa() {
+      document.getElementById('modal-2fa').classList.remove('open');
+      if (__mfaCountdownTimer) clearInterval(__mfaCountdownTimer);
+    }
+
+    function iniciarCountdown2fa(segundos = 45) {
+      const link = document.getElementById('btn-reenviar-2fa');
+      if (__mfaCountdownTimer) clearInterval(__mfaCountdownTimer);
+
+      let restante = segundos;
+      link.style.pointerEvents = 'none';
+      link.style.opacity = '0.5';
+      link.textContent = `Reenviar código (${restante}s)`;
+
+      __mfaCountdownTimer = setInterval(() => {
+        restante--;
+        if (restante <= 0) {
+          clearInterval(__mfaCountdownTimer);
+          link.style.pointerEvents = 'auto';
+          link.style.opacity = '1';
+          link.textContent = 'Reenviar código';
+        } else {
+          link.textContent = `Reenviar código (${restante}s)`;
+        }
+      }, 1000);
+    }
+
+    async function verificarCodigo2fa() {
+      const codigo = document.getElementById('codigo-2fa').value.trim();
+      const btn    = document.getElementById('btn-verificar-2fa');
+      const msg    = document.getElementById('msg-2fa');
+
+      if (!codigo || codigo.length !== 6) {
+        msg.textContent = 'Ingresa el código de 6 dígitos.';
+        msg.className = 'error';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+      msg.textContent = '';
+      msg.className = '';
+
+      try {
+        const result = await API.auth.verify2fa(window.__mfaToken, codigo);
+        cerrar2fa();
+        completarLogin(result.token, result.user);
+      } catch (err) {
+        msg.textContent = err.message || 'Código inválido o expirado.';
+        msg.className = 'error';
+        btn.disabled = false;
+        btn.textContent = 'Verificar';
+      }
+    }
+
+    async function reenviarCodigo2fa() {
+      const link = document.getElementById('btn-reenviar-2fa');
+      if (link.style.pointerEvents === 'none') return; // aún en countdown
+
+      const msg = document.getElementById('msg-2fa');
+      msg.textContent = '';
+      msg.className = '';
+
+      try {
+        const result = await API.auth.resend2fa(window.__mfaToken);
+        window.__mfaToken = result.mfaToken;
+        msg.textContent = 'Te enviamos un nuevo código.';
+        msg.className = 'success';
+        iniciarCountdown2fa();
+      } catch (err) {
+        msg.textContent = err.message || 'No se pudo reenviar el código.';
+        msg.className = 'error';
+      }
+    }
     async function enviarForgot() {
       const email = document.getElementById('forgot-email').value.trim();
       const btn   = document.getElementById('btn-forgot');

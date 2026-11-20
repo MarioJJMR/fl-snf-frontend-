@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Usuario — Administrador · FL-SNF · Fundación Loyola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:     #1c3050;
+      --secondary:   #2a4a78;
+      --light-bg:    #eef3fb;
+      --border:      #c4d4e8;
+      --gold:        #b8963a;
+      --bg:          #f4f6f9;
+      --white:       #ffffff;
+      --text:        #111827;
+      --text-mid:    #4a5568;
+      --text-light:  #8a96a8;
+      --code-bg:     #111827;
+      --radius:      10px;
+      --shadow:      0 2px 16px rgba(28,48,80,0.10);
+      --warn-bg:     #fff8e6;
+      --warn-brd:    #e0b84a;
+      --warn-text:   #7a5810;
+      --tip-bg:      #e8f4fd;
+      --tip-brd:     #5aaddb;
+      --tip-text:    #0e4a6a;
+      --danger-bg:   #fde8e8;
+      --danger-brd:  #d04040;
+      --danger-text: #7a1818;
+      --success-bg:  #e6f4ee;
+      --success-brd: #38a070;
+      --success-text:#184a30;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #fff;
+      padding: 56px 48px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+    header .doc-type {
+      display: inline-block;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    header h1 {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    header .subtitle {
+      font-size: 18px;
+      font-weight: 300;
+      opacity: 0.85;
+      margin-bottom: 28px;
+    }
+    header .meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.18);
+      padding-top: 20px;
+      margin-top: 4px;
+    }
+    header .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header .meta-item .meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.6;
+    }
+    header .meta-item .meta-value {
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0.95;
+    }
+    .gold-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), #d4b060);
+    }
+
+    /* ── NAV ── */
+    nav.toc {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      scrollbar-width: none;
+    }
+    nav.toc::-webkit-scrollbar { display: none; }
+    nav.toc a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 13px 16px;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: all 0.18s;
+      letter-spacing: 0.2px;
+    }
+    nav.toc a:hover {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--light-bg);
+    }
+    nav.toc a .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px; height: 18px;
+      background: var(--light-bg);
+      color: var(--primary);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 52px 40px 80px;
+    }
+
+    section {
+      margin-bottom: 64px;
+      scroll-margin-top: 60px;
+    }
+
+    section > h2 {
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--primary);
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    section > h2 .sec-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    section > h2 .icon { font-size: 22px; }
+
+    h3.subsec {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--secondary);
+      margin: 32px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3.subsec::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 16px;
+      background: var(--gold);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    p { margin-bottom: 12px; color: var(--text); }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── STEPS ── */
+    ol.steps {
+      counter-reset: step-counter;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+    }
+    ol.steps li {
+      counter-increment: step-counter;
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    ol.steps li::before {
+      content: counter(step-counter);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px; height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    ol.steps li .step-body { flex: 1; padding-top: 3px; }
+    ol.steps li strong { color: var(--primary); }
+
+    ul.list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+    }
+    ul.list li {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: flex-start;
+    }
+    ul.list li::before {
+      content: '▸';
+      color: var(--gold);
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── CALLOUT BOXES ── */
+    .callout {
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border-left: 4px solid;
+    }
+    .callout .callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .callout .callout-body { flex: 1; }
+    .callout .callout-title {
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .callout p { font-size: 14px; margin: 0; }
+    .callout.warn   { background: var(--warn-bg);    border-color: var(--warn-brd);    color: var(--warn-text); }
+    .callout.tip    { background: var(--tip-bg);     border-color: var(--tip-brd);     color: var(--tip-text); }
+    .callout.danger { background: var(--danger-bg);  border-color: var(--danger-brd);  color: var(--danger-text); }
+    .callout.success{ background: var(--success-bg); border-color: var(--success-brd); color: var(--success-text); }
+
+    /* ── SCREENSHOT PLACEHOLDER ── */
+    .screenshot {
+      background: linear-gradient(135deg, var(--light-bg) 0%, #dce8f8 100%);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 36px 24px;
+      text-align: center;
+      margin: 20px 0;
+      color: var(--text-mid);
+    }
+    .screenshot .ss-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.6; }
+    .screenshot .ss-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .screenshot .ss-sub {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    /* ── STAT CARDS (visual demo) ── */
+    .stat-demo {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .stat-demo .stat-val {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-demo .stat-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-demo .stat-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+
+    /* ── FORM FIELD DEMO ── */
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+    .field-row label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .field-row label .req { color: #c0392b; margin-left: 3px; }
+    .field-demo {
+      background: var(--light-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 13px;
+      font-size: 13px;
+      color: var(--text-mid);
+      font-style: italic;
+    }
+    .field-hint {
+      font-size: 11.5px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .badge-primary { background: var(--light-bg); color: var(--primary); }
+    .badge-gold    { background: #fdf0d0; color: #7a5a10; }
+    .badge-green   { background: var(--success-bg); color: var(--success-text); }
+    .badge-red     { background: var(--danger-bg); color: var(--danger-text); }
+    .badge-gray    { background: #edf0f5; color: var(--text-mid); }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      margin: 16px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      background: var(--white);
+    }
+    th {
+      background: var(--light-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eef1f7;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7f9fc; }
+
+    /* ── CODE ── */
+    code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12.5px;
+      background: var(--light-bg);
+      color: var(--primary);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* ── ACTION BUTTON DEMO ── */
+    .btn-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: default;
+      border: none;
+      margin: 4px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-gold    { background: var(--gold); color: #fff; }
+    .btn-danger  { background: #c0392b; color: #fff; }
+    .btn-secondary { background: var(--light-bg); color: var(--primary); border: 1px solid var(--border); }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 36px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 12px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -30px; top: 6px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--border);
+    }
+    .tl-item.active::before { background: var(--gold); }
+    .tl-date {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+    .tl-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .tl-desc {
+      font-size: 13.5px;
+      color: var(--text-mid);
+    }
+
+    /* ── SIDEBAR ACTION LIST ── */
+    .sidebar-demo {
+      background: var(--primary);
+      border-radius: var(--radius);
+      padding: 20px;
+      color: #fff;
+      min-width: 200px;
+    }
+    .sidebar-demo .sd-logo {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      margin-bottom: 14px;
+    }
+    .sidebar-demo .sd-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: default;
+      margin-bottom: 4px;
+      transition: background 0.15s;
+    }
+    .sidebar-demo .sd-item.active {
+      background: rgba(255,255,255,0.18);
+    }
+    .sidebar-demo .sd-item.danger {
+      color: #ffaaaa;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 28px 40px;
+      font-size: 13px;
+    }
+    footer strong { color: #fff; }
+
+    /* ── PRINT ── */
+    @media print {
+      nav.toc { display: none; }
+      header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .gold-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      main { padding: 20px; }
+      section { page-break-inside: avoid; }
+      .callout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .stat-demo { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sidebar-demo { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      header { padding: 32px 20px 28px; }
+      header h1 { font-size: 26px; }
+      nav.toc { padding: 0 8px; }
+      nav.toc a { padding: 12px 10px; font-size: 11.5px; }
+      main { padding: 28px 16px 60px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="doc-type">📋 Documentación Oficial · FL-SNF</div>
+  <h1>Manual de Usuario — Administrador</h1>
+  <p class="subtitle">Sistema FL-SNF · Fundación Loyola</p>
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-label">Versión</span>
+      <span class="meta-value">v2.0</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Fecha</span>
+      <span class="meta-value">Agosto 2026</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Rol destinatario</span>
+      <span class="meta-value">Administrador del Sistema</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Panel</span>
+      <span class="meta-value">admin_dashboard.html</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Clasificación</span>
+      <span class="meta-value">Uso interno</span>
+    </div>
+  </div>
+</header>
+<div class="gold-bar"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════════════════ -->
+<nav class="toc" aria-label="Tabla de contenidos">
+  <a href="#sec-intro"><span class="nav-num">0</span>Introducción</a>
+  <a href="#sec-login"><span class="nav-num">1</span>Inicio de Sesión</a>
+  <a href="#sec-panel"><span class="nav-num">2</span>Panel de Inicio</a>
+  <a href="#sec-obras"><span class="nav-num">3</span>Gestión de Obras</a>
+  <a href="#sec-usuarios"><span class="nav-num">4</span>Usuarios</a>
+  <a href="#sec-proyectos"><span class="nav-num">5</span>Proyectos</a>
+  <a href="#sec-contacto"><span class="nav-num">6</span>Contacto con Obras</a>
+  <a href="#sec-seguimiento"><span class="nav-num">7</span>Seguimiento de Obras</a>
+  <a href="#sec-notificaciones"><span class="nav-num">8</span>Notificaciones</a>
+  <a href="#sec-reporte"><span class="nav-num">9</span>Reporte PDF</a>
+  <a href="#sec-json"><span class="nav-num">10</span>Exportar JSON</a>
+  <a href="#sec-sesion"><span class="nav-num">11</span>Cerrar Sesión</a>
+  <a href="#sec-ref"><span class="nav-num">★</span>Referencia Rápida</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════════════════ -->
+<main>
+
+  <!-- ─────────────────── INTRODUCCIÓN ─────────────────── -->
+  <section id="sec-intro">
+    <h2>
+      <span class="sec-num">0</span>
+      <span class="icon">📖</span>
+      Introducción
+    </h2>
+
+    <p>Este documento es el manual oficial de referencia para el rol de <strong>Administrador</strong> del sistema <strong>FL-SNF</strong> (Sondeo de Necesidades de Formación) de <strong>Fundación Loyola</strong>. Describe en detalle cada funcionalidad disponible en el panel de administración, junto con instrucciones paso a paso, advertencias importantes y buenas prácticas de uso.</p>
+
+    <p>El panel de administración se encuentra en el archivo <code>admin_dashboard.html</code> y es accesible únicamente para usuarios con rol <strong>Admin</strong> debidamente autenticados.</p>
+
+    <div class="grid-2" style="margin-top:24px;">
+      <div class="card">
+        <div class="card-title">🎯 Objetivos del sistema</div>
+        <ul class="list">
+          <li>Gestionar las obras jesuitas participantes en el proceso SNF.</li>
+          <li>Administrar los usuarios de cada obra y sus accesos.</li>
+          <li>Dar seguimiento al estado de los proyectos y al avance del sondeo por obra.</li>
+          <li>Comunicarse con las obras mediante notificaciones y revisar su información de contacto.</li>
+          <li>Generar reportes ejecutivos en PDF y exportar datos en JSON.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">👤 Roles del sistema</div>
+        <ul class="list">
+          <li><span class="badge badge-primary">Admin</span> — Acceso completo a todas las funcionalidades del panel.</li>
+          <li><span class="badge badge-gold">Usuario de Obra</span> — Acceso restringido a su obra asignada (responder sondeos).</li>
+        </ul>
+        <div class="callout tip" style="margin-top:14px;">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <div class="callout-title">Nota sobre roles</div>
+            <p>Este manual cubre exclusivamente las funciones del rol <strong>Admin</strong>. Los usuarios de obra tienen su propio manual separado.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Estructura del manual</h3>
+    <p>Cada sección cubre un módulo del panel de administración. Las instrucciones se presentan en listas numeradas para seguirse en orden. Los recuadros de color tienen el siguiente significado:</p>
+
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <div class="callout-body">
+          <div class="callout-title">Consejo</div>
+          <p>Información útil o buenas prácticas para aprovechar mejor el sistema.</p>
+        </div>
+      </div>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-body">
+          <div class="callout-title">Advertencia</div>
+          <p>Acciones que requieren atención especial para evitar problemas.</p>
+        </div>
+      </div>
+      <div class="callout danger">
+        <span class="callout-icon">🚫</span>
+        <div class="callout-body">
+          <div class="callout-title">Peligro</div>
+          <p>Operaciones irreversibles o que pueden causar pérdida de datos.</p>
+        </div>
+      </div>
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-body">
+          <div class="callout-title">Resultado esperado</div>
+          <p>Confirmación de que una operación se completó exitosamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 1. LOGIN ─────────────────── -->
+  <section id="sec-login">
+    <h2>
+      <span class="sec-num">1</span>
+      <span class="icon">🔐</span>
+      Inicio de Sesión
+    </h2>
+
+    <p>Para acceder al panel de administración es necesario autenticarse en la página de inicio del sistema (<code>Inicio.html</code>). Actualmente la pantalla de login solo ofrece un método de acceso: <strong>usuario y contraseña</strong>.</p>
+
+    <div class="screenshot">
+      <div class="ss-icon">🖥️</div>
+      <div class="ss-label">[Vista: Página de inicio de sesión — Inicio.html]</div>
+      <div class="ss-sub">Formulario de login con campos de correo electrónico y contraseña</div>
+    </div>
+
+    <h3 class="subsec">Usuario y contraseña</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Abra su navegador web y diríjase a la URL del sistema. La página <code>Inicio.html</code> se cargará automáticamente.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          En el campo <strong>Correo electrónico</strong>, ingrese su nombre de usuario o correo registrado en el sistema.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          En el campo <strong>Contraseña</strong>, ingrese su contraseña. Los caracteres se mostrarán ocultos por seguridad.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>Entrar</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Si las credenciales son correctas, el sistema lo redirigirá automáticamente a <code>admin_dashboard.html</code>.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">¿Olvidó su contraseña?</div>
+        <p>En la pantalla de inicio de sesión hay un enlace <strong>"¿Olvidé mi contraseña?"</strong> que abre un formulario para solicitar un enlace de restablecimiento al correo registrado.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">El botón "Continuar con Google" no está visible actualmente</div>
+        <p>El sistema tiene soporte técnico para iniciar sesión con Google, pero esa opción está <strong>desactivada mediante configuración</strong> (<code>FEATURES.GOOGLE_LOGIN: false</code> en <code>assets/js/config.js</code>) y por lo tanto <strong>no aparece en la pantalla de login</strong>. Todas las cuentas, incluidas las de administrador, deben ingresar hoy con usuario y contraseña. Si en el futuro se reactiva esta opción, se documentará por separado.</p>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚫</span>
+      <div class="callout-body">
+        <div class="callout-title">Credenciales incorrectas</div>
+        <p>Si ingresa credenciales incorrectas, el sistema mostrará un mensaje de error. Verifique que el usuario y contraseña sean correctos. Después de varios intentos fallidos, es posible que la sesión quede bloqueada temporalmente.</p>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <div class="callout-title">Inicio de sesión exitoso</div>
+        <p>Al ingresar correctamente, será redirigido a <code>admin_dashboard.html</code> y verá el Panel de Inicio con las estadísticas generales del sistema.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 2. PANEL DE INICIO ─────────────────── -->
+  <section id="sec-panel">
+    <h2>
+      <span class="sec-num">2</span>
+      <span class="icon">🏠</span>
+      Panel de Inicio (Bienvenida)
+    </h2>
+
+    <p>Una vez autenticado, la primera pantalla que verá es el <strong>Panel de Inicio</strong> (sección "Bienvenida"). Este panel ofrece una visión general del estado del sistema y accesos rápidos a las acciones más frecuentes.</p>
+
+    <h3 class="subsec">Tarjetas de estadísticas rápidas</h3>
+    <p>En la parte superior del panel de inicio se muestran <strong>4 tarjetas de métricas</strong> con información actualizada en tiempo real (se refrescan automáticamente cada 30 segundos mientras el panel está abierto):</p>
+
+    <div class="grid-4" style="margin: 20px 0;">
+      <div class="stat-demo">
+        <div class="stat-icon">🏢</div>
+        <div class="stat-val">—</div>
+        <div class="stat-lbl">Obras Registradas</div>
+      </div>
+      <div class="stat-demo">
+        <div class="stat-icon">👥</div>
+        <div class="stat-val">—</div>
+        <div class="stat-lbl">Usuarios</div>
+      </div>
+      <div class="stat-demo">
+        <div class="stat-icon">📋</div>
+        <div class="stat-val">—</div>
+        <div class="stat-lbl">Sondeos Activos</div>
+      </div>
+      <div class="stat-demo">
+        <div class="stat-icon">🕐</div>
+        <div class="stat-val">—</div>
+        <div class="stat-lbl">Última actualización</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tarjeta</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Obras Registradas</strong></td>
+            <td>Cantidad total de obras jesuitas cargadas en el sistema.</td>
+          </tr>
+          <tr>
+            <td><strong>Usuarios</strong></td>
+            <td>Número total de cuentas de usuario registradas en la plataforma (todos los roles).</td>
+          </tr>
+          <tr>
+            <td><strong>Sondeos Activos</strong></td>
+            <td>Actualmente esta tarjeta no calcula un valor real y se muestra como <code>—</code>. No refleja todavía cuántas obras han avanzado en su sondeo (para eso use la sección <a href="#sec-seguimiento">7 — Seguimiento de Obras</a>).</td>
+          </tr>
+          <tr>
+            <td><strong>Última actualización</strong></td>
+            <td>Fecha y hora en que el navegador consultó por última vez los datos del sistema.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsec">Acciones rápidas</h3>
+    <p>Debajo de las tarjetas se encuentran los botones de <strong>Acciones Rápidas</strong> que permiten ejecutar las operaciones más comunes sin navegar por el menú lateral:</p>
+
+    <div class="card" style="margin-top:16px;">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <span class="btn-demo btn-primary">🏢 Nueva Obra</span>
+        <span class="btn-demo btn-primary">👤 Nuevo Usuario</span>
+        <span class="btn-demo btn-gold">📄 Generar Reporte PDF</span>
+        <span class="btn-demo btn-secondary">💾 Exportar JSON</span>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Botón</th>
+            <th>Acción</th>
+            <th>Sección relacionada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>🏢 Nueva Obra</strong></td>
+            <td>Abre el formulario de registro de una nueva obra.</td>
+            <td><a href="#sec-obras">§ 3 — Gestión de Obras</a></td>
+          </tr>
+          <tr>
+            <td><strong>👤 Nuevo Usuario</strong></td>
+            <td>Abre el formulario de registro de un nuevo usuario.</td>
+            <td><a href="#sec-usuarios">§ 4 — Usuarios</a></td>
+          </tr>
+          <tr>
+            <td><strong>📄 Generar Reporte PDF</strong></td>
+            <td>Genera y descarga automáticamente el reporte ejecutivo en PDF.</td>
+            <td><a href="#sec-reporte">§ 9 — Reporte PDF</a></td>
+          </tr>
+          <tr>
+            <td><strong>💾 Exportar JSON</strong></td>
+            <td>Descarga todos los datos de obras y usuarios en formato JSON.</td>
+            <td><a href="#sec-json">§ 10 — Exportar JSON</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsec">Fechas Importantes</h3>
+    <p>La pantalla de inicio incluye también una tabla fija con las fechas clave del proceso SNF vigente:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fecha</th><th>Actividad</th></tr></thead>
+        <tbody>
+          <tr><td><strong>18 de agosto</strong></td><td>Presentación de la plataforma e inducción</td></tr>
+          <tr><td><strong>25 de agosto</strong></td><td>Apertura de la plataforma</td></tr>
+          <tr><td><strong>20 de septiembre</strong></td><td>Recordatorio de llenado y atención a dudas</td></tr>
+          <tr><td><strong>25 de octubre</strong></td><td>Cierre de la plataforma</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Tabla fija, no un calendario interactivo</div>
+        <p>Esta tabla de fechas es contenido estático del panel — no es un calendario navegable. El sistema incluye código para un calendario de Google Calendar embebido, pero actualmente <strong>no hay ningún botón del menú que lo abra</strong> (ver nota en la sección <a href="#sec-ref">Referencia Rápida</a>).</p>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">🖥️</div>
+      <div class="ss-label">[Vista: Panel de Inicio — Tarjetas, acciones rápidas y fechas importantes]</div>
+      <div class="ss-sub">admin_dashboard.html → sección "Bienvenida"</div>
+    </div>
+
+    <h3 class="subsec">Navegación lateral (Sidebar)</h3>
+    <p>El menú lateral izquierdo está siempre visible y permite navegar entre las diferentes secciones del panel. La estructura actual es la siguiente:</p>
+
+    <div class="grid-2" style="margin-top: 16px; align-items: start;">
+      <div class="sidebar-demo">
+        <div class="sd-logo">🏛 FL-SNF Admin</div>
+        <div class="sd-item active">🏠 Inicio</div>
+        <div class="sd-item">🏢 Gestión de Obras</div>
+        <div style="margin-left:14px;font-size:12px;opacity:.85">
+          <div class="sd-item" style="padding:6px 10px">👥 Usuarios</div>
+          <div class="sd-item" style="padding:6px 10px">📋 Proyectos</div>
+          <div class="sd-item" style="padding:6px 10px">📢 Notificaciones</div>
+        </div>
+        <div class="sd-item">📞 Contacto con Obras</div>
+        <div class="sd-item">📊 Seguimiento de Obras</div>
+        <div class="sd-item" style="margin-top:14px; border-top:1px solid rgba(255,255,255,0.15); padding-top:14px;">💾 Exportar datos</div>
+        <div class="sd-item">📄 Generar reporte PDF</div>
+        <div class="sd-item danger">🚪 Cerrar sesión</div>
+      </div>
+      <div>
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <div class="callout-title">Submenú de Gestión de Obras</div>
+            <p><strong>Usuarios</strong>, <strong>Proyectos</strong> y <strong>Notificaciones</strong> son un submenú desplegable dentro de "Gestión de Obras". Haga clic en "🏢 Gestión de Obras" para desplegarlo u ocultarlo.</p>
+          </div>
+        </div>
+        <div class="callout tip" style="margin-top: 12px;">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <div class="callout-title">Acceso rápido desde el pie del sidebar</div>
+            <p>Los botones <strong>"Exportar datos"</strong>, <strong>"Generar reporte PDF"</strong> y <strong>"Cerrar sesión"</strong> están siempre visibles al final del menú lateral, sin necesidad de entrar a una sección específica.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 3. GESTIÓN DE OBRAS ─────────────────── -->
+  <section id="sec-obras">
+    <h2>
+      <span class="sec-num">3</span>
+      <span class="icon">🏢</span>
+      Gestión de Obras
+    </h2>
+
+    <p>La sección <strong>Gestión de Obras</strong> permite al administrador visualizar, registrar, editar, eliminar y consultar el detalle de todas las obras (centros o instituciones) registradas en el sistema.</p>
+
+    <div class="screenshot">
+      <div class="ss-icon">🏢</div>
+      <div class="ss-label">[Vista: Cuadrícula de tarjetas de obras]</div>
+      <div class="ss-sub">admin_dashboard.html → sección "Gestión de Obras"</div>
+    </div>
+
+    <h3 class="subsec">Visualizar obras</h3>
+    <p>Al ingresar a la sección, verá todas las obras registradas desplegadas en un <strong>grid de tarjetas</strong>. Cada tarjeta muestra:</p>
+    <ul class="list">
+      <li>Nombre de la obra.</li>
+      <li>Dirección y teléfono de contacto.</li>
+      <li>Estado de la obra (activa / inactiva).</li>
+      <li>Correo electrónico de contacto (si fue registrado).</li>
+      <li>Botones de acción: <strong>✏️ Editar</strong> y <strong>🗑️ Eliminar</strong>.</li>
+    </ul>
+
+    <h3 class="subsec">Buscar obras</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Localice la <strong>barra de búsqueda</strong> en la parte superior de la sección.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Escriba el <strong>nombre</strong> o el <strong>estado</strong> de la obra que desea encontrar. El listado se filtrará automáticamente mientras escribe.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Para ver todas las obras nuevamente, borre el texto del campo de búsqueda.
+        </div>
+      </li>
+    </ol>
+
+    <h3 class="subsec">Registrar nueva obra</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>"➕ Registrar Nueva Obra"</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Se abrirá un formulario modal. Complete los campos solicitados:
+        </div>
+      </li>
+    </ol>
+
+    <div class="card" style="margin: 16px 0 20px 0;">
+      <div class="card-title">📋 Formulario — Registrar Nueva Obra</div>
+      <div class="field-row">
+        <label>Nombre de la Obra <span class="req">*</span></label>
+        <div class="field-demo">Ej: Colegio Loyola Sucre</div>
+        <div class="field-hint">Campo obligatorio. Nombre completo del centro o institución.</div>
+      </div>
+      <div class="field-row">
+        <label>Dirección <span class="req">*</span></label>
+        <div class="field-demo">Ej: Av. del Maestro #1234, Sucre</div>
+        <div class="field-hint">Campo obligatorio. Dirección física de la obra.</div>
+      </div>
+      <div class="field-row">
+        <label>Teléfono <span class="req">*</span></label>
+        <div class="field-demo">Ej: +591 4 6430000</div>
+        <div class="field-hint">Campo obligatorio. Número de contacto principal.</div>
+      </div>
+      <div class="field-row">
+        <label>Estado</label>
+        <div class="field-demo">Activa / Inactiva</div>
+        <div class="field-hint">Define si la obra está operativa en el sistema.</div>
+      </div>
+      <div class="field-row">
+        <label>Correo Electrónico</label>
+        <div class="field-demo">Ej: contacto@obra.edu.bo</div>
+        <div class="field-hint">Opcional. Correo institucional de la obra.</div>
+      </div>
+    </div>
+
+    <ol class="steps" start="3">
+      <li>
+        <div class="step-body">
+          Una vez completados los campos obligatorios (marcados con <span style="color:#c0392b;font-weight:700;">*</span>), haga clic en el botón <strong>Guardar</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          La obra quedará registrada y aparecerá como una nueva tarjeta en el grid.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">Campos obligatorios</div>
+        <p>Los campos <strong>Nombre</strong>, <strong>Dirección</strong> y <strong>Teléfono</strong> son obligatorios. El formulario no permitirá guardar si alguno de estos campos está vacío.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Editar una obra</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Localice la tarjeta de la obra que desea modificar en el grid.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>✏️ Editar</strong> de esa tarjeta.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Se abrirá el formulario modal con los datos actuales de la obra precargados.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Modifique los campos que necesite actualizar.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en <strong>Guardar</strong> para confirmar los cambios.
+        </div>
+      </li>
+    </ol>
+
+    <h3 class="subsec">Eliminar una obra</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Localice la tarjeta de la obra que desea eliminar.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>🗑️ Eliminar</strong> de esa tarjeta.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Aparecerá un <strong>diálogo de confirmación</strong>. Léalo con atención antes de continuar.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Si está seguro, confirme la eliminación. La obra será removida permanentemente del sistema.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚫</span>
+      <div class="callout-body">
+        <div class="callout-title">Operación irreversible</div>
+        <p>La eliminación de una obra <strong>es permanente e irreversible</strong>. Una vez confirmada, no es posible recuperar la obra ni sus datos asociados. Asegúrese de que la obra ya no sea necesaria antes de eliminarla.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Ver detalle de una obra</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Haga clic directamente sobre la tarjeta de la obra (en el área de nombre o información, fuera de los botones de acción).
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Se abrirá un <strong>modal de detalle</strong> con la dirección, teléfono, estado, correo y fecha de registro de la obra.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Debajo de los datos generales, el modal carga dos bloques adicionales de solo lectura: <strong>📋 Proyectos asociados</strong> (lista de proyectos de la obra con su tipo — vigente / por financiar — y status) y <strong>📂 Documentos Institucionales</strong> (conteo de archivos por categoría: Acta Constitutiva, CFDI, Comprobante de Domicilio, Logotipos institucionales, y las tres subcarpetas de Convenios, más el enlace a la carpeta de Google Drive institucional que la obra haya registrado, si existe).
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Para cerrar el modal, haga clic en el botón <strong>Cerrar</strong>, en la <strong>✕</strong>, o fuera del área del modal.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Solo lectura</div>
+        <p>El administrador puede <strong>consultar</strong> los proyectos y documentos de la obra desde este modal, pero no puede subir, editar ni eliminar documentos desde aquí — esa acción la realiza la propia obra desde su panel. Para cambiar el status de un proyecto use la sección <a href="#sec-proyectos">5 — Proyectos</a>.</p>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">🔍</div>
+      <div class="ss-label">[Vista: Modal de detalle de obra]</div>
+      <div class="ss-sub">Datos generales + proyectos asociados + documentos institucionales (solo lectura)</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 4. GESTIÓN DE USUARIOS ─────────────────── -->
+  <section id="sec-usuarios">
+    <h2>
+      <span class="sec-num">4</span>
+      <span class="icon">👥</span>
+      Usuarios
+    </h2>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Ubicación en el menú</div>
+        <p><strong>Usuarios</strong> ya no es un ítem independiente del sidebar: vive dentro del submenú desplegable de <strong>🏢 Gestión de Obras</strong>. Despliegue "Gestión de Obras" y haga clic en "👥 Usuarios" para entrar.</p>
+      </div>
+    </div>
+
+    <p>Esta sección permite al administrador ver todos los usuarios registrados, crear nuevas cuentas, editarlas y eliminarlas. El campo de correo Gmail que se captura aquí es el que, en caso de reactivarse la opción "Continuar con Google" (ver <a href="#sec-login">§ 1</a>), vincularía la cuenta con ese inicio de sesión.</p>
+
+    <h3 class="subsec">Tabla de usuarios</h3>
+    <p>Los usuarios se muestran en una tabla con las siguientes columnas:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Email Google</th>
+            <th>Fecha de Registro</th>
+            <th>Obra Asignada</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>admin_loyola</strong></td>
+            <td><span class="badge badge-primary">Admin</span></td>
+            <td>admin@fundacionloyola.org</td>
+            <td>15/01/2025</td>
+            <td>—</td>
+            <td><span class="badge badge-green">Activo</span></td>
+            <td><span class="btn-demo btn-danger" style="font-size:11px;padding:4px 10px;">🗑️ Eliminar</span></td>
+          </tr>
+          <tr>
+            <td><strong>coord_sucre</strong></td>
+            <td><span class="badge badge-gold">Usuario de Obra</span></td>
+            <td>coord.sucre@gmail.com</td>
+            <td>20/02/2025</td>
+            <td>Colegio Loyola Sucre</td>
+            <td><span class="badge badge-green">Activo</span></td>
+            <td><span class="btn-demo btn-danger" style="font-size:11px;padding:4px 10px;">🗑️ Eliminar</span></td>
+          </tr>
+          <tr>
+            <td><strong>responsable_lp</strong></td>
+            <td><span class="badge badge-gold">Usuario de Obra</span></td>
+            <td>—</td>
+            <td>03/03/2025</td>
+            <td>Centro Fe y Alegría LP</td>
+            <td><span class="badge badge-gray">Sin Gmail</span></td>
+            <td><span class="btn-demo btn-danger" style="font-size:11px;padding:4px 10px;">🗑️ Eliminar</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Columna "Email Google"</div>
+        <p>Esta columna muestra el correo Gmail vinculado para el inicio de sesión con Google. Si aparece como "—", ese usuario solo puede autenticarse con usuario y contraseña.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Registrar nuevo usuario</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>"➕ Registrar Nuevo Usuario"</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Se abrirá un formulario modal. Complete los campos:
+        </div>
+      </li>
+    </ol>
+
+    <div class="card" style="margin: 16px 0 20px 0;">
+      <div class="card-title">📋 Formulario — Registrar Nuevo Usuario</div>
+      <div class="field-row">
+        <label>Nombre de usuario <span class="req">*</span></label>
+        <div class="field-demo">Ej: coord_cochabamba</div>
+        <div class="field-hint">Mínimo 4 caracteres. Solo letras, números y guión bajo. No se puede repetir.</div>
+      </div>
+      <div class="field-row">
+        <label>Correo Gmail (para Google OAuth)</label>
+        <div class="field-demo">Ej: coordinador.cba@gmail.com</div>
+        <div class="field-hint">Opcional. Si se ingresa, este usuario podrá iniciar sesión con "Continuar con Google".</div>
+      </div>
+      <div class="field-row">
+        <label>Contraseña <span class="req">*</span></label>
+        <div class="field-demo">••••••••</div>
+        <div class="field-hint">Mínimo 6 caracteres. Se recomienda combinar letras y números.</div>
+      </div>
+      <div class="field-row">
+        <label>Rol <span class="req">*</span></label>
+        <div class="field-demo">Admin / Usuario de Obra</div>
+        <div class="field-hint">Define los permisos del usuario en el sistema.</div>
+      </div>
+      <div class="field-row">
+        <label>Obra asignada <span class="req">*</span> <span style="font-size:11px;font-weight:400;color:var(--text-light)">(obligatorio si Rol = Usuario de Obra)</span></label>
+        <div class="field-demo">Seleccionar obra...</div>
+        <div class="field-hint">Asocia al usuario con una obra específica. No aplica para Admins.</div>
+      </div>
+    </div>
+
+    <ol class="steps" start="3">
+      <li>
+        <div class="step-body">
+          Seleccione el <strong>Rol</strong> del usuario. Si elige <strong>Usuario de Obra</strong>, el campo "Obra asignada" se volverá obligatorio.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Si desea que el usuario pueda iniciar sesión con Google, ingrese su dirección de <strong>Correo Gmail</strong> en el campo correspondiente.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en <strong>Guardar</strong>. El usuario quedará registrado y aparecerá en la tabla.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">Correo Gmail — vinculación para Google Login</div>
+        <p>El campo "Correo Gmail" se guarda con la cuenta independientemente de si el botón de Google está visible hoy. Si el campo se deja vacío, ese usuario únicamente podrá autenticarse con usuario y contraseña, que es el único método disponible actualmente para todos.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Nombre de usuario único</div>
+        <p>El nombre de usuario debe ser único en el sistema. Si intenta registrar un nombre de usuario ya existente, el sistema mostrará un error de validación.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Editar un usuario</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Localice al usuario en la tabla y haga clic en el botón <strong>✏️ Editar</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Se abrirá un formulario modal precargado con los datos actuales: <strong>nombre completo</strong>, <strong>correo Gmail</strong>, <strong>rol</strong> y, si el rol es "Usuario de Obra", la <strong>obra asignada</strong>. El nombre de usuario (login) no puede modificarse desde aquí.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          El campo <strong>Nueva contraseña</strong> es opcional: déjelo en blanco para conservar la contraseña actual, o escriba una nueva (mínimo 6 caracteres) para reemplazarla.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en <strong>💾 Guardar Cambios</strong> para confirmar.
+        </div>
+      </li>
+    </ol>
+
+    <h3 class="subsec">Eliminar un usuario</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Localice al usuario en la tabla.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>🗑️ Eliminar</strong> en la columna "Acciones".
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Confirme la eliminación en el diálogo que aparecerá.
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚫</span>
+      <div class="callout-body">
+        <div class="callout-title">Operación irreversible</div>
+        <p>Eliminar un usuario borra su cuenta de forma permanente. No existe una papelera ni una función de recuperación desde el panel.</p>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">👥</div>
+      <div class="ss-label">[Vista: Tabla de usuarios]</div>
+      <div class="ss-sub">admin_dashboard.html → Gestión de Obras → Usuarios</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 5. PROYECTOS ─────────────────── -->
+  <section id="sec-proyectos">
+    <h2>
+      <span class="sec-num">5</span>
+      <span class="icon">📋</span>
+      Proyectos
+    </h2>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Ubicación en el menú</div>
+        <p>Al igual que Usuarios, <strong>Proyectos</strong> está dentro del submenú desplegable de <strong>🏢 Gestión de Obras</strong>.</p>
+      </div>
+    </div>
+
+    <p>Esta sección concentra en una sola tabla <strong>todos los proyectos registrados por todas las obras</strong> (los que cada obra captura en las secciones "Proyectos Vigentes" y "Proyectos a Financiar" de su sondeo). El texto de la página dice: <em>"Solo los administradores pueden cambiar el status."</em></p>
+
+    <div class="callout danger">
+      <span class="callout-icon">🚫</span>
+      <div class="callout-body">
+        <div class="callout-title">Esa restricción no está aplicada en el servidor</div>
+        <p>Se verificó <code>controllers/proyectosController.js</code> en el backend: la función <code>updateStatus</code> (y también <code>update</code> y <code>remove</code>) solo bloquea la operación cuando el proyecto <strong>no</strong> pertenece a la obra del usuario que hace la petición — no cuando el usuario no es administrador. En la práctica, cualquier usuario de obra puede cambiar el status, editar o eliminar los proyectos de <strong>su propia</strong> obra directamente desde <code>proyectos.html</code>, aunque esa pantalla no está pensada para ese rol. "Solo administradores" es la intención del texto de la página, no una regla que hoy impida la acción. Repórtelo al equipo de desarrollo si esto no es el comportamiento deseado.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Buscar y filtrar</h3>
+    <ul class="list">
+      <li><strong>🔍 Buscar por obra o proyecto</strong> — filtra la tabla mientras escribe.</li>
+      <li><strong>Filtro de status</strong> — menú desplegable con las opciones Todos los status, Nuevo, Aprobado, Rechazado, Cerrado.</li>
+      <li><strong>🔄 Actualizar</strong> — vuelve a consultar los proyectos de todas las obras desde el servidor.</li>
+    </ul>
+
+    <h3 class="subsec">Columnas de la tabla</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Columna</th><th>Contenido</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Obra</strong></td><td>Nombre de la obra que registró el proyecto.</td></tr>
+          <tr><td><strong>Tipo</strong></td><td>Insignia <em>vigente</em> o <em>por financiar</em>, según en qué sección del sondeo se capturó.</td></tr>
+          <tr><td><strong>Proyecto</strong></td><td>Nombre del proyecto tal como lo capturó la obra.</td></tr>
+          <tr><td><strong>Status actual</strong></td><td>Insignia de color: <span class="badge badge-primary">Nuevo</span> <span class="badge badge-green">Aprobado</span> <span class="badge badge-red">Rechazado</span> <span class="badge badge-gray">Cerrado</span></td></tr>
+          <tr><td><strong>Cambiar status</strong></td><td>Menú desplegable con los 4 valores de status + botón <strong>Guardar</strong> para aplicar el cambio a ese proyecto.</td></tr>
+          <tr><td>(icono ojo)</td><td>Abre un modal con el detalle completo del proyecto: causa, temporalidad, responsable, correo, lugar, objetivo, descripción, realidad a responder, resultados esperados, beneficiados directos, monto del proyecto y monto requerido.</td></tr>
+          <tr><td><strong>Imprimir</strong></td><td>Genera y descarga una ficha en PDF de ese proyecto individual.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsec">Cambiar el status de un proyecto</h3>
+    <ol class="steps">
+      <li><div class="step-body">Localice el proyecto en la tabla (use el buscador o el filtro si la lista es larga).</div></li>
+      <li><div class="step-body">En la columna "Cambiar status", seleccione el nuevo valor: <strong>Nuevo</strong>, <strong>Aprobado</strong>, <strong>Rechazado</strong> o <strong>Cerrado</strong>.</div></li>
+      <li><div class="step-body">Haga clic en el botón <strong>Guardar</strong> de esa misma fila para confirmar el cambio.</div></li>
+      <li><div class="step-body">La insignia de "Status actual" se actualiza de inmediato con el nuevo color y valor.</div></li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="ss-icon">📋</div>
+      <div class="ss-label">[Vista: Tabla de Proyectos]</div>
+      <div class="ss-sub">admin_dashboard.html → Gestión de Obras → Proyectos</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 6. CONTACTO CON OBRAS ─────────────────── -->
+  <section id="sec-contacto">
+    <h2>
+      <span class="sec-num">6</span>
+      <span class="icon">📞</span>
+      Contacto con Obras
+    </h2>
+
+    <p>Esta sección está destinada a mostrar la información de contacto que las obras envían a través del sistema.</p>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">Actualmente siempre aparece vacía</div>
+        <p>Hoy, al entrar a "Contacto con Obras" el panel siempre muestra el mismo mensaje: <em>"No hay información de contacto registrada aún"</em>, sin importar la actividad real de las obras — la pantalla no está conectada todavía a ningún dato del servidor. Trátela como un espacio reservado para una funcionalidad futura, no como un listado en tiempo real.</p>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">📭</div>
+      <div class="ss-label">[Vista: Contacto con Obras — estado vacío]</div>
+      <div class="ss-sub">admin_dashboard.html → sección "Contacto con Obras"</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 7. SEGUIMIENTO DE OBRAS ─────────────────── -->
+  <section id="sec-seguimiento">
+    <h2>
+      <span class="sec-num">7</span>
+      <span class="icon">📊</span>
+      Seguimiento de Obras
+    </h2>
+
+    <p>Muestra el avance del sondeo SNF de cada obra en formato de tarjetas, para que el administrador identifique de un vistazo qué obras van adelantadas y cuáles necesitan un recordatorio.</p>
+
+    <h3 class="subsec">Buscar y filtrar</h3>
+    <ul class="list">
+      <li><strong>🔍 Buscar obra</strong> — filtra las tarjetas por nombre mientras escribe.</li>
+      <li><strong>Filtro de estado</strong> — Todos los estados, Sin actividad, Iniciado, En progreso, Completo.</li>
+      <li><strong>🔄 Actualizar</strong> — vuelve a calcular el avance de todas las obras.</li>
+    </ul>
+
+    <h3 class="subsec">Qué muestra cada tarjeta</h3>
+    <ul class="list">
+      <li><strong>Insignia de estado</strong> — calculada automáticamente según cuántas secciones del sondeo tiene guardadas la obra: <span class="badge badge-gray">Sin actividad</span> (0 secciones), <span class="badge badge-gold">Iniciado</span> (1 a 3), <span class="badge badge-gold">En progreso</span> (4 o más, incompleto), <span class="badge badge-green">Completo ✓</span> (todas).</li>
+      <li><strong>Nombre de la obra</strong>, estado geográfico y correo de contacto.</li>
+      <li><strong>Barra de progreso</strong> con el conteo "X / 9 secciones" y el porcentaje.</li>
+      <li><strong>Pastillas de secciones</strong> — una por cada sección posible, resaltada en verde si ya fue guardada por la obra.</li>
+      <li><strong>Contadores</strong> de 📄 Documentos, 📋 Proyectos y 👥 Usuarios de esa obra.</li>
+      <li><strong>Fecha</strong> de la última actividad registrada y botón <strong>"Ver detalle →"</strong> que abre el mismo modal de detalle de la obra descrito en <a href="#sec-obras">§ 3</a>.</li>
+    </ul>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">El progreso se mide sobre 9 secciones, pero el sondeo real solo tiene 7</div>
+        <p>Las pastillas de progreso incluyen 9 nombres: Datos Obra, Sondeo, Presupuesto, Proy. Vigentes, Proy. Financiar, Necesidades, Contexto, Impacto y Calendario. Sin embargo, el formulario de sondeo que llenan las obras solo guarda 7 secciones (Datos de la Obra, Presupuesto, Proyectos Vigentes, Proyectos a Financiar, Necesidades Materiales, Contexto Demográfico e Impacto); no existe una acción de guardado para "Sondeo" ni para "Calendario". En la práctica esto significa que ninguna obra puede llegar a "9 / 9 — 100%" ni marcar esas dos pastillas como completadas, aunque haya terminado todo el sondeo. Verifique con el equipo de desarrollo si esto es un ajuste pendiente antes de comunicar metas de "100% de avance" a las obras.</p>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="ss-icon">📊</div>
+      <div class="ss-label">[Vista: Seguimiento de Obras — grid de tarjetas]</div>
+      <div class="ss-sub">admin_dashboard.html → sección "Seguimiento de Obras"</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 8. NOTIFICACIONES ─────────────────── -->
+  <section id="sec-notificaciones">
+    <h2>
+      <span class="sec-num">8</span>
+      <span class="icon">📢</span>
+      Notificaciones
+    </h2>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Ubicación en el menú</div>
+        <p><strong>Notificaciones</strong> también está dentro del submenú de <strong>🏢 Gestión de Obras</strong>.</p>
+      </div>
+    </div>
+
+    <p>Permite al administrador enviar avisos a los usuarios de una o de todas las obras, y consultar el historial de avisos enviados. Los avisos aparecen para la obra como un aviso dentro de su propio panel (campana de notificaciones), y opcionalmente también por correo.</p>
+
+    <h3 class="subsec">Redactar y enviar una notificación</h3>
+    <div class="card" style="margin: 16px 0 20px 0;">
+      <div class="card-title">✉️ Nueva notificación</div>
+      <div class="field-row">
+        <label>Obra destinataria</label>
+        <div class="field-demo">Todas las obras / seleccionar una obra específica</div>
+      </div>
+      <div class="field-row">
+        <label>Roles que recibirán la notificación</label>
+        <div class="field-demo">Todos los roles / Solo usuarios de obra / Solo administradores</div>
+      </div>
+      <div class="field-row">
+        <label>Asunto <span class="req">*</span></label>
+        <div class="field-demo">Ej: Recordatorio fecha límite SNF</div>
+      </div>
+      <div class="field-row">
+        <label>Mensaje <span class="req">*</span></label>
+        <div class="field-demo">Texto libre del aviso</div>
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li><div class="step-body">Seleccione la <strong>obra destinataria</strong> (o "Todas las obras") y el <strong>rol</strong> que debe recibirla.</div></li>
+      <li><div class="step-body">Escriba el <strong>asunto</strong> y el <strong>mensaje</strong>. Ambos son obligatorios.</div></li>
+      <li><div class="step-body">Haga clic en el botón de envío al pie del formulario.</div></li>
+    </ol>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">Servicio de correo no configurado</div>
+        <p>Mientras la variable de entorno <code>RESEND_API_KEY</code> no esté configurada en el servidor (feature flag <code>FEATURES.CORREO: false</code>), el panel muestra un aviso amarillo: <em>"Servicio de correo no configurado. El aviso se publicará en el panel in-app de cada obra pero no se enviará por email."</em> El botón de envío cambia su etiqueta a <strong>"📋 Publicar aviso (sin correo)"</strong>. En ese estado, la notificación sí llega a la campana de avisos del panel de la obra, pero no se envía ningún correo electrónico.</p>
+      </div>
+    </div>
+
+    <h3 class="subsec">Historial de envíos</h3>
+    <p>El panel derecho lista las notificaciones enviadas, de la más reciente a la más antigua, con: asunto, fecha y hora de envío, obras destinatarias (o "Todas las obras"), número total de usuarios notificados, quién la envió y una vista previa del mensaje. Use el botón <strong>🔄</strong> para refrescar el historial.</p>
+
+    <div class="screenshot">
+      <div class="ss-icon">📢</div>
+      <div class="ss-label">[Vista: Notificaciones — composición e historial]</div>
+      <div class="ss-sub">admin_dashboard.html → Gestión de Obras → Notificaciones</div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 9. GENERAR REPORTE PDF ─────────────────── -->
+  <section id="sec-reporte">
+    <h2>
+      <span class="sec-num">9</span>
+      <span class="icon">📄</span>
+      Generar Reporte PDF
+    </h2>
+
+    <p>El sistema permite generar un <strong>reporte ejecutivo en formato PDF</strong> con un resumen completo del estado del proceso SNF. Este reporte se genera automáticamente con los datos actuales del sistema y se descarga directamente al equipo del administrador.</p>
+
+    <h3 class="subsec">Cómo generar el reporte</h3>
+    <p>La función de generación de reporte PDF está disponible desde dos ubicaciones:</p>
+
+    <div class="grid-2" style="margin: 16px 0;">
+      <div class="card">
+        <div class="card-title">📍 Desde el menú lateral</div>
+        <ol class="steps">
+          <li>
+            <div class="step-body">En el sidebar, localice el ítem <strong>"📄 Generar Reporte PDF"</strong>.</div>
+          </li>
+          <li>
+            <div class="step-body">Haga clic sobre él.</div>
+          </li>
+          <li>
+            <div class="step-body">La generación inicia automáticamente.</div>
+          </li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="card-title">📍 Desde el Panel de Inicio</div>
+        <ol class="steps">
+          <li>
+            <div class="step-body">Navegue a la sección <a href="#sec-panel"><strong>Inicio</strong></a>.</div>
+          </li>
+          <li>
+            <div class="step-body">En "Acciones Rápidas", haga clic en el botón <strong>"📄 Generar Reporte PDF"</strong>.</div>
+          </li>
+          <li>
+            <div class="step-body">La generación inicia automáticamente.</div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <h3 class="subsec">Contenido del reporte PDF</h3>
+    <p>El archivo generado incluye las siguientes secciones:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Sección del reporte</th>
+            <th>Contenido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Resumen ejecutivo</strong></td>
+            <td>Totales del sistema: obras, usuarios, sondeos con datos, registros. Fecha de generación y nombre del administrador.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Tabla de obras</strong></td>
+            <td>Listado completo de obras con nombre, dirección, teléfono, estado y correo.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Tabla de usuarios</strong></td>
+            <td>Listado de usuarios con nombre, rol, correo Gmail, fecha de registro y obra asignada.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsec">Nombre del archivo generado</h3>
+    <p>El archivo PDF se descarga automáticamente con el siguiente formato de nombre:</p>
+    <div class="card" style="padding: 16px 20px; margin-top: 12px;">
+      <code>reporte_admin_[timestamp].pdf</code>
+      <p style="margin-top:10px; font-size:13px; color:var(--text-mid);">Donde <code>[timestamp]</code> es la fecha y hora exacta de generación en formato numérico (ej: <code>reporte_admin_20250415143022.pdf</code>).</p>
+    </div>
+
+    <div class="callout success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <div class="callout-title">Descarga automática</div>
+        <p>Una vez completada la generación, el archivo PDF se descarga automáticamente a la carpeta de descargas predeterminada del navegador. No es necesario realizar ninguna acción adicional.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Recomendación antes de generar</div>
+        <p>El reporte usa los datos de obras y usuarios ya cargados en memoria por el panel. Si acaba de registrar una obra o usuario nuevo, espere a que el panel termine de refrescar (o navegue a <a href="#sec-obras">Gestión de Obras</a> / <a href="#sec-usuarios">Usuarios</a> y regrese) antes de generar el PDF, para asegurarse de que el nuevo registro quede incluido.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 9. EXPORTAR JSON ─────────────────── -->
+  <section id="sec-json">
+    <h2>
+      <span class="sec-num">10</span>
+      <span class="icon">📦</span>
+      Exportar JSON
+    </h2>
+
+    <p>La función <strong>Exportar JSON</strong> permite descargar todos los datos del sistema (obras y usuarios) en formato JSON. Este archivo es útil para realizar respaldos manuales, integraciones con otros sistemas o análisis externo de los datos.</p>
+
+    <h3 class="subsec">Cómo exportar los datos</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          Haga clic en el botón <strong>"💾 Exportar datos"</strong> al pie del menú lateral, o en <strong>"💾 Exportar JSON"</strong> dentro de "Acciones Rápidas" en el <a href="#sec-panel">Panel de Inicio</a>. Ambos disparan la misma exportación.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          El sistema recopilará automáticamente todos los datos de obras y usuarios desde el servidor.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          El archivo JSON se descargará automáticamente a la carpeta de descargas de su navegador con el nombre <code>fundacion_loyola_admin_[timestamp].json</code>.
+        </div>
+      </li>
+    </ol>
+
+    <h3 class="subsec">Contenido del archivo JSON</h3>
+    <p>El archivo exportado contiene la siguiente estructura:</p>
+
+    <div class="card" style="padding: 20px 24px; font-family: 'Courier New', monospace; font-size: 13px; background: var(--code-bg); color: #a8c8e8; margin-top: 14px; border-radius: var(--radius);">
+      <span style="color:#4a6a8a;">// Estructura general del JSON exportado</span><br>
+      {<br>
+      &nbsp;&nbsp;<span style="color:#f0c060;">"obras"</span>: [ <span style="color:#4a6a8a;">/* array con todas las obras */</span> ],<br>
+      &nbsp;&nbsp;<span style="color:#f0c060;">"usuarios"</span>: [ <span style="color:#4a6a8a;">/* array con todos los usuarios */</span> ],<br>
+      &nbsp;&nbsp;<span style="color:#f0c060;">"fechaExportacion"</span>: <span style="color:#98d8a8;">"2026-08-21T14:30:22.000Z"</span>,<br>
+      &nbsp;&nbsp;<span style="color:#f0c060;">"version"</span>: <span style="color:#98d8a8;">"3.0"</span><br>
+      }
+    </div>
+    <div class="callout tip" style="margin-top:12px;">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Solo obras y usuarios</div>
+        <p>La exportación JSON incluye únicamente los registros de <strong>obras</strong> y <strong>usuarios</strong>. No incluye proyectos, documentos, notificaciones ni las respuestas del sondeo.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">Datos sensibles</div>
+        <p>El archivo JSON exportado puede contener información sensible como correos electrónicos, datos de contacto y nombres de usuario. <strong>Guarde este archivo en un lugar seguro</strong> y no lo comparta con personas no autorizadas.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Buena práctica de respaldo</div>
+        <p>Se recomienda exportar el JSON al finalizar cada etapa del proceso SNF como respaldo de seguridad. Guarde los archivos con una nomenclatura clara que incluya la fecha de exportación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── 10. CERRAR SESIÓN ─────────────────── -->
+  <section id="sec-sesion">
+    <h2>
+      <span class="sec-num">11</span>
+      <span class="icon">🚪</span>
+      Cerrar Sesión
+    </h2>
+
+    <p>Es importante cerrar correctamente la sesión al terminar de trabajar con el panel de administración, especialmente si se utiliza un equipo compartido.</p>
+
+    <h3 class="subsec">Procedimiento para cerrar sesión</h3>
+    <ol class="steps">
+      <li>
+        <div class="step-body">
+          En el menú lateral, desplácese hasta el final y haga clic en el botón <strong>"🚪 Cerrar sesión"</strong> (resaltado en rojo).
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Aparecerá un <strong>diálogo de confirmación</strong>. Léalo y confirme que desea cerrar la sesión.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          El sistema enviará una solicitud al servidor para <strong>revocar la sesión activa</strong>.
+        </div>
+      </li>
+      <li>
+        <div class="step-body">
+          Una vez revocada la sesión, será redirigido automáticamente a la página <code>Inicio.html</code>.
+        </div>
+      </li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="ss-icon">🚪</div>
+      <div class="ss-label">[Vista: Diálogo de confirmación de cierre de sesión]</div>
+      <div class="ss-sub">Confirmación antes de revocar la sesión en el servidor</div>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">No cierre el navegador sin cerrar sesión</div>
+        <p>Cerrar la pestaña o el navegador <strong>no equivale a cerrar sesión</strong>. Si no cierra sesión correctamente, la sesión puede permanecer activa en el servidor. Siempre use el botón <strong>"🚪 Cerrar sesión"</strong> para garantizar que la sesión sea revocada de forma segura.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">Equipos compartidos</div>
+        <p>Si trabaja en un equipo compartido o de acceso público, cierre sesión siempre al finalizar. Adicionalmente, cierre la pestaña del navegador y considere limpiar el historial de navegación para mayor seguridad.</p>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-body">
+        <div class="callout-title">Sesión cerrada correctamente</div>
+        <p>Cuando la sesión se cierra correctamente, el servidor revoca las credenciales activas y es redirigido a <code>Inicio.html</code>. Si intenta acceder nuevamente a <code>admin_dashboard.html</code> sin autenticarse, será redirigido automáticamente a la página de inicio de sesión.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── APÉNDICE / REFERENCIA RÁPIDA ─────────────────── -->
+  <section id="sec-ref">
+    <h2>
+      <span class="sec-num" style="background: var(--gold);">★</span>
+      <span class="icon">📌</span>
+      Referencia Rápida — Resumen de funciones
+    </h2>
+
+    <p>A continuación se presenta una tabla consolidada con todas las funciones del panel de administración para consulta rápida.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Función</th>
+            <th>Ubicación en el panel</th>
+            <th>Acción requerida</th>
+            <th>Sección del manual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Iniciar sesión</strong></td>
+            <td>Inicio.html</td>
+            <td>Usuario + contraseña (único método visible hoy)</td>
+            <td><a href="#sec-login">§ 1</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver estadísticas rápidas y fechas importantes</strong></td>
+            <td>Panel de Inicio</td>
+            <td>Automático al ingresar</td>
+            <td><a href="#sec-panel">§ 2</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver / buscar obras</strong></td>
+            <td>Gestión de Obras</td>
+            <td>Navegar al módulo</td>
+            <td><a href="#sec-obras">§ 3</a></td>
+          </tr>
+          <tr>
+            <td><strong>Registrar / editar / eliminar obra</strong></td>
+            <td>Gestión de Obras → "➕ Registrar Nueva Obra" / ✏️ / 🗑️</td>
+            <td>Rellenar formulario y guardar, o confirmar diálogo</td>
+            <td><a href="#sec-obras">§ 3</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver detalle de obra (con proyectos y documentos)</strong></td>
+            <td>Hacer clic en tarjeta de obra</td>
+            <td>Clic en área de la tarjeta</td>
+            <td><a href="#sec-obras">§ 3</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver / registrar / editar / eliminar usuarios</strong></td>
+            <td>Gestión de Obras → submenú → Usuarios</td>
+            <td>Rellenar formulario y guardar, o confirmar diálogo</td>
+            <td><a href="#sec-usuarios">§ 4</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver / filtrar proyectos y cambiar status</strong></td>
+            <td>Gestión de Obras → submenú → Proyectos</td>
+            <td>Seleccionar status y Guardar</td>
+            <td><a href="#sec-proyectos">§ 5</a></td>
+          </tr>
+          <tr>
+            <td><strong>Consultar contacto enviado por obras</strong></td>
+            <td>Contacto con Obras</td>
+            <td>Navegar al módulo (actualmente siempre vacío)</td>
+            <td><a href="#sec-contacto">§ 6</a></td>
+          </tr>
+          <tr>
+            <td><strong>Ver avance del sondeo por obra</strong></td>
+            <td>Seguimiento de Obras</td>
+            <td>Navegar al módulo</td>
+            <td><a href="#sec-seguimiento">§ 7</a></td>
+          </tr>
+          <tr>
+            <td><strong>Enviar notificación / ver historial</strong></td>
+            <td>Gestión de Obras → submenú → Notificaciones</td>
+            <td>Completar asunto y mensaje, enviar</td>
+            <td><a href="#sec-notificaciones">§ 8</a></td>
+          </tr>
+          <tr>
+            <td><strong>Generar Reporte PDF</strong></td>
+            <td>Sidebar o Panel de Inicio</td>
+            <td>Clic en botón → descarga automática</td>
+            <td><a href="#sec-reporte">§ 9</a></td>
+          </tr>
+          <tr>
+            <td><strong>Exportar JSON</strong></td>
+            <td>Sidebar ("Exportar datos") o Panel de Inicio</td>
+            <td>Clic en botón → descarga automática</td>
+            <td><a href="#sec-json">§ 10</a></td>
+          </tr>
+          <tr>
+            <td><strong>Cerrar sesión</strong></td>
+            <td>Sidebar → "🚪 Cerrar sesión"</td>
+            <td>Confirmar diálogo</td>
+            <td><a href="#sec-sesion">§ 11</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="subsec">Funciones presentes en el código pero no accesibles hoy</h3>
+    <p>El sistema conserva código para algunas pantallas que ya <strong>no están enlazadas</strong> desde ningún botón del menú actual. No las documentamos como funciones activas, pero es útil saberlo:</p>
+    <ul class="list">
+      <li><strong>Calendario de Google embebido</strong> (<code>page-calendario</code> en <code>admin_dashboard.html</code>) — existe en el HTML del panel, pero ningún botón del sidebar ni del arreglo de navegación (<code>PAGES</code>) apunta a él. Hoy no hay forma de abrirlo desde la interfaz.</li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<div class="gold-bar"></div>
+<footer>
+  <strong>FL-SNF · Fundación Loyola</strong> &nbsp;|&nbsp;
+  Manual de Usuario — Administrador &nbsp;|&nbsp;
+  v2.0 · Agosto 2026 &nbsp;|&nbsp;
+  Documento de uso interno
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<title>FL-SNF Prototipos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --green-dark:   #8a6d1b;
+    --green-mid:    #c9a84c;
+    --green-light:  #f5f5f5;
+    --green-border: #e0e0e0;
+    --gold:         #c9a84c;
+    --gold-soft:    #f6efdc;
+    --text-dark:    #1a1a1a;
+    --text-mid:     #555555;
+    --text-light:   #8a8a8a;
+    --bg:           #ffffff;
+    --white:        #ffffff;
+    --warn:         #e8a020;
+    --warn-soft:    #fdf2df;
+    --danger:       #d94040;
+    --danger-soft:  #fbe8e8;
+    --success:      #8a6d1b;
+    --success-soft: #f6efdc;
+    --radius:       12px;
+    --radius-sm:    8px;
+    --shadow:       0 4px 20px rgba(0,0,0,0.08);
+    --shadow-sm:    0 2px 8px rgba(0,0,0,0.07);
+    --font: 'Montserrat', 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --green-light: #22201a; --green-border: #3a3730; --gold-soft: #2c2716;
+      --text-dark: #f0f0f0; --text-mid: #b0b0b0; --text-light: #8a8a8a;
+      --bg: #121212; --white: #1c1c1c;
+      --warn-soft: #33270f; --danger-soft: #341717; --success-soft: #2c2716;
+      --shadow: 0 4px 20px rgba(0,0,0,0.35); --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --green-light: #22201a; --green-border: #3a3730; --gold-soft: #2c2716;
+    --text-dark: #f0f0f0; --text-mid: #b0b0b0; --text-light: #8a8a8a;
+    --bg: #121212; --white: #1c1c1c;
+    --warn-soft: #33270f; --danger-soft: #341717; --success-soft: #2c2716;
+    --shadow: 0 4px 20px rgba(0,0,0,0.35); --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text-dark); font-family: var(--font); margin: 0; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  .banner {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--gold-soft); border: 1px solid var(--gold);
+    color: var(--text-dark); border-radius: var(--radius-sm);
+    padding: 10px 16px; font-size: 13px; font-weight: 600; margin-bottom: 22px;
+  }
+  .banner .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+  .head { margin-bottom: 22px; }
+  .head .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green-mid); margin-bottom: 6px; }
+  .head h1 { font-size: 26px; font-weight: 800; margin: 0 0 6px; text-wrap: balance; }
+  .head p { font-size: 14px; color: var(--text-mid); margin: 0; max-width: 62ch; }
+
+  nav.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 24px 0 26px; border-bottom: 1px solid var(--green-border); }
+  nav.tabs button {
+    font-family: var(--font); font-size: 13.5px; font-weight: 700; color: var(--text-mid);
+    background: none; border: none; padding: 11px 16px; cursor: pointer;
+    border-bottom: 3px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s;
+  }
+  nav.tabs button:hover { color: var(--green-dark); }
+  nav.tabs button.active { color: var(--green-dark); border-bottom-color: var(--green-dark); }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .screen.active { animation: none; } }
+
+  .card { background: var(--white); border: 1px solid var(--green-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+
+  /* ---------- Screen 1: Mi cuenta ---------- */
+  .account-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+  @media (max-width: 760px) { .account-grid { grid-template-columns: 1fr; } }
+
+  .avatar-card { padding: 26px 22px; text-align: center; }
+  .avatar {
+    width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 14px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800;
+  }
+  .avatar-card h3 { margin: 0 0 3px; font-size: 16px; }
+  .avatar-card .role { font-size: 12px; color: var(--text-light); font-weight: 600; }
+  .avatar-card .meta-list { text-align: left; margin-top: 20px; border-top: 1px solid var(--green-border); padding-top: 16px; }
+  .avatar-card .meta-list div { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; }
+  .avatar-card .meta-list span:first-child { color: var(--text-light); }
+  .avatar-card .meta-list span:last-child { font-weight: 700; }
+
+  .section-card { padding: 22px 24px; margin-bottom: 18px; }
+  .section-card h3 { margin: 0 0 4px; font-size: 15px; }
+  .section-card .sub { font-size: 12.5px; color: var(--text-light); margin: 0 0 16px; }
+
+  .row-between { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .track { position: absolute; inset: 0; background: var(--green-border); border-radius: 24px; transition: .2s; cursor: pointer; }
+  .toggle .track::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle input:checked + .track { background: var(--green-mid); }
+  .toggle input:checked + .track::before { transform: translateX(20px); }
+
+  table.sessions { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.sessions th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-light); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--green-border); }
+  table.sessions td { padding: 10px 10px; border-bottom: 1px solid var(--green-light); }
+  table.sessions tr:last-child td { border-bottom: none; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+  .badge.now { background: #f6efdc; color: #8a6d1b; }
+  .badge.now .dot { width: 6px; height: 6px; border-radius: 50%; background: #8a6d1b; }
+
+  /* ---------- Screen 2: Seguimiento redesign ---------- */
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .kpi { padding: 16px 18px; }
+  .kpi.k-green { background: var(--green-light); }
+  .kpi.k-blue  { background: #e8f0fa; }
+  .kpi.k-gold  { background: #fdf4e0; }
+  .kpi.k-gray  { background: #f2f2f2; }
+  .kpi .k-label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); font-weight: 700; margin-bottom: 6px; }
+  .kpi .k-val { font-size: 26px; font-weight: 800; color: var(--green-dark); }
+  .kpi .k-val small { font-size: 13px; font-weight: 700; color: var(--text-light); }
+
+  .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .chip { font-size: 12.5px; font-weight: 700; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--green-border); background: var(--white); color: var(--text-mid); cursor: pointer; }
+  .chip.active { background: var(--green-dark); border-color: var(--green-dark); color: #fff; }
+
+  .obra-track { padding: 18px 20px; margin-bottom: 12px; }
+  .obra-track-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; gap: 12px; flex-wrap: wrap; }
+  .obra-track-head strong { font-size: 14.5px; }
+  .obra-track-head .estado { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .estado.completo  { background: #f6efdc; color: #8a6d1b; }
+  .estado.progreso  { background: #fff3e0; color: #f57c00; }
+  .estado.iniciado  { background: #fff8e1; color: #e65100; }
+  .estado.inactivo  { background: #f5f5f5; color: #999; }
+  .bar-track { height: 9px; background: #eeeeee; border-radius: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 20px; }
+  .bar-fill.completo { background: #8a6d1b; }
+  .bar-fill.progreso { background: #f39c12; }
+  .bar-fill.iniciado { background: #e67e22; }
+  .obra-track-foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); margin-top: 8px; }
+
+  /* ---------- Screen 3: Onboarding wizard ---------- */
+  .wizard { max-width: 640px; margin: 0 auto; }
+  .stepper { display: flex; align-items: center; margin-bottom: 30px; }
+  .step-item { display: flex; align-items: center; flex: 1; }
+  .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; flex-shrink: 0; border: 2px solid var(--green-border); color: var(--text-light); background: var(--white); }
+  .step-item.done .step-circle { background: var(--green-mid); border-color: var(--green-mid); color: #fff; }
+  .step-item.current .step-circle { border-color: var(--green-dark); color: var(--green-dark); }
+  .step-label { font-size: 11px; font-weight: 700; color: var(--text-light); margin-left: 8px; white-space: nowrap; }
+  .step-item.current .step-label, .step-item.done .step-label { color: var(--text-dark); }
+  .step-line { flex: 1; height: 2px; background: var(--green-border); margin: 0 8px; }
+  .step-item.done + .step-line { background: var(--green-mid); }
+
+  .wizard-card { padding: 26px 28px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 11px 12px; border: 1.5px solid var(--green-border); border-radius: var(--radius-sm); font-family: var(--font); font-size: 13.5px; background: var(--white); color: var(--text-dark); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+  .user-row { display: grid; grid-template-columns: 1fr 1fr 100px; gap: 10px; margin-bottom: 10px; align-items: center; }
+  @media (max-width: 560px) { .user-row { grid-template-columns: 1fr; } }
+  .user-row select { padding: 9px 10px; border: 1.5px solid var(--green-border); border-radius: var(--radius-sm); font-family: var(--font); font-size: 12.5px; }
+
+  .wizard-actions { display: flex; justify-content: space-between; margin-top: 24px; }
+  .btn { font-family: var(--font); font-size: 13.5px; font-weight: 700; padding: 11px 20px; border-radius: var(--radius-sm); cursor: pointer; border: none; }
+  .btn-primary { background: linear-gradient(135deg, var(--green-dark), var(--green-mid)); color: #fff; }
+  .btn-ghost { background: none; color: var(--text-mid); border: 1.5px solid var(--green-border); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .summary-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--green-light); font-size: 13px; }
+  .summary-row span:first-child { color: var(--text-light); }
+  .summary-row span:last-child { font-weight: 700; }
+
+  /* ---------- Screen 4: Vista móvil ---------- */
+  .phone-stage { display: flex; justify-content: center; padding: 20px 0 10px; }
+  .phone { width: 320px; height: 660px; background: #1a1a1a; border-radius: 40px; padding: 12px; box-shadow: var(--shadow); position: relative; }
+  .phone-screen { background: var(--bg); width: 100%; height: 100%; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; }
+  .phone-notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 90px; height: 18px; background: #1a1a1a; border-radius: 0 0 14px 14px; z-index: 2; }
+
+  .m-topbar { background: var(--green-dark); color: #fff; padding: 20px 16px 14px; }
+  .m-topbar .m-greet { font-size: 11px; opacity: .8; font-weight: 600; }
+  .m-topbar h4 { margin: 3px 0 0; font-size: 16px; font-weight: 800; }
+
+  .m-body { flex: 1; overflow-y: auto; padding: 14px; }
+  .m-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .m-stat { background: var(--white); border-radius: var(--radius-sm); padding: 12px; border: 1px solid var(--green-border); }
+  .m-stat .m-label { font-size: 10px; color: var(--text-light); font-weight: 700; text-transform: uppercase; }
+  .m-stat .m-val { font-size: 18px; font-weight: 800; color: var(--green-dark); margin-top: 2px; }
+
+  .m-card { background: var(--white); border: 1px solid var(--green-border); border-radius: var(--radius-sm); padding: 13px 14px; margin-bottom: 10px; }
+  .m-card h5 { margin: 0 0 3px; font-size: 13px; }
+  .m-card p { margin: 0; font-size: 11.5px; color: var(--text-light); }
+
+  .m-tabbar { display: flex; background: var(--white); border-top: 1px solid var(--green-border); padding: 8px 4px 10px; }
+  .m-tabbar .m-tab { flex: 1; text-align: center; font-size: 9.5px; font-weight: 700; color: var(--text-light); }
+  .m-tabbar .m-tab.active { color: var(--green-dark); }
+  .m-tabbar .m-tab .m-ic { font-size: 17px; display: block; margin-bottom: 2px; }
+
+  .foot-note { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 14px; }
+
+  /* ---------- Screen 5: Subir documentos ---------- */
+  .upload-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+  @media (max-width: 820px) { .upload-layout { grid-template-columns: 1fr; } }
+
+  .cat-list { padding: 10px; }
+  .cat-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-weight: 700; color: var(--text-mid); }
+  .cat-item .cat-ic { font-size: 17px; }
+  .cat-item .cat-count { margin-left: auto; font-size: 11px; font-weight: 700; background: #f6efdc; color: #8a6d1b; border-radius: 12px; padding: 1px 9px; }
+  .cat-item:hover { background: var(--green-light); }
+  .cat-item.active { background: var(--green-light); color: var(--green-dark); }
+
+  .drop-zone {
+    border: 2px dashed var(--green-border); border-radius: var(--radius);
+    background: #f8faf9; padding: 46px 24px; text-align: center; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--green-dark); background: #f6efdc; }
+  .drop-zone.dragover { background: #f6efdc; }
+  .drop-zone .dz-icon { font-size: 34px; margin-bottom: 10px; }
+  .drop-zone .dz-main { font-size: 14.5px; font-weight: 700; color: var(--text-dark); }
+  .drop-zone .dz-main strong { color: var(--green-dark); text-decoration: underline; }
+  .drop-zone .dz-sub { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+  .queue { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .queue-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #e3e3e3; border-radius: var(--radius-sm); background: #fff; }
+  .queue-ic { width: 34px; height: 34px; border-radius: 8px; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .queue-body { flex: 1; min-width: 0; }
+  .queue-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .queue-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .queue-track { height: 5px; background: var(--green-light); border-radius: 6px; margin-top: 6px; overflow: hidden; }
+  .queue-track-fill { height: 100%; background: var(--green-mid); border-radius: 6px; transition: width .3s linear; }
+  .queue-status { font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .queue-status.done  { color: #8a6d1b; }
+  .queue-status.error { color: #c43a3a; }
+  .queue-item.done .queue-track-fill { background: #8a6d1b; }
+  .queue-item.error .queue-ic { background: #fbe8e8; }
+  .queue-item.error .queue-track-fill { background: #d94040; }
+  .queue-remove { background: none; border: none; font-size: 15px; color: var(--text-light); cursor: pointer; flex-shrink: 0; }
+  .queue-remove:hover { color: #d94040; }
+
+  .existing-list { margin-top: 22px; }
+  .existing-list h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin: 0 0 10px; }
+  .existing-item { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--green-light); font-size: 12.5px; }
+  .existing-item:last-child { border-bottom: none; }
+  .existing-item .ex-name { flex: 1; }
+  .existing-item .ex-meta { color: var(--text-light); font-size: 11.5px; }
+
+  /* ---------- Screen 6: Revisión de proyectos ---------- */
+  .rev-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+  @media (max-width: 860px) { .rev-layout { grid-template-columns: 1fr; } }
+
+  .rev-queue { padding: 8px; max-height: 640px; overflow-y: auto; }
+  .rev-queue-head { padding: 10px 12px 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); font-weight: 700; }
+  .rev-card { padding: 12px 12px; border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 4px; border: 1.5px solid transparent; }
+  .rev-card:hover { background: var(--green-light); }
+  .rev-card.active { background: var(--green-light); border-color: var(--green-mid); }
+  .rev-card .rc-nombre { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .rev-card .rc-obra { font-size: 11.5px; color: var(--text-light); }
+  .rev-card .rc-monto { font-size: 12px; font-weight: 700; color: var(--green-dark); margin-top: 5px; }
+  .rev-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
+  .rev-tag.nuevo { background: #e8effd; color: #5b8dee; }
+
+  .rev-detail { padding: 26px 30px; }
+  .rev-detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 4px; flex-wrap: wrap; }
+  .rev-detail-head h2 { font-size: 20px; margin: 0; }
+  .rev-status-pill { font-size: 11.5px; font-weight: 700; padding: 4px 12px; border-radius: 20px; color: #fff; white-space: nowrap; }
+  .rev-detail-sub { font-size: 12.5px; color: var(--text-light); margin: 4px 0 22px; }
+
+  .rev-money-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+  .rev-money { background: var(--bg); border: 1px solid var(--green-border); border-radius: var(--radius-sm); padding: 14px 16px; }
+  .rev-money .rm-label { font-size: 11px; color: var(--text-mid); font-weight: 700; text-transform: uppercase; }
+  .rev-money .rm-val { font-size: 21px; font-weight: 800; color: var(--green-dark); margin-top: 2px; }
+
+  .rev-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; margin-bottom: 22px; }
+  @media (max-width: 600px) { .rev-fields { grid-template-columns: 1fr; } }
+  .rev-field.full { grid-column: 1 / -1; }
+  .rev-field .rf-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-light); font-weight: 700; margin-bottom: 4px; }
+  .rev-field .rf-val { font-size: 13.5px; line-height: 1.55; }
+
+  .rev-actions { border-top: 1px solid var(--green-border); padding-top: 20px; }
+  .rev-actions label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; }
+  .rev-actions textarea { width: 100%; min-height: 64px; padding: 10px 12px; border: 1.5px solid var(--green-border); border-radius: var(--radius-sm); font-family: var(--font); font-size: 13px; resize: vertical; margin-bottom: 14px; }
+  .rev-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-aprobar { background: #8a6d1b; color: #fff; }
+  .btn-rechazar { background: #fff; color: #e74c3c; border: 1.5px solid #e74c3c; }
+  .btn-cerrar-proy { background: #fff; color: #7f8c8d; border: 1.5px solid #ccd1d1; }
+
+  /* ---------- Screen 7: Vista previa de reporte ---------- */
+  .report-layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .report-layout { grid-template-columns: 1fr; } }
+
+  .report-opts { padding: 20px; }
+  .report-opts h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-light); margin: 0 0 12px; }
+  .opt-row { display: flex; align-items: center; gap: 9px; padding: 8px 0; font-size: 13px; }
+  .opt-row input { width: 16px; height: 16px; accent-color: var(--green-mid); }
+  .report-opts .btn { width: 100%; margin-top: 14px; }
+
+  .paper-stage { display: flex; justify-content: center; padding: 6px 0; }
+  .paper {
+    width: 100%; max-width: 560px; aspect-ratio: 8.5 / 11; background: #fff;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.14); border: 1px solid #e6e6e6;
+    padding: 34px 36px; font-size: 11px; color: #333; overflow: hidden; position: relative;
+  }
+  .paper-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--green-dark); padding-bottom: 14px; margin-bottom: 18px; }
+  .paper-head .ph-title { font-size: 16px; font-weight: 800; color: var(--green-dark); }
+  .paper-head .ph-sub { font-size: 10px; color: #888; margin-top: 2px; }
+  .paper-head .ph-meta { text-align: right; font-size: 9.5px; color: #888; line-height: 1.5; }
+
+  .paper h5 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--green-dark); margin: 18px 0 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .paper .p-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 4px; }
+  .paper .p-stat { text-align: center; background: #f7f7f7; border-radius: 6px; padding: 8px 4px; }
+  .paper .p-stat b { display: block; font-size: 15px; color: var(--green-dark); }
+  .paper .p-stat span { font-size: 8px; color: #999; text-transform: uppercase; }
+
+  .paper table { width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 6px; }
+  .paper th { text-align: left; background: #f2f2f2; padding: 4px 6px; font-weight: 700; color: #555; }
+  .paper td { padding: 4px 6px; border-bottom: 1px solid #eee; color: #444; }
+
+  .paper-foot { position: absolute; bottom: 20px; left: 36px; right: 36px; display: flex; justify-content: space-between; font-size: 8.5px; color: #aaa; border-top: 1px solid #eee; padding-top: 8px; }
+
+  /* ---------- Screen 8: Chatbot ---------- */
+  .chat-shell { max-width: 640px; margin: 0 auto; padding: 0; display: flex; flex-direction: column; height: 560px; }
+  .chat-head { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--green-border); }
+  .chat-head .ch-ic { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--green-dark), var(--green-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .chat-head h4 { margin: 0; font-size: 14px; }
+  .chat-head .ch-sub { font-size: 11px; color: var(--text-light); }
+
+  .chat-body { flex: 1; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; }
+  .msg.bot { background: var(--green-light); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .msg.user { background: var(--green-dark); color: #fff; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .msg table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: 8px; }
+  .msg th { text-align: left; padding: 3px 6px; border-bottom: 1px solid #d8d8d8; color: var(--text-mid); }
+  .msg td { padding: 3px 6px; border-bottom: 1px solid #eee; }
+
+  .chat-suggest { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 20px 12px; }
+  .sugg-chip { font-size: 11.5px; font-weight: 600; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--green-border); background: #fff; color: var(--text-mid); cursor: pointer; }
+  .sugg-chip:hover { border-color: var(--green-mid); color: var(--green-dark); }
+
+  .chat-input-row { display: flex; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--green-border); }
+  .chat-input-row input { flex: 1; padding: 11px 14px; border: 1.5px solid var(--green-border); border-radius: 24px; font-family: var(--font); font-size: 13px; }
+  .chat-send { width: 42px; height: 42px; border-radius: 50%; background: var(--green-dark); color: #fff; border: none; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+
+  /* ---------- Screen 9: Notificaciones ---------- */
+  .notif-shell { max-width: 640px; margin: 0 auto; }
+  .notif-item { display: flex; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--green-light); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--green-light); }
+  .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-mid); margin-top: 6px; flex-shrink: 0; }
+  .notif-item.leida .notif-dot { background: transparent; }
+  .notif-item.leida .n-asunto { font-weight: 600; }
+  .n-body { flex: 1; min-width: 0; }
+  .n-top { display: flex; justify-content: space-between; gap: 10px; }
+  .n-asunto { font-size: 13.5px; font-weight: 800; }
+  .n-fecha { font-size: 11px; color: var(--text-light); white-space: nowrap; }
+  .n-preview { font-size: 12.5px; color: var(--text-mid); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .n-detail { display: none; font-size: 13px; color: var(--text-dark); margin-top: 8px; line-height: 1.6; background: var(--green-light); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .notif-item.open .n-detail { display: block; }
+
+  /* ---------- Screen 10: Comparar obras ---------- */
+  .compare-grid { display: grid; grid-template-columns: 180px repeat(2, 1fr); gap: 1px; background: var(--green-border); border: 1px solid var(--green-border); border-radius: var(--radius); overflow: hidden; }
+  .cmp-cell { background: #fff; padding: 14px 16px; }
+  .cmp-cell.head { background: var(--green-light); font-weight: 800; font-size: 13px; }
+  .cmp-cell.row-label { background: var(--green-light); font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: .03em; display: flex; align-items: center; }
+  .cmp-cell .cv-big { font-size: 20px; font-weight: 800; color: var(--green-dark); }
+  .cmp-progress { height: 7px; background: var(--green-light); border-radius: 20px; overflow: hidden; margin-top: 6px; }
+  .cmp-progress-fill { height: 100%; background: var(--green-mid); border-radius: 20px; }
+  .cmp-add { display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 12.5px; font-weight: 700; cursor: pointer; border: 1.5px dashed var(--green-border); }
+  .cmp-add:hover { color: var(--green-dark); border-color: var(--green-dark); }
+</style>
+
+<div class="wrap">
+  <div class="banner"><span class="dot"></span> Maqueta interactiva — sin conexión a datos reales. Los clics no guardan nada; es para revisar el diseño antes de programarlo.</div>
+
+  <div class="head">
+    <div class="eyebrow">FL-SNF · Fundación Loyola</div>
+    <h1>Prototipos de pantallas nuevas</h1>
+    <p>Propuestas de diseño para revisar antes de construirlas: perfil de cuenta, seguimiento de obras, alta de una obra nueva, vista para celular y subida de documentos.</p>
+  </div>
+
+  <nav class="tabs">
+    <button class="active" data-screen="cuenta">Mi cuenta</button>
+    <button data-screen="seguimiento">Seguimiento de obras</button>
+    <button data-screen="onboarding">Alta de obra nueva</button>
+    <button data-screen="movil">Vista móvil</button>
+    <button data-screen="upload">Subir documentos</button>
+    <button data-screen="revision">Revisión de proyectos</button>
+    <button data-screen="reporte">Vista previa de reporte</button>
+    <button data-screen="chatbot">Chatbot</button>
+    <button data-screen="notif">Notificaciones</button>
+    <button data-screen="comparar">Comparar obras</button>
+  </nav>
+
+  <!-- ═══════════ SCREEN 1 — MI CUENTA ═══════════ -->
+  <section class="screen active" id="screen-cuenta">
+    <div class="account-grid">
+      <div class="card avatar-card">
+        <div class="avatar">AS</div>
+        <h3>Administrador San Ignacio</h3>
+        <div class="role">Usuario de obra · Obra San Ignacio</div>
+        <div class="meta-list">
+          <div><span>Usuario</span><span>admin.sanignacio</span></div>
+          <div><span>Correo</span><span>admin@obra.mx</span></div>
+          <div><span>Miembro desde</span><span>31 mar 2026</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card section-card">
+          <div class="row-between">
+            <div>
+              <h3>Verificación en dos pasos</h3>
+              <p class="sub">Pide un código enviado a tu correo cada vez que inicias sesión.</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="toggle-2fa" checked onchange="const s=document.getElementById('mfa-status'); s.textContent = this.checked ? 'Activada' : 'Desactivada'; s.style.color = this.checked ? '#8a6d1b' : '#8a8a8a';">
+              <span class="track"></span>
+            </label>
+          </div>
+          <p style="margin:12px 0 0;font-size:12.5px;color:var(--text-light)">Estado actual: <strong id="mfa-status" style="color:#8a6d1b">Activada</strong></p>
+        </div>
+
+        <div class="card section-card">
+          <h3>Sesiones recientes</h3>
+          <p class="sub">Dispositivos donde tu cuenta ha iniciado sesión.</p>
+          <div style="overflow-x:auto">
+            <table class="sessions">
+              <thead><tr><th>Dispositivo</th><th>Ubicación aprox.</th><th>Fecha</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Chrome · Windows</td><td>Guadalajara, JAL</td><td>Hoy, 09:14</td><td><span class="badge now"><span class="dot"></span>Esta sesión</span></td></tr>
+                <tr><td>Safari · iPhone</td><td>Guadalajara, JAL</td><td>Ayer, 18:40</td><td></td></tr>
+                <tr><td>Chrome · Windows</td><td>Zapopan, JAL</td><td>18 ago, 08:02</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 2 — SEGUIMIENTO REDISEÑADO ═══════════ -->
+  <section class="screen" id="screen-seguimiento">
+    <div class="kpi-row">
+      <div class="card kpi k-green"><div class="k-label">Obras activas</div><div class="k-val">2</div></div>
+      <div class="card kpi k-blue"><div class="k-label">Avance promedio</div><div class="k-val">64<small>%</small></div></div>
+      <div class="card kpi k-gold"><div class="k-label">Obras completas</div><div class="k-val" style="color:var(--gold)">0</div></div>
+      <div class="card kpi k-gray"><div class="k-label">Última actividad</div><div class="k-val" style="font-size:16px;color:var(--text-dark)">Hoy, 11:20</div></div>
+    </div>
+
+    <div class="filter-chips">
+      <button class="chip active">Todos los estados</button>
+      <button class="chip">En progreso</button>
+      <button class="chip">Iniciado</button>
+      <button class="chip">Completo</button>
+    </div>
+
+    <div class="card obra-track">
+      <div class="obra-track-head">
+        <strong>Obra San Ignacio</strong>
+        <span class="estado progreso">En progreso</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill progreso" style="width:78%"></div></div>
+      <div class="obra-track-foot"><span>7 de 9 secciones completas</span><span>78%</span></div>
+    </div>
+
+    <div class="card obra-track">
+      <div class="obra-track-head">
+        <strong>Centro Comunitario San Ignacio</strong>
+        <span class="estado iniciado">Iniciado</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill iniciado" style="width:50%"></div></div>
+      <div class="obra-track-foot"><span>4 de 9 secciones completas</span><span>50%</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 3 — ONBOARDING OBRA NUEVA ═══════════ -->
+  <section class="screen" id="screen-onboarding">
+    <div class="wizard">
+      <div class="stepper" id="stepper">
+        <div class="step-item current" data-step="1"><div class="step-circle">1</div><div class="step-label">Datos generales</div></div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="2"><div class="step-circle">2</div><div class="step-label">Contacto</div></div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="3"><div class="step-circle">3</div><div class="step-label">Usuarios</div></div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="4"><div class="step-circle">4</div><div class="step-label">Confirmar</div></div>
+      </div>
+
+      <div class="card wizard-card">
+
+        <div class="wizard-step" data-content="1">
+          <div class="field"><label>Nombre de la obra *</label><input type="text" placeholder="Ej. Colegio San José"></div>
+          <div class="field-row">
+            <div class="field"><label>Estado *</label><select><option>Jalisco</option><option>Ciudad de México</option><option>Nuevo León</option></select></div>
+            <div class="field"><label>Personalidad jurídica</label><input type="text" placeholder="A.C., I.A.P., etc."></div>
+          </div>
+          <div class="field"><label>Dirección *</label><input type="text" placeholder="Calle, número, colonia"></div>
+        </div>
+
+        <div class="wizard-step" data-content="2" style="display:none">
+          <div class="field-row">
+            <div class="field"><label>Teléfono *</label><input type="tel" placeholder="33 1000 0001"></div>
+            <div class="field"><label>Correo institucional</label><input type="email" placeholder="contacto@obra.mx"></div>
+          </div>
+          <div class="field"><label>Nombre del contacto principal</label><input type="text" placeholder="Nombre completo"></div>
+        </div>
+
+        <div class="wizard-step" data-content="3" style="display:none">
+          <p class="sub" style="margin-bottom:14px">Cada obra necesita al menos un usuario administrador. Puedes agregar más después.</p>
+          <div class="user-row"><input type="text" placeholder="admin.nuevaobra" value="admin.colegiosanjose"><input type="email" placeholder="correo" value="admin@colegiosanjose.mx"><select><option>Admin</option><option>Director</option><option>Gestor</option></select></div>
+          <div class="user-row"><input type="text" placeholder="director.nuevaobra" value="director.colegiosanjose"><input type="email" placeholder="correo" value="director@colegiosanjose.mx"><select><option selected>Director</option><option>Admin</option><option>Gestor</option></select></div>
+          <button class="chip" style="margin-top:6px">+ Agregar otro usuario</button>
+        </div>
+
+        <div class="wizard-step" data-content="4" style="display:none">
+          <p class="sub" style="margin-bottom:6px">Revisa los datos antes de crear la obra.</p>
+          <div class="summary-row"><span>Nombre</span><span>Colegio San José</span></div>
+          <div class="summary-row"><span>Estado</span><span>Jalisco</span></div>
+          <div class="summary-row"><span>Teléfono</span><span>33 1000 0001</span></div>
+          <div class="summary-row"><span>Usuarios iniciales</span><span>2</span></div>
+        </div>
+
+        <div class="wizard-actions">
+          <button class="btn btn-ghost" id="btn-wizard-atras" onclick="cambiarPaso(-1)" disabled>Atrás</button>
+          <button class="btn btn-primary" id="btn-wizard-siguiente" onclick="cambiarPaso(1)">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 4 — VISTA MÓVIL ═══════════ -->
+  <section class="screen" id="screen-movil">
+    <div class="phone-stage">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="m-topbar">
+            <div class="m-greet">Obra San Ignacio</div>
+            <h4>Hola, Admin 👋</h4>
+          </div>
+          <div class="m-body">
+            <div class="m-stat-row">
+              <div class="m-stat"><div class="m-label">Avance</div><div class="m-val">78%</div></div>
+              <div class="m-stat"><div class="m-label">Documentos</div><div class="m-val">12</div></div>
+            </div>
+            <div class="m-card"><h5>📋 Sondeo de necesidades</h5><p>7 de 9 secciones completas</p></div>
+            <div class="m-card"><h5>📂 Documentos institucionales</h5><p>Últimos: RFC.pdf, Acta constitutiva.pdf</p></div>
+            <div class="m-card"><h5>📊 Proyectos</h5><p>2 vigentes · 1 por financiar</p></div>
+            <div class="m-card"><h5>🔔 Notificaciones</h5><p>Recordatorio de llenado — hace 2 días</p></div>
+          </div>
+          <div class="m-tabbar">
+            <div class="m-tab active"><span class="m-ic">🏠</span>Inicio</div>
+            <div class="m-tab"><span class="m-ic">📋</span>Sondeo</div>
+            <div class="m-tab"><span class="m-ic">📂</span>Docs</div>
+            <div class="m-tab"><span class="m-ic">⋯</span>Más</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="foot-note">Portal de obra actual es de escritorio — esta es una propuesta para acceso desde celular.</p>
+  </section>
+
+  <!-- ═══════════ SCREEN 5 — SUBIR DOCUMENTOS ═══════════ -->
+  <section class="screen" id="screen-upload">
+    <div class="upload-layout">
+      <div class="card cat-list">
+        <div class="cat-item active"><span class="cat-ic">📜</span>Acta Constitutiva<span class="cat-count">1</span></div>
+        <div class="cat-item"><span class="cat-ic">🖼️</span>Logotipos<span class="cat-count">3</span></div>
+        <div class="cat-item"><span class="cat-ic">🧾</span>CFDI<span class="cat-count">0</span></div>
+        <div class="cat-item"><span class="cat-ic">🏠</span>Comprobante domicilio<span class="cat-count">1</span></div>
+        <div class="cat-item"><span class="cat-ic">🤝</span>Convenios<span class="cat-count">4</span></div>
+      </div>
+
+      <div>
+        <div class="card" style="padding:22px">
+          <div class="drop-zone" id="dropZone">
+            <div class="dz-icon">📤</div>
+            <div class="dz-main">Arrastra tus archivos aquí o <strong>haz clic para elegir</strong></div>
+            <div class="dz-sub">PDF, DOC, XLS, PNG o JPG · hasta 10 MB por archivo</div>
+          </div>
+
+          <div class="queue" id="queue">
+            <div class="queue-item done">
+              <div class="queue-ic">📄</div>
+              <div class="queue-body">
+                <div class="queue-name">Acta_constitutiva_2021.pdf</div>
+                <div class="queue-sub">1.2 MB</div>
+                <div class="queue-track"><div class="queue-track-fill" style="width:100%"></div></div>
+              </div>
+              <div class="queue-status done">✓ Listo</div>
+              <button class="queue-remove" title="Quitar">✕</button>
+            </div>
+
+            <div class="queue-item" id="demoItem">
+              <div class="queue-ic">🖼️</div>
+              <div class="queue-body">
+                <div class="queue-name">Logo_2026_alta_res.png</div>
+                <div class="queue-sub" id="demoSub">2.8 MB · subiendo…</div>
+                <div class="queue-track"><div class="queue-track-fill" id="demoFill" style="width:35%"></div></div>
+              </div>
+              <div class="queue-status" id="demoStatus">35%</div>
+            </div>
+
+            <div class="queue-item error">
+              <div class="queue-ic">📊</div>
+              <div class="queue-body">
+                <div class="queue-name">CFDI_marzo_2026.xlsx</div>
+                <div class="queue-sub">4.6 MB · el archivo excede 10 MB</div>
+                <div class="queue-track"><div class="queue-track-fill" style="width:100%"></div></div>
+              </div>
+              <div class="queue-status error">✕ Falló</div>
+              <button class="queue-remove" title="Reintentar">↻</button>
+            </div>
+          </div>
+
+          <div class="existing-list">
+            <h4>Ya en Acta Constitutiva</h4>
+            <div class="existing-item"><span>📜</span><span class="ex-name">Acta_constitutiva_2018.pdf</span><span class="ex-meta">890 KB · 12 ene 2026</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 6 — REVISIÓN DE PROYECTOS ═══════════ -->
+  <section class="screen" id="screen-revision">
+    <div class="rev-layout">
+      <div class="card rev-queue">
+        <div class="rev-queue-head">Pendientes de revisión (3)</div>
+
+        <div class="rev-card active" data-proy="aula">
+          <div class="rc-nombre">Construcción Aula Comunitaria</div>
+          <div class="rc-obra">Obra San Ignacio · Por financiar</div>
+          <div class="rc-monto">$350,000 MXN</div>
+          <span class="rev-tag nuevo">Nuevo</span>
+        </div>
+
+        <div class="rev-card" data-proy="becas">
+          <div class="rc-nombre">Programa de Becas Secundaria 2026</div>
+          <div class="rc-obra">Obra San Ignacio · Vigente</div>
+          <div class="rc-monto">$150,000 MXN</div>
+          <span class="rev-tag nuevo">Nuevo</span>
+        </div>
+
+        <div class="rev-card" data-proy="computo">
+          <div class="rc-nombre">Equipo de Cómputo para Biblioteca</div>
+          <div class="rc-obra">Centro Comunitario San Ignacio · Por financiar</div>
+          <div class="rc-monto">$200,000 MXN</div>
+          <span class="rev-tag nuevo">Nuevo</span>
+        </div>
+      </div>
+
+      <div class="card rev-detail">
+        <div class="rev-detail-head">
+          <h2>Construcción Aula Comunitaria</h2>
+          <span class="rev-status-pill" style="background:#5b8dee">Nuevo</span>
+        </div>
+        <p class="rev-detail-sub">Obra San Ignacio · Por financiar · Registrado el 20 ago 2026 por director.sanignacio</p>
+
+        <div class="rev-money-row">
+          <div class="rev-money"><div class="rm-label">Monto del proyecto</div><div class="rm-val">$350,000</div></div>
+          <div class="rev-money"><div class="rm-label">Monto requerido</div><div class="rm-val">$210,000</div></div>
+        </div>
+
+        <div class="rev-fields">
+          <div class="rev-field"><div class="rf-label">Responsable</div><div class="rf-val">Ana García Ruiz</div></div>
+          <div class="rev-field"><div class="rf-label">Correo</div><div class="rf-val">director@obra.mx</div></div>
+          <div class="rev-field"><div class="rf-label">Lugar</div><div class="rf-val">Predio anexo al Centro Comunitario</div></div>
+          <div class="rev-field"><div class="rf-label">Temporalidad</div><div class="rf-val">6 meses (ene–jun 2027)</div></div>
+          <div class="rev-field"><div class="rf-label">Beneficiados directos</div><div class="rf-val">120 personas</div></div>
+          <div class="rev-field"><div class="rf-label">Tipo</div><div class="rf-val">Por financiar</div></div>
+
+          <div class="rev-field full"><div class="rf-label">Causa</div><div class="rf-val">El centro no cuenta con un espacio propio para talleres y actividades educativas; hoy se rentan salones externos.</div></div>
+          <div class="rev-field full"><div class="rf-label">Realidad a responder</div><div class="rf-val">Alta demanda de talleres comunitarios sin infraestructura suficiente para atenderla dentro del centro.</div></div>
+          <div class="rev-field full"><div class="rf-label">Objetivo</div><div class="rf-val">Construir un aula multiusos de 60 m² para talleres, cursos y reuniones comunitarias.</div></div>
+          <div class="rev-field full"><div class="rf-label">Descripción</div><div class="rf-val">Obra civil de un aula independiente, con instalación eléctrica, ventilación natural y mobiliario básico para 40 personas.</div></div>
+          <div class="rev-field full"><div class="rf-label">Resultados esperados</div><div class="rf-val">Espacio propio disponible para al menos 8 talleres mensuales a partir de julio 2027, sin costo de renta externo.</div></div>
+        </div>
+
+        <div class="rev-actions">
+          <label>Comentario para la obra (opcional)</label>
+          <textarea placeholder="Ej. Aprobado, favor de subir la cotización final antes de iniciar la obra."></textarea>
+          <div class="rev-btn-row">
+            <button class="btn btn-aprobar" onclick="resolverProyecto('aprobado')">✓ Aprobar</button>
+            <button class="btn btn-rechazar" onclick="resolverProyecto('rechazado')">✕ Rechazar</button>
+            <button class="btn btn-cerrar-proy" onclick="resolverProyecto('cerrado')">Cerrar proyecto</button>
+          </div>
+          <p id="rev-feedback" style="min-height:16px;font-size:12.5px;font-weight:700;margin:12px 0 0"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 7 — VISTA PREVIA DE REPORTE ═══════════ -->
+  <section class="screen" id="screen-reporte">
+    <div class="report-layout">
+      <div class="card report-opts">
+        <h4>Incluir en el reporte</h4>
+        <label class="opt-row"><input type="checkbox" checked onchange="toggleSeccion('sec-resumen', this)"> Resumen ejecutivo</label>
+        <label class="opt-row"><input type="checkbox" checked onchange="toggleSeccion('sec-obras', this)"> Tabla de obras</label>
+        <label class="opt-row"><input type="checkbox" checked onchange="toggleSeccion('sec-usuarios', this)"> Tabla de usuarios</label>
+        <button class="btn btn-primary">📄 Descargar PDF</button>
+        <button class="btn btn-ghost" style="margin-top:8px">🖨️ Imprimir</button>
+      </div>
+
+      <div class="paper-stage">
+        <div class="paper">
+          <div class="paper-head">
+            <div>
+              <div class="ph-title">Reporte Ejecutivo · FL-SNF</div>
+              <div class="ph-sub">Fundación Loyola</div>
+            </div>
+            <div class="ph-meta">
+              Generado: 21 ago 2026, 11:42<br>
+              Por: plataforma@fundacionloyola.mx
+            </div>
+          </div>
+
+          <div id="sec-resumen">
+            <h5>Resumen ejecutivo</h5>
+            <div class="p-stats">
+              <div class="p-stat"><b>2</b><span>Obras</span></div>
+              <div class="p-stat"><b>7</b><span>Usuarios</span></div>
+              <div class="p-stat"><b>2</b><span>Sondeos con datos</span></div>
+              <div class="p-stat"><b>4</b><span>Proyectos registrados</span></div>
+            </div>
+          </div>
+
+          <div id="sec-obras">
+            <h5>Obras registradas</h5>
+            <table>
+              <thead><tr><th>Nombre</th><th>Estado</th><th>Teléfono</th><th>Correo</th></tr></thead>
+              <tbody>
+                <tr><td>Obra San Ignacio</td><td>Jalisco</td><td>3310000001</td><td>contacto@obra.mx</td></tr>
+                <tr><td>Centro Comunitario San Ignacio</td><td>Jalisco</td><td>3310000002</td><td>director@sanignacio.org.mx</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="sec-usuarios">
+            <h5>Usuarios del sistema</h5>
+            <table>
+              <thead><tr><th>Usuario</th><th>Rol</th><th>Obra</th><th>Registro</th></tr></thead>
+              <tbody>
+                <tr><td>plataforma</td><td>Admin</td><td>—</td><td>31 mar 2026</td></tr>
+                <tr><td>admin.sanignacio</td><td>Usuario</td><td>Obra San Ignacio</td><td>31 mar 2026</td></tr>
+                <tr><td>director.sanignacio</td><td>Usuario</td><td>Obra San Ignacio</td><td>31 mar 2026</td></tr>
+                <tr><td>admin.ccsi</td><td>Usuario</td><td>Centro Comunitario</td><td>31 mar 2026</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="paper-foot">
+            <span>reporte_admin_20260821114200.pdf</span>
+            <span>Página 1 de 1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 8 — CHATBOT ═══════════ -->
+  <section class="screen" id="screen-chatbot">
+    <div class="card chat-shell">
+      <div class="chat-head">
+        <div class="ch-ic">✦</div>
+        <div>
+          <h4>Asistente FL-SNF</h4>
+          <div class="ch-sub">Pregunta sobre proyectos y obras en lenguaje natural</div>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody">
+        <div class="msg bot">Hola, soy el asistente de FL-SNF. Puedo ayudarte a consultar el estado de proyectos, obras y sondeos. ¿Qué necesitas saber?</div>
+        <div class="msg user">¿Cuáles proyectos siguen sin aprobar?</div>
+        <div class="msg bot">
+          Encontré 3 proyectos con status "nuevo":
+          <table>
+            <thead><tr><th>Proyecto</th><th>Obra</th><th>Monto</th></tr></thead>
+            <tbody>
+              <tr><td>Construcción Aula Comunitaria</td><td>San Ignacio</td><td>$350,000</td></tr>
+              <tr><td>Programa de Becas Secundaria</td><td>San Ignacio</td><td>$150,000</td></tr>
+              <tr><td>Equipo de Cómputo</td><td>CCSI</td><td>$200,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chat-suggest">
+        <button class="sugg-chip" onclick="enviarSugerencia(this)">¿Qué obra tiene menos avance?</button>
+        <button class="sugg-chip" onclick="enviarSugerencia(this)">Resume el sondeo de CCSI</button>
+      </div>
+
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Escribe tu pregunta…" onkeydown="if(event.key==='Enter') enviarChat()">
+        <button class="chat-send" onclick="enviarChat()">➤</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 9 — NOTIFICACIONES (LADO OBRA) ═══════════ -->
+  <section class="screen" id="screen-notif">
+    <div class="card notif-shell">
+      <div class="notif-item" onclick="this.classList.toggle('open')">
+        <div class="notif-dot"></div>
+        <div class="n-body">
+          <div class="n-top"><span class="n-asunto">Recordatorio de llenado y atención a dudas</span><span class="n-fecha">Hace 2 días</span></div>
+          <div class="n-preview">Quedan pocas semanas para el cierre de la plataforma, por favor completen las secciones pendientes…</div>
+          <div class="n-detail">Quedan pocas semanas para el cierre de la plataforma. Por favor completen las secciones pendientes del sondeo antes del 25 de octubre. Cualquier duda, contactar a soporte.</div>
+        </div>
+      </div>
+
+      <div class="notif-item leida" onclick="this.classList.toggle('open')">
+        <div class="notif-dot"></div>
+        <div class="n-body">
+          <div class="n-top"><span class="n-asunto">Apertura de la plataforma</span><span class="n-fecha">25 ago 2026</span></div>
+          <div class="n-preview">La plataforma FL-SNF ya está disponible para que registren su sondeo de necesidades…</div>
+          <div class="n-detail">La plataforma FL-SNF ya está disponible para que registren su sondeo de necesidades de formación. Ingresen con las credenciales que se les compartieron.</div>
+        </div>
+      </div>
+
+      <div class="notif-item leida" onclick="this.classList.toggle('open')">
+        <div class="notif-dot"></div>
+        <div class="n-body">
+          <div class="n-top"><span class="n-asunto">Presentación de la plataforma e inducción</span><span class="n-fecha">18 ago 2026</span></div>
+          <div class="n-preview">Los invitamos a la sesión de inducción donde explicaremos el funcionamiento del sistema…</div>
+          <div class="n-detail">Los invitamos a la sesión de inducción donde explicaremos el funcionamiento del sistema FL-SNF, el 20 de agosto a las 10:00 am.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SCREEN 10 — COMPARAR OBRAS ═══════════ -->
+  <section class="screen" id="screen-comparar">
+    <div class="compare-grid">
+      <div class="cmp-cell head"></div>
+      <div class="cmp-cell head">Obra San Ignacio</div>
+      <div class="cmp-cell head">Centro Comunitario San Ignacio</div>
+
+      <div class="cmp-cell row-label">Avance del sondeo</div>
+      <div class="cmp-cell"><span class="cv-big">78%</span><div class="cmp-progress"><div class="cmp-progress-fill" style="width:78%"></div></div></div>
+      <div class="cmp-cell"><span class="cv-big">50%</span><div class="cmp-progress"><div class="cmp-progress-fill" style="width:50%"></div></div></div>
+
+      <div class="cmp-cell row-label">Usuarios</div>
+      <div class="cmp-cell"><span class="cv-big">3</span></div>
+      <div class="cmp-cell"><span class="cv-big">3</span></div>
+
+      <div class="cmp-cell row-label">Documentos subidos</div>
+      <div class="cmp-cell"><span class="cv-big">12</span></div>
+      <div class="cmp-cell"><span class="cv-big">4</span></div>
+
+      <div class="cmp-cell row-label">Proyectos</div>
+      <div class="cmp-cell"><span class="cv-big">3</span> <span style="font-size:11.5px;color:var(--text-light)">(1 aprobado)</span></div>
+      <div class="cmp-cell"><span class="cv-big">1</span> <span style="font-size:11.5px;color:var(--text-light)">(0 aprobados)</span></div>
+
+      <div class="cmp-cell row-label">Última actividad</div>
+      <div class="cmp-cell">Hoy, 11:20</div>
+      <div class="cmp-cell">18 ago, 09:05</div>
+    </div>
+    <p class="foot-note">Selecciona hasta 3 obras para comparar lado a lado (por ahora, maqueta con 2).</p>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll('nav.tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('screen-' + btn.dataset.screen).classList.add('active');
+    });
+  });
+
+  let pasoActual = 1;
+  function cambiarPaso(delta) {
+    const nuevo = pasoActual + delta;
+    if (nuevo < 1 || nuevo > 4) return;
+    document.querySelector(`.wizard-step[data-content="${pasoActual}"]`).style.display = 'none';
+    document.querySelector(`.step-item[data-step="${pasoActual}"]`).classList.remove('current');
+    document.querySelector(`.step-item[data-step="${pasoActual}"]`).classList.add(nuevo > pasoActual ? 'done' : '');
+    if (nuevo < pasoActual) document.querySelector(`.step-item[data-step="${pasoActual}"]`).classList.remove('done');
+
+    pasoActual = nuevo;
+    document.querySelector(`.wizard-step[data-content="${pasoActual}"]`).style.display = 'block';
+    document.querySelector(`.step-item[data-step="${pasoActual}"]`).classList.remove('done');
+    document.querySelector(`.step-item[data-step="${pasoActual}"]`).classList.add('current');
+
+    document.getElementById('btn-wizard-atras').disabled = pasoActual === 1;
+    const btnSig = document.getElementById('btn-wizard-siguiente');
+    btnSig.textContent = pasoActual === 4 ? 'Crear obra' : 'Siguiente';
+  }
+
+  // ── Categorías (screen 5) ──────────────────────────────
+  document.querySelectorAll('.cat-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // ── Drop zone (screen 5) ────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  if (dropZone) {
+    ['dragover', 'dragenter'].forEach(evt =>
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('dragover'); })
+    );
+    ['dragleave', 'drop'].forEach(evt =>
+      dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('dragover'); })
+    );
+  }
+
+  // ── Chatbot (screen 8) ──────────────────────────────────
+  const chatRespuestas = {
+    '¿qué obra tiene menos avance?': 'Centro Comunitario San Ignacio tiene el menor avance, con 50% del sondeo completo (4 de 9 secciones), frente al 78% de Obra San Ignacio.',
+    'resume el sondeo de ccsi': 'Centro Comunitario San Ignacio lleva 4 de 9 secciones del sondeo completas: presupuesto, contexto demográfico, proyectos vigentes e impacto. Faltan necesidades materiales, proyectos a financiar y documentos institucionales.'
+  };
+
+  function agregarMensaje(texto, tipo) {
+    const body = document.getElementById('chatBody');
+    const div = document.createElement('div');
+    div.className = 'msg ' + tipo;
+    div.textContent = texto;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function responderChat(pregunta) {
+    setTimeout(() => {
+      const clave = pregunta.trim().toLowerCase();
+      agregarMensaje(chatRespuestas[clave] || '(Maqueta) Aquí el asistente respondería consultando obras/proyectos en tiempo real vía la API de chatbot.', 'bot');
+    }, 500);
+  }
+
+  function enviarChat() {
+    const input = document.getElementById('chatInput');
+    const texto = input.value.trim();
+    if (!texto) return;
+    agregarMensaje(texto, 'user');
+    input.value = '';
+    responderChat(texto);
+  }
+
+  function enviarSugerencia(btn) {
+    const texto = btn.textContent;
+    agregarMensaje(texto, 'user');
+    responderChat(texto);
+  }
+
+  // ── Vista previa de reporte (screen 7) ──────────────────
+  function toggleSeccion(id, checkbox) {
+    document.getElementById(id).style.display = checkbox.checked ? 'block' : 'none';
+  }
+
+  // ── Revisión de proyectos (screen 6) ────────────────────
+  document.querySelectorAll('.rev-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.rev-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    });
+  });
+
+  function resolverProyecto(accion) {
+    const pill = document.querySelector('.rev-status-pill');
+    const colores = { aprobado: '#8a6d1b', rechazado: '#e74c3c', cerrado: '#7f8c8d' };
+    const etiquetas = { aprobado: 'Aprobado', rechazado: 'Rechazado', cerrado: 'Cerrado' };
+    pill.textContent = etiquetas[accion];
+    pill.style.background = colores[accion];
+
+    const fb = document.getElementById('rev-feedback');
+    fb.style.color = colores[accion];
+    fb.textContent = '(Maqueta) Quedaría marcado como "' + etiquetas[accion].toLowerCase() + '" y se notificaría a la obra.';
+  }
+
+  // Simula el progreso del archivo "subiendo…" para que la maqueta no se vea estática
+  (function animarProgreso() {
+    const fill = document.getElementById('demoFill');
+    const status = document.getElementById('demoStatus');
+    const sub = document.getElementById('demoSub');
+    const item = document.getElementById('demoItem');
+    if (!fill) return;
+    let pct = 35;
+    const timer = setInterval(() => {
+      pct = Math.min(100, pct + Math.random() * 18);
+      fill.style.width = pct + '%';
+      status.textContent = Math.round(pct) + '%';
+      if (pct >= 100) {
+        clearInterval(timer);
+        item.classList.add('done');
+        status.textContent = '✓ Listo';
+        sub.textContent = '2.8 MB';
+      }
+    }, 550);
+  })();
+</script>

@@ -78,6 +78,12 @@ const API = {
     loginGoogle(id_token) {
       return API.post('/auth/google', { id_token });
     },
+    verify2fa(mfaToken, code) {
+      return API.post('/auth/verify-2fa', { mfaToken, code });
+    },
+    resend2fa(mfaToken) {
+      return API.post('/auth/resend-2fa', { mfaToken });
+    },
     logout() {
       return API.post('/auth/logout');
     },
@@ -101,7 +107,9 @@ const API = {
     getByObra(obraId) { return API.get(`/usuarios/obra/${obraId}`); },
     create(data)    { return API.post('/usuarios', data); },
     update(id, data){ return API.put(`/usuarios/${id}`, data); },
-    delete(id)      { return API.delete(`/usuarios/${id}`); }
+    delete(id)      { return API.delete(`/usuarios/${id}`); },
+    enableMfa()             { return API.post('/usuarios/me/mfa/enable'); },
+    disableMfa(contrasena)  { return API.post('/usuarios/me/mfa/disable', { contrasena }); }
   },
 
   // ── Formularios ───────────────────────────────────────────────────
